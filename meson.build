@@ -4,5 +4,4 @@ project('go-runtime', 'cpp',
 
 subdir('src')
 subdir('example')
-
-#test('test', go_runtime)
+subdir('test')
