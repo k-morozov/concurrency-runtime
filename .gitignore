@@ -1,4 +1,3 @@
-buildDir
-cmake-build-debug
+build*
 venv
 .idea
