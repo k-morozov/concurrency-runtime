@@ -21,7 +21,7 @@ commands = [
     "ls -l /usr/bin | grep clang",
     "clang++ --version",
     "clang++-18 --version",
-    "sudo ln -s /usr/bin/c++ /usr/bin/clang++-18",
+    "sudo ln -s /usr/bin/clang++-18 /usr/bin/c++",
     "echo compiler updated",
     "pip install conan",
     "ls -l",
