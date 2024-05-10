@@ -18,6 +18,8 @@ commands = [
     "pip3 install --user meson",
     "sudo bash -c \"$(wget -O - https://apt.llvm.org/llvm.sh)\"",
     "clang++ --version",
+    "sudo ln -s /usr/bin/c++ /usr/bin/clang++",
+    "echo compiler updated",
     "pip install conan",
     "ls -l",
     "conan install . --output-folder=buildDir --build=missing --profile:build=./config/myprofile --profile:host=./config/myprofile",
