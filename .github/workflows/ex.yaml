@@ -16,9 +16,9 @@ jobs:
           submodules: true
       - name: Install Dependencies
         uses: actions/cache@v2
-      #        with:
-      #          path: ~/.conan2/data
-      #          key: ${{ runner.os }}-conan-${{ hashFiles('conanfile.txt') }}-executor
+        with:
+          path: ~/.conan2
+          key: ${{ runner.os }}-conan-${{ hashFiles('conanfile.txt') }}-executor
       - run: |
           python tools/prepare.py
       - run: |
