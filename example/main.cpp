@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "executor/executor.h"
+#include "core/executor/executor.h"
 
 int main() {
   std::cout << "Hello, world!" << std::endl;
 
-  NExe::Executor ex;
+  auto ex = NExe::MakeThreadPool();
 
   return 0;
 }
