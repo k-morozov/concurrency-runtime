@@ -17,18 +17,12 @@ commands = [
     "python3 -m venv ./env/",
     "pip3 install --user meson",
     "sudo bash -c \"$(wget -O - https://apt.llvm.org/llvm.sh)\"",
-    "echo compiler version",
-    "ls -l /usr/bin | grep clang",
-    "clang++ --version",
-    "clang++-18 --version",
-    "/usr/bin/c++ --version",
     "sudo rm /usr/bin/c++",
     "sudo ln -s /usr/bin/clang++-18 /usr/bin/c++",
     "sudo rm /usr/bin/clang++",
     "sudo ln -s /usr/bin/clang++-18 /usr/bin/clang++",
     "pip install conan",
-    "ls -l",
-    "conan install . --output-folder=buildDir --build=missing --profile:build=./config/debug_profile --profile:host=./config/debug_profile",
+    "conan install . -of=buildDir --build=missing -pr:a=./config/debug_profile",
 ]
 
 for cmd in commands:
