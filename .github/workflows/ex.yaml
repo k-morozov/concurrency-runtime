@@ -1,0 +1,30 @@
+name: Executor
+
+on:
+  workflow_call:
+
+#env:
+#  CC: clang-18
+#  CXX: clang++-18
+
+jobs:
+  ubuntu-clang:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Install Dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.conan2
+          key: ${{ runner.os }}-conan-${{ hashFiles('conanfile.txt') }}-executor
+      - run: |
+          python tools/prepare.py
+      - run: |
+          CC=clang-18 CXX=clang++-18 meson setup --native-file buildDir/conan_meson_native.ini buildDir .
+          meson compile -C buildDir
+          meson test -C buildDir
+
+
