@@ -19,8 +19,8 @@ commands = [
     "sudo bash -c \"$(wget -O - https://apt.llvm.org/llvm.sh)\"",
     "clang++ --version",
     "pip install conan",
-    "pwd",
-    "conan install . --output-folder=buildDir --build=missing --profile:build=config/myprofile --profile:host=myprofile",
+    "ls -l",
+    "conan install . --output-folder=buildDir --build=missing --profile:build=./config/myprofile --profile:host=./config/myprofile",
 ]
 
 for cmd in commands:
