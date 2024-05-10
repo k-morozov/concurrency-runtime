@@ -4,6 +4,9 @@
 
 #include "executor.h"
 
+#include <memory>
+#include <thread>
+
 namespace NExe {
 
 std::shared_ptr<Executor> MakeThreadPool() { return nullptr; }

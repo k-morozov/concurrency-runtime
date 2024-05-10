@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include <core/task/task.h>
-
 #include <memory>
+
+#include <pool/task/task.h>
 
 namespace NExe {
 

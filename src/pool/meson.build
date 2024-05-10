@@ -4,5 +4,6 @@ executor_sources = files(
 executor = library('executor',
                    executor_sources,
                    install : true,
-                   include_directories : [runtime_inc]
+                   include_directories : [runtime_inc],
+                   link_with : pool_queue,
 )
