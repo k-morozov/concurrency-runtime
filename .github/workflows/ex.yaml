@@ -4,7 +4,8 @@ on:
   workflow_call:
 
 env:
-  CLANG_15: clang++-16
+  CC: clang-18
+  CXX: clang++-18
 
 jobs:
   ubuntu-clang-16:
