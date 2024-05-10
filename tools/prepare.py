@@ -24,6 +24,8 @@ commands = [
     "/usr/bin/c++ --version",
     "sudo rm /usr/bin/c++",
     "sudo ln -s /usr/bin/clang++-18 /usr/bin/c++",
+    "sudo rm /usr/bin/clang++",
+    "sudo ln -s /usr/bin/clang++-18 /usr/bin/clang++",
     "pip install conan",
     "ls -l",
     "conan install . --output-folder=buildDir --build=missing --profile:build=./config/myprofile --profile:host=./config/myprofile",
