@@ -18,6 +18,7 @@ commands = [
     "pip3 install --user meson",
     "sudo bash -c \"$(wget -O - https://apt.llvm.org/llvm.sh)\"",
     "echo compiler version",
+    "ls -l /usr/bin | grep clang",
     "clang++ --version",
     "clang++-18 --version",
     "sudo ln -s /usr/bin/c++ /usr/bin/clang++-18",
