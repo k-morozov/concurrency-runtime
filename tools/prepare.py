@@ -28,7 +28,7 @@ commands = [
     "sudo ln -s /usr/bin/clang++-18 /usr/bin/clang++",
     "pip install conan",
     "ls -l",
-    "conan install . --output-folder=buildDir --build=missing --profile:build=./config/myprofile --profile:host=./config/myprofile",
+    "conan install . --output-folder=buildDir --build=missing --profile:build=./config/debug_profile --profile:host=./config/debug_profile",
 ]
 
 for cmd in commands:
