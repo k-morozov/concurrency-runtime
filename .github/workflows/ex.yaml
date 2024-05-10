@@ -3,12 +3,12 @@ name: Executor
 on:
   workflow_call:
 
-env:
-  CC: clang-18
-  CXX: clang++-18
+#env:
+#  CC: clang-18
+#  CXX: clang++-18
 
 jobs:
-  ubuntu-clang-16:
+  ubuntu-clang:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -23,8 +23,8 @@ jobs:
       - run: |
           python tools/prepare.py
       - run: |
-               meson setup --native-file buildDir/conan_meson_native.ini buildDir .
-               meson compile -C buildDir
-               meson test -C buildDir
+          CC=clang-18 CXX=clang++-18 meson setup --native-file buildDir/conan_meson_native.ini buildDir .
+          meson compile -C buildDir
+          meson test -C buildDir
 
 
