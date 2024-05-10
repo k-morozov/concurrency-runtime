@@ -16,14 +16,12 @@ jobs:
           submodules: true
       - name: Install Dependencies
         uses: actions/cache@v2
-        with:
-          path: ~/.conan2/data
-          key: ${{ runner.os }}-conan-${{ hashFiles('conanfile.txt') }}-executor
+      #        with:
+      #          path: ~/.conan2/data
+      #          key: ${{ runner.os }}-conan-${{ hashFiles('conanfile.txt') }}-executor
       - run: |
-        #          export BUILD_TYPE=${{env.BUILD_TYPE_DEBUG}}
-          python ./tools/prepare.py
+          python tools/prepare.py
       - run: |
-        #          mkdir -p ${{github.workspace}}/buildDir
                meson setup --native-file buildDir/conan_meson_native.ini buildDir .
                meson compile -C buildDir
                meson test -C buildDir
