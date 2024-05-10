@@ -20,7 +20,7 @@ jobs:
           path: ~/.conan2/data
           key: ${{ runner.os }}-conan-${{ hashFiles('conanfile.txt') }}-executor
       - run: |
-          export BUILD_TYPE=${{env.BUILD_TYPE_DEBUG}}
+        #          export BUILD_TYPE=${{env.BUILD_TYPE_DEBUG}}
           python ./tools/prepare.py
       - run: |
         #          mkdir -p ${{github.workspace}}/buildDir
