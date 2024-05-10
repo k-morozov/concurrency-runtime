@@ -9,3 +9,18 @@
 # meson setup --native-file buildDir/conan_meson_native.ini  buildDir .
 # meson compile -C buildDir
 # meson test -C buildDir
+
+import subprocess
+
+commands = [
+    "sudo apt-get install python3 python3-pip python3-setuptools python3-wheel ninja-build",
+    "python3 -m venv ./env/",
+    "pip3 install --user meson",
+    "sudo bash -c \"$(wget -O - https://apt.llvm.org/llvm.sh)\"",
+    "clang++ --version",
+    "pip install conan",
+    "conan install . --output-folder=buildDir --build=missing --profile:build=config/myprofile --profile:host=myprofile",
+]
+
+for cmd in commands:
+    subprocess.run(cmd, shell=True, check=True)
