@@ -21,12 +21,14 @@ commands = [
     "ls -l /usr/bin | grep clang",
     "clang++ --version",
     "clang++-18 --version",
-    # "sudo ln -s /usr/bin/clang++-18 /usr/bin/c++",
-    "echo compiler updated",
+    "/usr/bin/c++ --version",
+    "sudo rm /usr/bin/c++",
+    "sudo ln -s /usr/bin/clang++-18 /usr/bin/c++",
     "pip install conan",
     "ls -l",
     "conan install . --output-folder=buildDir --build=missing --profile:build=./config/myprofile --profile:host=./config/myprofile",
 ]
 
 for cmd in commands:
+    print(cmd)
     subprocess.run(cmd, shell=True, check=True)
