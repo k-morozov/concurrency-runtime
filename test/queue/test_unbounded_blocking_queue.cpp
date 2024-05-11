@@ -7,6 +7,7 @@
 #include <chrono>
 #include <thread>
 
+#include <common/clock.h>
 #include <pool_queue/blocking_queue/queue.h>
 
 using namespace std::chrono_literals;
@@ -80,13 +81,15 @@ TEST(TestPoolSimple, BlockingTake) {
         queue.Put(7);
     });
 
+    common::ThreadCPUTimer thread_cpu_timer;
+
     auto value = queue.Take();
 
-    //         auto spent = thread_cpu_timer.Spent();
+    auto spent = thread_cpu_timer.Spent();
 
     ASSERT_TRUE(value);
     ASSERT_EQ(*value, 7);
-    //         ASSERT_TRUE(spent < 100ms);
+    ASSERT_LE(spent, 100ms);
 
     producer.join();
 }
@@ -99,14 +102,14 @@ TEST(TestPoolSimple, BlockingTake2) {
         queue.Close();
     });
 
-    //    ThreadCPUTimer thread_cpu_timer;
+    common::ThreadCPUTimer thread_cpu_timer;
 
     auto value = queue.Take();
 
-    //    auto spent = thread_cpu_timer.Spent();
+    auto spent = thread_cpu_timer.Spent();
 
     ASSERT_FALSE(value);
-    //    ASSERT_TRUE(spent < 100ms);
+    ASSERT_LE(spent, 100ms);
 
     producer.join();
 }
@@ -131,7 +134,7 @@ TEST(TestPoolSimple, UnblockConsumers) {
 TEST(TestPoolSimple, ProducerConsumer) {
     Queue<int> queue;
 
-    //         ProcessCPUTimer process_cpu_timer;
+    common::ProcessCPUTimer process_cpu_timer;
 
     std::thread producer([&]() {
         // Producer
@@ -154,5 +157,5 @@ TEST(TestPoolSimple, ProducerConsumer) {
 
     producer.join();
 
-    //         ASSERT_TRUE(process_cpu_timer.Spent() < 100ms);
+    ASSERT_LE(process_cpu_timer.Spent(), 100ms);
 }
