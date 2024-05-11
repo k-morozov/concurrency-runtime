@@ -2,14 +2,14 @@
 // Created by konstantin on 09.05.24.
 //
 
-#include <core/executor/executor.h>
-#include <core/task/task.h>
+#include "gtest/gtest.h"
 
 #include <chrono>
 #include <memory>
 #include <thread>
 
-#include "gtest/gtest.h"
+#include <pool/executor/executor.h>
+#include <pool/task/task.h>
 
 using namespace std::chrono_literals;
 

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "core/executor/executor.h"
+#include "pool/executor/executor.h"
 
 int main() {
   std::cout << "Hello, world!" << std::endl;
