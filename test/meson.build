@@ -6,5 +6,5 @@ test_dependencies = dependency(
     ]
 )
 
-#subdir('pool')
+subdir('pool')
 subdir('queue')

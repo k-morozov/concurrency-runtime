@@ -1,5 +1,6 @@
 executor_sources = files(
     'executor/executor.cpp',
+    'task/task.cpp'
 )
 
 executor = library('executor',

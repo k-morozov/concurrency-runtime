@@ -42,6 +42,8 @@ public:
         }
         lock.unlock();
 
+        empty_data_.notify_one();
+
         return result;
     }
 
