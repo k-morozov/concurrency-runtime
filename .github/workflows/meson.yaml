@@ -1,8 +1,0 @@
-name: Meson
-
-on:
-  push:
-
-jobs:
-  Executor:
-    uses: ./.github/workflows/ex.yaml

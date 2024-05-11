@@ -1,11 +1,10 @@
-name: Executor
+name: Pool
 
 on:
   workflow_call:
 
-#env:
-#  CC: clang-18
-#  CXX: clang++-18
+env:
+  BuidlDir: buildDir
 
 jobs:
   ubuntu-debug:
@@ -23,9 +22,9 @@ jobs:
       - run: |
           python tools/prepare.py
       - run: |
-          CC=clang-18 CXX=clang++-18 meson setup --native-file buildDir/conan_meson_native.ini buildDir .
-          meson compile -C buildDir
-          meson test -C buildDir
+          CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} .
+          meson compile -C ${{env.BuidlDir}}
+          meson test -C ${{env.BuidlDir}}
 
   ubuntu-debug-sanitize-address:
     timeout-minutes: 15
@@ -42,9 +41,9 @@ jobs:
       - run: |
           python tools/prepare.py
       - run: |
-          CC=clang-18 CXX=clang++-18 meson setup --native-file buildDir/conan_meson_native.ini buildDir . -Db_sanitize=address -Db_lundef=false
-          meson compile -C buildDir
-          meson test -C buildDir
+          CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . -Db_sanitize=address -Db_lundef=false
+          meson compile -C ${{env.BuidlDir}}
+          meson test -C ${{env.BuidlDir}}
 
   ubuntu-debug-sanitize-thread:
     timeout-minutes: 15
@@ -61,8 +60,8 @@ jobs:
       - run: |
           python tools/prepare.py
       - run: |
-          CC=clang-18 CXX=clang++-18 meson setup --native-file buildDir/conan_meson_native.ini buildDir . -Db_sanitize=thread -Db_lundef=false
-          meson compile -C buildDir
-          meson test -C buildDir
+          CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . -Db_sanitize=thread -Db_lundef=false
+          meson compile -C ${{env.BuidlDir}}
+          meson test -C ${{env.BuidlDir}}
 
 
