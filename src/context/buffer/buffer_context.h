@@ -4,16 +4,15 @@
 
 #pragma once
 
-#include <runner.h>
-
-#include <buffer/buffer.h>
+#include "buffer.h"
+#include "runner.h"
 
 namespace go::impl::ctx {
 
-class EngineContext final {
+class BufferContext final {
 public:
     void Setup(BufferView target_buffer, Runner* runner);
-    void SwitchTo(EngineContext& target);
+    void SwitchTo(BufferContext& target);
 
 private:
     void* rsp_;

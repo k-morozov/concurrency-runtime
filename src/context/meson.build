@@ -1,8 +1,8 @@
 context_sources = files(
     'context.cpp',
     'buffer/buffer.cpp',
-    'engine/engine_context.cpp',
-    'internal/internal_context.S'
+    'buffer/prepare_context.S',
+    'buffer/buffer_context.cpp',
 )
 context = library('context',
                   context_sources,

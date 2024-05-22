@@ -10,13 +10,16 @@ namespace go::impl::ctx {
 
 void Context::Setup(BufferView target_buffer, Runner* runner) {
     assert(runner);
-    engine_ctx_.Setup(target_buffer, runner);
+    buffer_ctx_.Setup(target_buffer, this);
     runner_ = runner;
 }
 
-void Context::SwitchTo(Context& /*target*/) {}
+void Context::SwitchTo(Context& target) {
+    buffer_ctx_.SwitchTo(target.buffer_ctx_);
+}
 
 void Context::ExitTo(Context& /*target*/) {}
-void Context::Run() {}
+
+void Context::Run() { runner_->Run(); }
 
 }  // namespace go::impl::ctx

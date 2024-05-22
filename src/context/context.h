@@ -7,7 +7,8 @@
 #include <runner.h>
 
 #include <buffer/buffer.h>
-#include <engine/engine_context.h>
+
+#include "buffer/buffer_context.h"
 
 namespace go::impl::ctx {
 
@@ -17,6 +18,10 @@ public:
 
     void Setup(BufferView target_buffer, Runner* runner);
 
+    /**
+     * 1. Save current context in this.
+     * 2. Activate target context.
+     */
     void SwitchTo(Context& target);
 
     void ExitTo(Context& target);
@@ -24,7 +29,7 @@ public:
 private:
     void Run() override;
 
-    EngineContext engine_ctx_;
+    BufferContext buffer_ctx_;
     Runner* runner_{nullptr};
 };
 

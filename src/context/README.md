@@ -1,4 +1,7 @@
-[source][stanford-x86-64]
+- [Calling convention][Calling convention]
+- [syscalls][syscalls]
+- [System V ABI][System V Application Binary Interface AMD64]
+- [x86 Assembly Guide][x86 Assembly Guide]
 
 ```
 | Register | Conventional use                | Low 32-bits | Low 16-bits | Low 8-bits |
@@ -25,4 +28,10 @@
 
 ---
 
-[stanford-x86-64]: https://web.stanford.edu/class/archive/cs/cs107/cs107.1174/guide_x86-64.html
+[Calling convention]: https://web.stanford.edu/class/archive/cs/cs107/cs107.1174/guide_x86-64.html
+
+[System V Application Binary Interface AMD64]: https://uclibc.org/docs/psABI-x86_64.pdf
+
+[syscalls]: https://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/
+
+[x86 Assembly Guide]: https://flint.cs.yale.edu/cs421/papers/x86-asm/asm.html
