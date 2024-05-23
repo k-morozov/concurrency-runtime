@@ -5,6 +5,7 @@
 #include "context.h"
 
 #include <cassert>
+#include <stdexcept>
 
 namespace go::impl::ctx {
 
@@ -18,7 +19,10 @@ void Context::SwitchTo(Context& target) {
     buffer_ctx_.SwitchTo(target.buffer_ctx_);
 }
 
-void Context::ExitTo(Context& /*target*/) {}
+void Context::ExitTo(Context& target) {
+    buffer_ctx_.SwitchTo(target.buffer_ctx_);
+    throw std::runtime_error("Unreachable place for Context::ExitTo.");
+}
 
 void Context::Run() { runner_->Run(); }
 

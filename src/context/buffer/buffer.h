@@ -10,12 +10,12 @@ namespace go::impl::ctx {
 
 using BufferView = std::span<std::byte>;
 
-class ContextBuffer {
+class Buffer {
 public:
-    ~ContextBuffer();
+    ~Buffer();
 
-    static ContextBuffer AllocBytes(const size_t bytes) {
-        return ContextBuffer(Alloc{new std::byte[bytes], bytes});
+    static Buffer AllocBytes(const size_t bytes) {
+        return Buffer(Alloc{new std::byte[bytes], bytes});
     }
 
     BufferView GetSpan() const { return {alloc_.data, alloc_.size}; }
@@ -29,7 +29,7 @@ private:
     Alloc alloc_;
 
 private:
-    explicit ContextBuffer(Alloc alloc);
+    explicit Buffer(Alloc alloc);
 };
 
 }  // namespace go::impl::ctx

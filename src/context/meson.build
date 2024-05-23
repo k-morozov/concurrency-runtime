@@ -6,4 +6,5 @@ context_sources = files(
 )
 context = library('context',
                   context_sources,
+                  include_directories : [runtime_inc],
 )

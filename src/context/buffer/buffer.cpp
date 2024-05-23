@@ -6,8 +6,8 @@
 
 namespace go::impl::ctx {
 
-ContextBuffer::ContextBuffer(ContextBuffer::Alloc alloc) : alloc_(alloc) {}
+Buffer::Buffer(Buffer::Alloc alloc) : alloc_(alloc) {}
 
-ContextBuffer::~ContextBuffer() { delete[] alloc_.data; }
+Buffer::~Buffer() { delete[] alloc_.data; }
 
 }  // namespace go::impl::ctx

@@ -4,11 +4,9 @@
 
 #pragma once
 
-#include <runner.h>
-
-#include <buffer/buffer.h>
-
-#include "buffer/buffer_context.h"
+#include <context/buffer/buffer.h>
+#include <context/buffer/buffer_context.h>
+#include <context/runner.h>
 
 namespace go::impl::ctx {
 

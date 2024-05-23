@@ -4,10 +4,10 @@
 
 #pragma once
 
-namespace go::impl::ctx {
+namespace go::impl::ctx::sys {
 
 extern void* PrepareContextInBuffer(void* buffer, void* runner, void* arg);
 
 extern void SwitchBufferContext(void** source, void** destination);
 
-}  // namespace go::impl::ctx
+}  // namespace go::impl::ctx::sys
