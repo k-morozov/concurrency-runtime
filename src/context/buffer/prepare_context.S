@@ -1,9 +1,7 @@
-#define ASM_SYMBOL(name) name
-
 .global PrepareContextInBuffer
 .global SwitchBufferContext
 
-.PrepareContextInBuffer:
+PrepareContextInBuffer:
     # rdi, rsi, rdx, rcx, r8, r9
     # 1. %rdi - buffer
     # 2. %rsi - CallRunner
@@ -43,7 +41,7 @@
     movq %r11, %rsp # rsp := tmp
     retq
 
-.SwitchBufferContext:
+SwitchBufferContext:
     # rdi, rsi, rdx, rcx, r8, r9
     # 1. %rdi - source
     # 2. %rsi - destination
@@ -52,6 +50,7 @@
     pushq %r14
     pushq %r13
     pushq %r12
+
     pushq %rbp
     pushq %rbx
 
@@ -60,6 +59,7 @@
 
     pop %rbx
     pop %rbp
+
     pop %r12
     pop %r13
     pop %r14

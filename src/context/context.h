@@ -27,7 +27,7 @@ public:
 private:
     void Run() override;
 
-    BufferContext buffer_ctx_;
+    BufferContext buffer_ctx_{};
     Runner* runner_{nullptr};
 };
 

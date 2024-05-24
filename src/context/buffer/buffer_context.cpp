@@ -21,12 +21,12 @@ void CallRunner(void*, void*, void*, void*, void*, void*, void* arg7) {
 void BufferContext::Setup(BufferView target_buffer, Runner* runner) {
     // @TODO https://man7.org/linux/man-pages/man2/getcontext.2.html
 
-    rsp_ = sys::PrepareContextInBuffer((void*)&target_buffer.back(),
-                                       (void*)CallRunner, (void*)runner);
+    rsp_ = PrepareContextInBuffer((void*)&target_buffer.back(),
+                                  (void*)CallRunner, (void*)runner);
 }
 
 void BufferContext::SwitchTo(BufferContext& target) {
-    sys::SwitchBufferContext(&rsp_, &target.rsp_);
+    SwitchBufferContext(&rsp_, &target.rsp_);
 }
 
 }  // namespace go::impl::ctx

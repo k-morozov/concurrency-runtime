@@ -14,27 +14,44 @@ using Ctx = go::impl::ctx::Context;
 template <class T>
 class TestCoro : private go::impl::Runner {
     struct SuspendCtx {
-        TestCoro* coro_;
-        void Suspend() {}
+        TestCoro* coro;
+        void Suspend() {
+            coro->Suspend();
+        }
     };
 
 public:
     explicit TestCoro(T&& body) : body_(std::move(body)) {
-        caller_ctx_.Setup(buffer_, this);
+        ctx_.Setup(buffer_, this);
     };
 
-    void Resume();
-    void Suspend();
+    void Resume() {
+        assert(!done_);
+        caller_ctx_.SwitchTo(ctx_);
+    }
+
+    void Suspend() {
+        ctx_.SwitchTo(caller_ctx_);
+    }
 
     bool IsDone() const { return done_; }
 
 private:
     T body_;
-    std::byte buffer_[1024];
+    std::byte buffer_[1024]{};
+    Ctx ctx_;
     Ctx caller_ctx_;
     bool done_{false};
 
-    void Run() override {}
+    void Run() override {
+        try {
+            body_(SuspendCtx{this});
+        } catch (...) {
+            std::abort();
+        }
+        done_ = true;
+        ctx_.ExitTo(caller_ctx_);
+    }
 };
 
 TEST(TestCtxSimple, JustWorks1Coro) {
