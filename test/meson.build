@@ -8,3 +8,4 @@ test_dependencies = dependency(
 
 subdir('pool')
 subdir('queue')
+subdir('ctx')

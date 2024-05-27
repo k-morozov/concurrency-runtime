@@ -1,11 +1,11 @@
 executor_sources = files(
     'executor/executor.cpp',
-    'task/task.cpp'
+    'task/task.cpp',
 )
 
 executor = library('executor',
                    executor_sources,
                    install : true,
                    include_directories : [runtime_inc],
-                   link_with : pool_queue,
+                   link_with : [context, pool_queue],
 )

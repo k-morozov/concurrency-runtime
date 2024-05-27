@@ -5,7 +5,7 @@
 int main() {
   std::cout << "Hello, world!" << std::endl;
 
-    auto ex = pool::MakeThreadPool();
+    auto ex = pool::MakeThreadPool(4);
 
     return 0;
 }
