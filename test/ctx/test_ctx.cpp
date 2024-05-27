@@ -26,7 +26,7 @@ public:
     };
 
     void Resume() {
-        assert(!done_);
+        assert(!IsDone());
         caller_ctx_.SwitchTo(ctx_);
     }
 
@@ -34,23 +34,25 @@ public:
         ctx_.SwitchTo(caller_ctx_);
     }
 
-    bool IsDone() const { return done_; }
+    bool IsDone() const noexcept { return done_; }
 
 private:
     T body_;
-    std::byte buffer_[1024]{};
+    std::byte buffer_[1024];
     Ctx ctx_;
     Ctx caller_ctx_;
     bool done_{false};
 
-    void Run() override {
+    void Run() noexcept override {
         try {
             body_(SuspendCtx{this});
         } catch (...) {
             std::abort();
         }
         done_ = true;
-        ctx_.ExitTo(caller_ctx_);
+
+        // @todo change to ExitTo
+        ctx_.SwitchTo(caller_ctx_);
     }
 };
 

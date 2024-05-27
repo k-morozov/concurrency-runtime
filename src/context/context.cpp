@@ -11,8 +11,8 @@ namespace go::impl::ctx {
 
 void Context::Setup(BufferView target_buffer, Runner* runner) {
     assert(runner);
-    buffer_ctx_.Setup(target_buffer, this);
     runner_ = runner;
+    buffer_ctx_.Setup(target_buffer, this);
 }
 
 void Context::SwitchTo(Context& target) {
@@ -21,9 +21,12 @@ void Context::SwitchTo(Context& target) {
 
 void Context::ExitTo(Context& target) {
     buffer_ctx_.SwitchTo(target.buffer_ctx_);
-    throw std::runtime_error("Unreachable place for Context::ExitTo.");
+    std::abort();
 }
 
-void Context::Run() { runner_->Run(); }
+void Context::Run() {
+    assert(runner_);
+    runner_->Run();
+}
 
 }  // namespace go::impl::ctx

@@ -22,12 +22,14 @@ public:
      */
     void SwitchTo(Context& target);
 
+    [[noreturn]]
     void ExitTo(Context& target);
 
 private:
     void Run() override;
 
     BufferContext buffer_ctx_{};
+
     Runner* runner_{nullptr};
 };
 

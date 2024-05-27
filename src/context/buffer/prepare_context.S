@@ -51,14 +51,16 @@ SwitchBufferContext:
     pushq %r13
     pushq %r12
 
-    pushq %rbp
     pushq %rbx
+    pushq %rbp
+
 
     movq %rsp, (%rdi)
     movq (%rsi), %rsp
 
-    pop %rbx
     pop %rbp
+    pop %rbx
+
 
     pop %r12
     pop %r13
