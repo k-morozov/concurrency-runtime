@@ -52,7 +52,7 @@ private:
         done_ = true;
 
         // @todo change to ExitTo
-        ctx_.SwitchTo(caller_ctx_);
+        ctx_.ExitTo(caller_ctx_);
     }
 };
 
