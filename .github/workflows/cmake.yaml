@@ -1,0 +1,8 @@
+name: Build
+
+on:
+  push:
+
+jobs:
+  Executor:
+    uses: ./.github/workflows/pool.yaml
