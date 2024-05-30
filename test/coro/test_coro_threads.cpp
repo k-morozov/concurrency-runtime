@@ -40,7 +40,7 @@ TEST(TestCoro, Threads) {
     threads.Run(resume);
     threads.Run(resume);
 
-    ASSERT_EQ(steps, 3);
+    ASSERT_EQ(steps, 3u);
 }
 
 TEST(TestCoro, Pipeline) {

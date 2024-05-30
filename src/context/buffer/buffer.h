@@ -14,11 +14,16 @@ class Buffer {
 public:
     ~Buffer();
 
+    Buffer(const Buffer&) noexcept = delete;
+    Buffer(Buffer&&) noexcept;
+
     static Buffer AllocBytes(const size_t bytes) {
         return Buffer(Alloc{new std::byte[bytes], bytes});
     }
 
-    BufferView GetSpan() const { return {alloc_.data, alloc_.size}; }
+    [[nodiscard]] BufferView GetSpan() const {
+        return {alloc_.data, alloc_.size};
+    }
 
 private:
     struct Alloc {
