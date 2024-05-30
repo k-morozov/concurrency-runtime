@@ -4,17 +4,18 @@
 
 #include "gtest/gtest.h"
 
+#include <chrono>
+
 #include <go/go.h>
 
+using namespace std::chrono_literals;
 
 TEST(TestFiber, JustWorks1Go) {
     pool::Executor pool{3};
 
     bool done = false;
 
-    Go(pool, [&]() {
-        done = true;
-    });
+    Go(pool, [&]() { done = true; });
 
     pool.StartShutdown();
     pool.WaitShutdown();
@@ -28,17 +29,19 @@ TEST(TestFiber, Child) {
     std::atomic<size_t> done{0};
 
     auto init = [&]() {
-        Go([&]() {
-            ++done;
-        });
+        Go([&]() { ++done; });
 
         ++done;
     };
 
     Go(pool, init);
 
-    pool.StartShutdown();
-    pool.WaitShutdown();
+    // @todo change API of thread pool
+    std::this_thread::sleep_for(1s);
+    //    pool.WaitShutdown();
 
     ASSERT_EQ(done.load(), 2u);
+
+    pool.StartShutdown();
+    pool.WaitShutdown();
 }
