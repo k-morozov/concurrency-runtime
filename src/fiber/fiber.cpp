@@ -1,0 +1,47 @@
+//
+// Created by konstantin on 29.05.24.
+//
+
+#include "fiber.h"
+
+#include <cassert>
+#include <memory>
+
+#include <pool/task/fiber_task.h>
+#include <pool/executor/executor.h>
+
+thread_local go::impl::fiber::Fiber* current_fiber;
+
+namespace go::impl::fiber {
+
+Fiber::Fiber(pool::Executor* executor,
+             go::impl::coro::FiberCoroutine::Routine routine,
+             go::impl::ctx::Buffer&& buffer)
+    : executor_(executor), fiber_coro_(std::move(routine), std::move(buffer)) {}
+
+void Fiber::Schedule() {
+    executor_->Submit(std::make_shared<pool::FiberTask>(([this]() { Run(); })));
+}
+
+void Fiber::Run() {
+    current_fiber = this;
+
+    fiber_coro_.Resume();
+    if (fiber_coro_.IsCompleted()) {
+        delete this;
+        return;
+    }
+
+    current_fiber = nullptr;
+    Schedule();
+}
+Fiber* Fiber::Self() { return current_fiber; }
+
+void Fiber::Yield() {
+    assert(current_fiber);
+    Self()->fiber_coro_.Suspend();
+}
+
+pool::Executor* Fiber::GetScheduler() { return executor_; }
+
+}  // namespace go::impl::fiber

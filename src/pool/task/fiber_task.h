@@ -1,0 +1,22 @@
+//
+// Created by konstantin on 29.05.24.
+//
+
+#pragma once
+
+#include <functional>
+
+#include <pool/task/task.h>
+
+namespace pool {
+
+class FiberTask : public Task {
+public:
+    explicit FiberTask(std::function<void()>&& f) : f_(std::move(f)){};
+    void Run() override { f_(); }
+
+private:
+    std::function<void()> f_;
+};
+
+}  // namespace pool

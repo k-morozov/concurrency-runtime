@@ -4,9 +4,14 @@
 
 #include "buffer.h"
 
+#include <utility>
+
 namespace go::impl::ctx {
 
 Buffer::Buffer(Buffer::Alloc alloc) : alloc_(alloc) {}
+
+Buffer::Buffer(Buffer&& buffer) noexcept
+    : alloc_(std::exchange(buffer.alloc_, {nullptr, 0})) {}
 
 Buffer::~Buffer() { delete[] alloc_.data; }
 
