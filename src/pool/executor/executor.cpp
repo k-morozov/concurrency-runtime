@@ -8,20 +8,39 @@
 #include <memory>
 #include <thread>
 
+thread_local pool::Executor* CurrentPool;
+
 namespace pool {
 
 std::shared_ptr<Executor> MakeThreadPool(const size_t count) {
-    return std::make_shared<Executor>(count);
+    auto pool = std::make_shared<Executor>(count);
+    pool->Start();
+    return pool;
 }
 
-Executor::Executor(const size_t count) {
-    for (size_t i = 0; i < count; i++) {
+Executor::Executor(const size_t count) : workers_count_(count) {}
+
+Executor::~Executor() {
+    StartShutdown();
+    WaitShutdown();
+
+    for (auto& p : workers_) {
+        if (p->joinable()) {
+            p->join();
+        }
+    }
+    assert(0 == count_tasks_.load());
+}
+
+void Executor::Start() {
+    for (size_t i = 0; i < workers_count_; i++) {
         {
             std::lock_guard lock(mutex_workers_);
             count_workers_++;
         }
 
         workers_.push_back(std::make_unique<std::thread>([this] {
+            CurrentPool = this;
             while (true) {
                 auto task_opt = queue_.Take();
                 if (!task_opt) {
@@ -38,6 +57,10 @@ Executor::Executor(const size_t count) {
                     std::exception_ptr p = std::current_exception();
                     task_ptr->MarFailed(p);
                 }
+
+                std::lock_guard lock(mutex_tasks_);
+                count_tasks_.fetch_sub(1);
+                empty_tasks_.notify_one();
             }
 
             {
@@ -46,17 +69,6 @@ Executor::Executor(const size_t count) {
             }
             empty_workers_.notify_one();
         }));
-    }
-}
-
-Executor::~Executor() {
-    StartShutdown();
-    WaitShutdown();
-
-    for (auto& p : workers_) {
-        if (p->joinable()) {
-            p->join();
-        }
     }
 }
 
@@ -72,11 +84,20 @@ void Executor::WaitShutdown() {
     }
 }
 
+void Executor::WaitIdle() {
+    std::unique_lock lock(mutex_tasks_);
+    while (0 != count_tasks_.load()) {
+        empty_tasks_.wait(lock);
+    }
+}
+
 void Executor::Submit(TaskPtr task) {
     if (shutdown_.load()) {
         return;
     }
+    count_tasks_.fetch_add(1);
     [[maybe_unused]] bool status = queue_.Put(std::move(task));
 }
+Executor* Executor::Current() { return CurrentPool; }
 
 }  // namespace pool

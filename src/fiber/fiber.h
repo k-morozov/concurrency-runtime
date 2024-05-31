@@ -21,7 +21,7 @@ public:
 
     static Fiber* Self();
 
-    void Yield();
+    static void Yield();
 
     pool::Executor* GetScheduler();
 

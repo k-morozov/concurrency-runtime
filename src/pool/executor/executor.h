@@ -22,13 +22,21 @@ public:
     explicit Executor(size_t count);
     ~Executor();
 
+    void Start();
+
     void StartShutdown();
 
     void WaitShutdown();
 
+    void WaitIdle();
+
     void Submit(TaskPtr /*task*/);
 
+    static Executor* Current();
+
 private:
+    const size_t workers_count_;
+
     std::vector<std::unique_ptr<std::thread>> workers_;
     UnboundedBlockingQueue<TaskPtr> queue_;
 
@@ -37,6 +45,10 @@ private:
     size_t count_workers_{0};
     std::mutex mutex_workers_;
     std::condition_variable empty_workers_;
+
+    std::atomic<size_t> count_tasks_{0};
+    std::mutex mutex_tasks_;
+    std::condition_variable empty_tasks_;
 };
 
 }  // namespace pool
