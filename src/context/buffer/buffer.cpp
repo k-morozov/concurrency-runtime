@@ -6,7 +6,7 @@
 
 #include <utility>
 
-namespace go::impl::ctx {
+namespace fibers::ctx {
 
 Buffer::Buffer(Buffer::Alloc alloc) : alloc_(alloc) {}
 
@@ -15,4 +15,4 @@ Buffer::Buffer(Buffer&& buffer) noexcept
 
 Buffer::~Buffer() { delete[] alloc_.data; }
 
-}  // namespace go::impl::ctx
+}  // namespace fibers::ctx

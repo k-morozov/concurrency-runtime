@@ -8,11 +8,11 @@
 #include <coro/fiber_coro.h>
 #include <pool/executor/executor.h>
 
-namespace go::impl::fiber {
+namespace fibers::impl {
 
 class Fiber {
 public:
-    Fiber(pool::Executor* executor, coro::FiberCoroutine::Routine routine,
+    Fiber(pool::Executor* executor, coro::Routine routine,
           ctx::Buffer&& buffer);
 
     void Schedule();
@@ -30,4 +30,4 @@ private:
     coro::FiberCoroutine fiber_coro_;
 };
 
-}  // namespace go::impl::fiber
+}  // namespace fibers::impl

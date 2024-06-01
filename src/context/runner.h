@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace go::impl {
+namespace fibers::ctx {
 
 class Runner {
 public:
@@ -13,4 +13,4 @@ public:
     virtual void Run() = 0;
 };
 
-}  // namespace go::impl
+}  // namespace fibers::ctx

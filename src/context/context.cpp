@@ -7,7 +7,7 @@
 #include <cassert>
 #include <stdexcept>
 
-namespace go::impl::ctx {
+namespace fibers::ctx {
 
 void Context::Setup(BufferView target_buffer, Runner* runner) {
     assert(runner);
@@ -29,4 +29,4 @@ void Context::Run() {
     runner_->Run();
 }
 
-}  // namespace go::impl::ctx
+}  // namespace fibers::ctx

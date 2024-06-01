@@ -9,10 +9,11 @@
 #include <context/buffer/buffer.h>
 #include <context/context.h>
 #include <context/runner.h>
+#include <coro/routine.h>
 
-namespace go::impl::coro {
+namespace fibers::coro {
 
-class Coroutine : private Runner {
+class Coroutine : private ctx::Runner {
 public:
     using Routine = std::function<void()>;
 
@@ -34,4 +35,4 @@ private:
     void Run() override;
 };
 
-}  // namespace go::impl::coro
+}  // namespace fibers::coro

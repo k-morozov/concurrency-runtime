@@ -8,7 +8,7 @@
 #include <context/buffer/buffer_context.h>
 #include <context/runner.h>
 
-namespace go::impl::ctx {
+namespace fibers::ctx {
 
 class Context final : private Runner {
 public:
@@ -22,8 +22,7 @@ public:
      */
     void SwitchTo(Context& target);
 
-    [[noreturn]]
-    void ExitTo(Context& target);
+    [[noreturn]] void ExitTo(Context& target);
 
 private:
     void Run() override;
@@ -33,4 +32,4 @@ private:
     Runner* runner_{nullptr};
 };
 
-}  // namespace go::impl::ctx
+}  // namespace fibers::ctx

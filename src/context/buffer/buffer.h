@@ -6,7 +6,7 @@
 
 #include <span>
 
-namespace go::impl::ctx {
+namespace fibers::ctx {
 
 using BufferView = std::span<std::byte>;
 
@@ -37,4 +37,4 @@ private:
     explicit Buffer(Alloc alloc);
 };
 
-}  // namespace go::impl::ctx
+}  // namespace fibers::ctx

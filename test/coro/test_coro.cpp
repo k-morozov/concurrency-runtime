@@ -8,7 +8,7 @@
 
 #include <coro/coro.h>
 
-using namespace go::impl::coro;
+using namespace fibers::coro;
 
 TEST(TestCoro, JustWorks1Coro) {
     Coroutine co([] { Coroutine::Suspend(); });

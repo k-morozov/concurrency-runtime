@@ -6,7 +6,7 @@
 
 #include <buffer/sys_context.h>
 
-namespace go::impl::ctx {
+namespace fibers::ctx {
 
 namespace {
 
@@ -29,4 +29,4 @@ void BufferContext::SwitchTo(BufferContext& target) {
     SwitchBufferContext(&rsp_, &target.rsp_);
 }
 
-}  // namespace go::impl::ctx
+}  // namespace fibers::ctx

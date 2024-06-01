@@ -7,7 +7,7 @@
 #include <context/buffer/buffer.h>
 #include <context/runner.h>
 
-namespace go::impl::ctx {
+namespace fibers::ctx {
 
 class BufferContext final {
 public:
@@ -18,4 +18,4 @@ private:
     void* rsp_;
 };
 
-}  // namespace go::impl::ctx
+}  // namespace fibers::ctx

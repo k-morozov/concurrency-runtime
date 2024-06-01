@@ -8,11 +8,11 @@
 #include <context/context.h>
 #include <context/runner.h>
 
-using Buffer = go::impl::ctx::Buffer;
-using Ctx = go::impl::ctx::Context;
+using Buffer = fibers::ctx::Buffer;
+using Ctx = fibers::ctx::Context;
 
 template <class T>
-class TestCoro : private go::impl::Runner {
+class TestCoro : private fibers::ctx::Runner {
     struct SuspendCtx {
         TestCoro* coro;
         void Suspend() {

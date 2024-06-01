@@ -8,18 +8,15 @@
 
 #pragma once
 
-#include <functional>
-
 #include <context/buffer/buffer.h>
 #include <context/context.h>
 #include <context/runner.h>
+#include <coro/routine.h>
 
-namespace go::impl::coro {
+namespace fibers::coro {
 
-class FiberCoroutine : private Runner {
+class FiberCoroutine : private ctx::Runner {
 public:
-    using Routine = std::function<void()>;
-
     FiberCoroutine(Routine routine, ctx::Buffer&& buffer);
 
     void Resume();
@@ -38,4 +35,4 @@ private:
     void Run() override;
 };
 
-}  // namespace go::impl::coro
+}  // namespace fibers::coro

@@ -5,7 +5,7 @@
 
 #include <cassert>
 
-namespace go::impl::coro {
+namespace fibers::coro {
 
 FiberCoroutine::FiberCoroutine(Routine routine, ctx::Buffer&& buffer)
     : routine_(std::move(routine)), coro_buffer_(std::move(buffer)) {
@@ -30,4 +30,4 @@ void FiberCoroutine::Resume() {
 
 void FiberCoroutine::Suspend() { coro_ctx_.SwitchTo(caller_ctx_); }
 
-}  // namespace go::impl::coro
+}  // namespace fibers::coro

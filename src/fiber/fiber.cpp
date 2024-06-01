@@ -7,16 +7,16 @@
 #include <cassert>
 #include <memory>
 
-#include <pool/task/fiber_task.h>
 #include <pool/executor/executor.h>
+#include <pool/task/fiber_task.h>
 
-thread_local go::impl::fiber::Fiber* current_fiber;
+thread_local fibers::impl::Fiber* current_fiber;
 
-namespace go::impl::fiber {
+namespace fibers::impl {
 
 Fiber::Fiber(pool::Executor* executor,
-             go::impl::coro::FiberCoroutine::Routine routine,
-             go::impl::ctx::Buffer&& buffer)
+             coro::Routine routine,
+             ctx::Buffer&& buffer)
     : executor_(executor), fiber_coro_(std::move(routine), std::move(buffer)) {}
 
 void Fiber::Schedule() {
@@ -44,4 +44,4 @@ void Fiber::Yield() {
 
 pool::Executor* Fiber::GetScheduler() { return executor_; }
 
-}  // namespace go::impl::fiber
+}  // namespace fibers::impl

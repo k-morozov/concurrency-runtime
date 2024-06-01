@@ -6,7 +6,7 @@
 
 #include <cassert>
 
-namespace go::impl::coro {
+namespace fibers::coro {
 
 static const size_t kDefaultCoroBufferSize = 64 * 1024;
 
@@ -45,4 +45,4 @@ void Coroutine::Suspend() {
     current_coro->coro_ctx_.SwitchTo(current_coro->caller_ctx_);
 }
 
-}  // namespace go::impl::coro
+}  // namespace fibers::coro
