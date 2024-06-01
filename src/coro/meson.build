@@ -1,6 +1,6 @@
 coro_sources = files(
     'coro.cpp',
-    'fiber_coro.cpp',
+    'stackfull_coro.cpp',
 )
 coro = library('coro',
                coro_sources,

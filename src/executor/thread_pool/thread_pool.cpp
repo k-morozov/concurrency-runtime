@@ -2,25 +2,25 @@
 // Created by konstantin on 09.05.24.
 //
 
-#include "executor.h"
-
 #include <cassert>
 #include <memory>
 #include <thread>
 
-thread_local pool::Executor* CurrentPool;
+#include "thread_pool.h"
+
+thread_local pool::ThreadPool* CurrentPool;
 
 namespace pool {
 
-std::shared_ptr<Executor> MakeThreadPool(const size_t count) {
-    auto pool = std::make_shared<Executor>(count);
+std::shared_ptr<ThreadPool> MakeThreadPool(const size_t count) {
+    auto pool = std::make_shared<ThreadPool>(count);
     pool->Start();
     return pool;
 }
 
-Executor::Executor(const size_t count) : workers_count_(count) {}
+ThreadPool::ThreadPool(const size_t count) : workers_count_(count) {}
 
-Executor::~Executor() {
+ThreadPool::~ThreadPool() {
     StartShutdown();
     WaitShutdown();
 
@@ -32,7 +32,7 @@ Executor::~Executor() {
     assert(0 == count_tasks_.load());
 }
 
-void Executor::Start() {
+void ThreadPool::Start() {
     for (size_t i = 0; i < workers_count_; i++) {
         {
             std::lock_guard lock(mutex_workers_);
@@ -72,32 +72,32 @@ void Executor::Start() {
     }
 }
 
-void Executor::StartShutdown() {
+void ThreadPool::StartShutdown() {
     shutdown_.store(true);
     queue_.Close();
 }
 
-void Executor::WaitShutdown() {
+void ThreadPool::WaitShutdown() {
     std::unique_lock lock(mutex_workers_);
     while (0 != count_workers_) {
         empty_workers_.wait(lock);
     }
 }
 
-void Executor::WaitIdle() {
+void ThreadPool::WaitIdle() {
     std::unique_lock lock(mutex_tasks_);
     while (0 != count_tasks_.load()) {
         empty_tasks_.wait(lock);
     }
 }
 
-void Executor::Submit(TaskPtr task) {
+void ThreadPool::Submit(TaskPtr task) {
     if (shutdown_.load()) {
         return;
     }
     count_tasks_.fetch_add(1);
     [[maybe_unused]] bool status = queue_.Put(std::move(task));
 }
-Executor* Executor::Current() { return CurrentPool; }
+ThreadPool* ThreadPool::Current() { return CurrentPool; }
 
 }  // namespace pool

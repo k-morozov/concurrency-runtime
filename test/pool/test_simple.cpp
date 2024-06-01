@@ -7,8 +7,8 @@
 #include <memory>
 #include <thread>
 
-#include <pool/executor/executor.h>
-#include <pool/task/task.h>
+#include <executor/task/task.h>
+#include <executor/thread_pool/thread_pool.h>
 
 using namespace std::chrono_literals;
 
@@ -23,7 +23,8 @@ struct TestTask : pool::Task {
     }
 
     ~TestTask() override {
-        EXPECT_FALSE(counter >= 2) << "seems like task body was run multiple times";
+        EXPECT_FALSE(counter >= 2)
+            << "seems like task body was run multiple times";
     }
 
     bool completed = false;

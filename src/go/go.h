@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include <coro/fiber_coro.h>
-#include <pool/executor/executor.h>
+#include <coro/stackfull_coro.h>
+#include <executor/thread_pool/thread_pool.h>
 
 namespace fibers {
 
-void Go(pool::Executor& scheduler, coro::Routine routine);
+void Go(pool::ThreadPool& scheduler, coro::Routine routine);
 
 void Go(coro::Routine routine);
 

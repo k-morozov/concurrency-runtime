@@ -1,18 +1,18 @@
 //
 // Created by konstantin on 30.05.24.
 //
-#include "fiber_coro.h"
-
 #include <cassert>
+
+#include "stackfull_coro.h"
 
 namespace fibers::coro {
 
-FiberCoroutine::FiberCoroutine(Routine routine, ctx::Buffer&& buffer)
+StackfullCoroutine::StackfullCoroutine(Routine routine, ctx::Buffer&& buffer)
     : routine_(std::move(routine)), coro_buffer_(std::move(buffer)) {
     coro_ctx_.Setup(coro_buffer_.GetSpan(), this);
 }
 
-void FiberCoroutine::Run() {
+void StackfullCoroutine::Run() {
     try {
         routine_();
     } catch (...) {
@@ -23,11 +23,11 @@ void FiberCoroutine::Run() {
     coro_ctx_.SwitchTo(caller_ctx_);
 }
 
-void FiberCoroutine::Resume() {
+void StackfullCoroutine::Resume() {
     caller_ctx_.SwitchTo(coro_ctx_);
     // exception?
 }
 
-void FiberCoroutine::Suspend() { coro_ctx_.SwitchTo(caller_ctx_); }
+void StackfullCoroutine::Suspend() { coro_ctx_.SwitchTo(caller_ctx_); }
 
 }  // namespace fibers::coro

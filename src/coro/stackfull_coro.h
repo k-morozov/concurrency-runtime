@@ -15,9 +15,9 @@
 
 namespace fibers::coro {
 
-class FiberCoroutine : private ctx::Runner {
+class StackfullCoroutine : private ctx::Runner {
 public:
-    FiberCoroutine(Routine routine, ctx::Buffer&& buffer);
+    StackfullCoroutine(Routine routine, ctx::Buffer&& buffer);
 
     void Resume();
     void Suspend();

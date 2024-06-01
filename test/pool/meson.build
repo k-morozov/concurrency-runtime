@@ -3,8 +3,8 @@ test_source_files = [
     'test_simple.cpp'
 ]
 
-test_executable = executable(
-    'test_executor',
+test_thread_pool = executable(
+    'test_thread_pool',
     sources : test_source_files,
     dependencies : test_dependencies,
     include_directories : [runtime_inc],
@@ -12,4 +12,4 @@ test_executable = executable(
 )
 
 
-test('test', test_executable)
+test('test_thread_pool', test_thread_pool)

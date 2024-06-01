@@ -9,18 +9,18 @@
 #include <thread>
 #include <vector>
 
-#include <pool/task/task.h>
+#include <executor/task/task.h>
 #include <pool_queue/blocking_queue/queue.h>
 
 namespace pool {
 
-class Executor;
-std::shared_ptr<Executor> MakeThreadPool(size_t count);
+class ThreadPool;
+std::shared_ptr<ThreadPool> MakeThreadPool(size_t count);
 
-class Executor final {
+class ThreadPool final {
 public:
-    explicit Executor(size_t count);
-    ~Executor();
+    explicit ThreadPool(size_t count);
+    ~ThreadPool();
 
     void Start();
 
@@ -32,7 +32,7 @@ public:
 
     void Submit(TaskPtr /*task*/);
 
-    static Executor* Current();
+    static ThreadPool* Current();
 
 private:
     const size_t workers_count_;

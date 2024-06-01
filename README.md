@@ -9,7 +9,7 @@ go some_func
 I try to make this code is true in C++.
 
 ```cpp
-pool::Executor pool{3};
+pool::ThreadPool pool{3};
 pool.Start();
 
 bool done = false;

@@ -7,15 +7,14 @@
 #include <cassert>
 #include <memory>
 
-#include <pool/executor/executor.h>
-#include <pool/task/fiber_task.h>
+#include <executor/task/fiber_task.h>
+#include <executor/thread_pool/thread_pool.h>
 
-thread_local fibers::impl::Fiber* current_fiber;
+thread_local fibers::Fiber* current_fiber;
 
-namespace fibers::impl {
+namespace fibers {
 
-Fiber::Fiber(pool::Executor* executor,
-             coro::Routine routine,
+Fiber::Fiber(pool::ThreadPool* executor, coro::Routine routine,
              ctx::Buffer&& buffer)
     : executor_(executor), fiber_coro_(std::move(routine), std::move(buffer)) {}
 
@@ -42,6 +41,6 @@ void Fiber::Yield() {
     Self()->fiber_coro_.Suspend();
 }
 
-pool::Executor* Fiber::GetScheduler() { return executor_; }
+pool::ThreadPool* Fiber::GetScheduler() { return executor_; }
 
-}  // namespace fibers::impl
+}  // namespace fibers

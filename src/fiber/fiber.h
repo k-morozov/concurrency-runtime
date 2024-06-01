@@ -5,14 +5,14 @@
 #pragma once
 
 #include <context/buffer/buffer.h>
-#include <coro/fiber_coro.h>
-#include <pool/executor/executor.h>
+#include <coro/stackfull_coro.h>
+#include <executor/thread_pool/thread_pool.h>
 
-namespace fibers::impl {
+namespace fibers {
 
 class Fiber {
 public:
-    Fiber(pool::Executor* executor, coro::Routine routine,
+    Fiber(pool::ThreadPool* executor, coro::Routine routine,
           ctx::Buffer&& buffer);
 
     void Schedule();
@@ -23,11 +23,11 @@ public:
 
     static void Yield();
 
-    pool::Executor* GetScheduler();
+    pool::ThreadPool* GetScheduler();
 
 private:
-    pool::Executor* executor_;
-    coro::FiberCoroutine fiber_coro_;
+    pool::ThreadPool* executor_;
+    coro::StackfullCoroutine fiber_coro_;
 };
 
-}  // namespace fibers::impl
+}  // namespace fibers
