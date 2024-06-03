@@ -12,4 +12,4 @@ test_coro = executable(
     link_with : [context, coro]
 )
 
-test('test', test_coro)
+test('test_coro', test_coro)

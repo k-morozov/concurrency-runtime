@@ -11,4 +11,4 @@ test_ctx = executable(
     link_with : context,
 )
 
-test('test', test_ctx)
+test('test_ctx', test_ctx)

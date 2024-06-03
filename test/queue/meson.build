@@ -11,4 +11,4 @@ test_queue = executable(
     link_with : executor,
 )
 
-test('test', test_queue)
+test('test_queue', test_queue)

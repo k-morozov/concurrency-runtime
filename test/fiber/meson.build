@@ -11,4 +11,4 @@ test_fiber = executable(
     link_with : [context, coro, executor, go]
 )
 
-test('test', test_fiber)
+test('test_fiber', test_fiber)
