@@ -1,23 +1,45 @@
 ### Goroutine in C++
 
-I like Go for this:
-
-```go
-go some_func
-```
-
 I try to make this code is true in C++.
 
+[example_fibers.cpp](example%2Fexample_fibers.cpp)
+
 ```cpp
-pool::ThreadPool pool{3};
-pool.Start();
+fibers::Go(*ex, [](){
+    std::cout << "1" << std::endl;
 
-bool done = false;
+    fibers::Go([] {
+        std::cout << "3" << std::endl;
+        fibers::Yield();
+        std::cout << "5" << std::endl;
 
-fibers::Go(pool, [&]() {
-    done = true;
+        fibers::Go([] {
+            std::cout << "7" << std::endl;
+            fibers::Yield();
+            std::cout << "9" << std::endl;
+        });
+
+        fibers::Yield();
+        std::cout << "8" << std::endl;
+    });
+
+    std::cout << "2" << std::endl;
+    fibers::Yield();
+    std::cout << "4" << std::endl;
+    fibers::Yield();
+    std::cout << "6" << std::endl;
 });
 
-pool.WaitIdle();
-std::cout << done << std::endl;
+Output:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+});
 ```
