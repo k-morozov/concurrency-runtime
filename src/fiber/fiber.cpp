@@ -8,13 +8,12 @@
 #include <memory>
 
 #include <executor/task/fiber_task.h>
-#include <executor/pool/thread_pool.h>
 
 thread_local fibers::Fiber* current_fiber;
 
 namespace fibers {
 
-Fiber::Fiber(pool::ThreadPool* executor, coro::Routine routine,
+Fiber::Fiber(pool::IExecutor* executor, coro::Routine routine,
              ctx::Buffer&& buffer)
     : executor_(executor), fiber_coro_(std::move(routine), std::move(buffer)) {}
 
@@ -41,6 +40,6 @@ void Fiber::Yield() {
     Self()->fiber_coro_.Suspend();
 }
 
-pool::ThreadPool* Fiber::GetScheduler() { return executor_; }
+pool::IExecutor* Fiber::GetScheduler() { return executor_; }
 
 }  // namespace fibers

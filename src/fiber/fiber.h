@@ -6,13 +6,13 @@
 
 #include <context/buffer/buffer.h>
 #include <coro/stackfull_coro.h>
-#include <executor/pool/thread_pool.h>
+#include <executor/executor.h>
 
 namespace fibers {
 
 class Fiber {
 public:
-    Fiber(pool::ThreadPool* executor, coro::Routine routine,
+    Fiber(pool::IExecutor* executor, coro::Routine routine,
           ctx::Buffer&& buffer);
 
     void Schedule();
@@ -23,10 +23,10 @@ public:
 
     static void Yield();
 
-    pool::ThreadPool* GetScheduler();
+    pool::IExecutor* GetScheduler();
 
 private:
-    pool::ThreadPool* executor_;
+    pool::IExecutor* executor_;
     coro::StackfullCoroutine fiber_coro_;
 };
 

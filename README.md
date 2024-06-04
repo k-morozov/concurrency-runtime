@@ -2,7 +2,7 @@
 
 I try to make this code is true in C++.
 
-[example_fibers.cpp](example%2Fexample_fibers.cpp)
+[example_go.cpp](example%2Fgo/%2Fexample_go.cpp)
 
 ```cpp
 fibers::Go(*ex, [](){
@@ -40,6 +40,4 @@ Output:
 7
 8
 9
-
-});
 ```
