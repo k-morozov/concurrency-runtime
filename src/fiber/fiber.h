@@ -6,7 +6,7 @@
 
 #include <context/buffer/buffer.h>
 #include <coro/stackfull_coro.h>
-#include <executor/thread_pool/thread_pool.h>
+#include <executor/pool/thread_pool.h>
 
 namespace fibers {
 

@@ -1,5 +1,5 @@
 executor_sources = files(
-    'thread_pool/thread_pool.cpp',
+    'pool/thread_pool.cpp',
     'task/task.cpp',
 )
 
