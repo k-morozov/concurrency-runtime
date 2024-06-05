@@ -13,7 +13,7 @@
 using namespace std::chrono_literals;
 
 template <typename T>
-using Queue = pool::UnboundedBlockingQueue<T>;
+using Queue = executors::UnboundedBlockingQueue<T>;
 
 TEST(TestPoolSimple, JustWorks) {
     Queue<int> queue;

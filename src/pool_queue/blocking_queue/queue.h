@@ -10,7 +10,7 @@
 #include <optional>
 #include <queue>
 
-namespace pool {
+namespace executors {
 
 // UnboundedBlockingQueue
 template <class T>

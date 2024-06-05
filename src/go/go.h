@@ -5,11 +5,11 @@
 #pragma once
 
 #include <coro/stackfull_coro.h>
-#include <executor/pool/thread_pool.h>
+#include <executor/executor.h>
 
 namespace fibers {
 
-void Go(pool::ThreadPool& scheduler, coro::Routine routine);
+void Go(executors::IExecutor& scheduler, coro::Routine routine);
 
 void Go(coro::Routine routine);
 

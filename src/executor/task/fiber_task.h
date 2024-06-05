@@ -8,7 +8,7 @@
 
 #include <executor/task/task.h>
 
-namespace pool {
+namespace executors {
 
 class FiberTask : public Task {
 public:
@@ -19,4 +19,4 @@ private:
     std::function<void()> f_;
 };
 
-}  // namespace pool
+}  // namespace executors

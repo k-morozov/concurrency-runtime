@@ -16,7 +16,7 @@ class TestSimple : public ::testing::Test {
 public:
 };
 
-struct TestTask : pool::Task {
+struct TestTask : executors::Task {
     void Run() override {
         completed = true;
         ++counter;
@@ -32,7 +32,7 @@ struct TestTask : pool::Task {
 };
 
 template <size_t msec>
-struct SlowTask : pool::Task {
+struct SlowTask : executors::Task {
     void Run() override {
         std::this_thread::sleep_for(msec * 1ms);
         completed = true;
@@ -41,26 +41,26 @@ struct SlowTask : pool::Task {
     bool completed = false;
 };
 
-struct FailedTask : pool::Task {
+struct FailedTask : executors::Task {
     void Run() override { throw std::logic_error{"Failed"}; }
 };
 
-TEST_F(TestSimple, Destructor) { auto _ = pool::MakeThreadPool(4); }
+TEST_F(TestSimple, Destructor) { auto _ = executors::MakeThreadPool(4); }
 
 TEST_F(TestSimple, StartShutdown) {
-    auto pool = pool::MakeThreadPool(4);
+    auto pool = executors::MakeThreadPool(4);
     pool->StartShutdown();
 }
 
 TEST_F(TestSimple, StartTwiceAndWait) {
-    auto pool = pool::MakeThreadPool(4);
+    auto pool = executors::MakeThreadPool(4);
     pool->StartShutdown();
     pool->StartShutdown();
     pool->WaitShutdown();
 }
 
 TEST_F(TestSimple, RunSingleTask) {
-    auto pool = pool::MakeThreadPool(4);
+    auto pool = executors::MakeThreadPool(4);
 
     auto task = std::make_shared<TestTask>();
 
@@ -75,7 +75,7 @@ TEST_F(TestSimple, RunSingleTask) {
 }
 
 TEST_F(TestSimple, RunSingleFailingTask) {
-    auto pool = pool::MakeThreadPool(4);
+    auto pool = executors::MakeThreadPool(4);
 
     auto task = std::make_shared<FailedTask>();
 
@@ -91,7 +91,7 @@ TEST_F(TestSimple, RunSingleFailingTask) {
 }
 
 TEST_F(TestSimple, CancelSingleTask) {
-    auto pool = pool::MakeThreadPool(4);
+    auto pool = executors::MakeThreadPool(4);
 
     auto task = std::make_shared<TestTask>();
     task->Cancel();

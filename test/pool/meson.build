@@ -1,10 +1,11 @@
 test_source_files = [
     'main.cpp',
-    'test_simple.cpp'
+    'test_thread_pool.cpp',
+    'test_manual_executor.cpp'
 ]
 
-test_thread_pool = executable(
-    'test_thread_pool',
+test_pool = executable(
+    'test_pool',
     sources : test_source_files,
     dependencies : test_dependencies,
     include_directories : [runtime_inc],
@@ -12,4 +13,4 @@ test_thread_pool = executable(
 )
 
 
-test('test_thread_pool', test_thread_pool)
+test('test_pool', test_pool)

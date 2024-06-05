@@ -9,18 +9,19 @@
 #include <thread>
 #include <vector>
 
+#include <executor/executor.h>
 #include <executor/task/task.h>
 #include <pool_queue/blocking_queue/queue.h>
 
-namespace pool {
+namespace executors {
 
 class ThreadPool;
 std::shared_ptr<ThreadPool> MakeThreadPool(size_t count);
 
-class ThreadPool final {
+class ThreadPool final : public IExecutor {
 public:
     explicit ThreadPool(size_t count);
-    ~ThreadPool();
+    ~ThreadPool() override;
 
     void Start();
 
@@ -30,7 +31,7 @@ public:
 
     void WaitIdle();
 
-    void Submit(TaskPtr /*task*/);
+    void Submit(TaskPtr /*task*/) override;
 
     static ThreadPool* Current();
 
@@ -51,4 +52,4 @@ private:
     std::condition_variable empty_tasks_;
 };
 
-}  // namespace pool
+}  // namespace executors
