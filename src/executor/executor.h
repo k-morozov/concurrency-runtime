@@ -6,11 +6,11 @@
 
 #include <executor/task/task.h>
 
-namespace pool {
+namespace executors {
 
 struct IExecutor {
     virtual ~IExecutor() noexcept = default;
     virtual void Submit(TaskPtr /*task*/) = 0;
 };
 
-}  // namespace pool
+}  // namespace executors

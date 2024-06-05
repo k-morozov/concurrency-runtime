@@ -8,7 +8,7 @@
 #include <exception>
 #include <mutex>
 
-namespace pool {
+namespace executors {
 
 class Task;
 using TaskPtr = std::shared_ptr<Task>;
@@ -47,4 +47,4 @@ private:
     std::exception_ptr ex_error_{};
 };
 
-}  // namespace pool
+}  // namespace executors

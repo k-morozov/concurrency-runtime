@@ -13,12 +13,12 @@ thread_local fibers::Fiber* current_fiber;
 
 namespace fibers {
 
-Fiber::Fiber(pool::IExecutor* executor, coro::Routine routine,
+Fiber::Fiber(executors::IExecutor* executor, coro::Routine routine,
              ctx::Buffer&& buffer)
     : executor_(executor), fiber_coro_(std::move(routine), std::move(buffer)) {}
 
 void Fiber::Schedule() {
-    executor_->Submit(std::make_shared<pool::FiberTask>(([this]() { Run(); })));
+    executor_->Submit(std::make_shared<executors::FiberTask>(([this]() { Run(); })));
 }
 
 void Fiber::Run() {
@@ -40,6 +40,6 @@ void Fiber::Yield() {
     Self()->fiber_coro_.Suspend();
 }
 
-pool::IExecutor* Fiber::GetScheduler() { return executor_; }
+executors::IExecutor* Fiber::GetScheduler() { return executor_; }
 
 }  // namespace fibers

@@ -13,7 +13,7 @@
 #include <executor/task/task.h>
 #include <pool_queue/blocking_queue/queue.h>
 
-namespace pool {
+namespace executors {
 
 class ThreadPool;
 std::shared_ptr<ThreadPool> MakeThreadPool(size_t count);
@@ -52,4 +52,4 @@ private:
     std::condition_variable empty_tasks_;
 };
 
-}  // namespace pool
+}  // namespace executors

@@ -2,15 +2,15 @@
 // Created by konstantin on 09.05.24.
 //
 
+#include "thread_pool.h"
+
 #include <cassert>
 #include <memory>
 #include <thread>
 
-#include "thread_pool.h"
+thread_local executors::ThreadPool* CurrentPool;
 
-thread_local pool::ThreadPool* CurrentPool;
-
-namespace pool {
+namespace executors {
 
 std::shared_ptr<ThreadPool> MakeThreadPool(const size_t count) {
     auto pool = std::make_shared<ThreadPool>(count);
@@ -100,4 +100,4 @@ void ThreadPool::Submit(TaskPtr task) {
 }
 ThreadPool* ThreadPool::Current() { return CurrentPool; }
 
-}  // namespace pool
+}  // namespace executors

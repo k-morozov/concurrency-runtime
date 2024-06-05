@@ -7,7 +7,7 @@
 #include <cassert>
 #include <mutex>
 
-namespace pool {
+namespace executors {
 
 void Task::Cancel() {
     std::lock_guard lock(task_mutex_);
@@ -66,4 +66,4 @@ std::exception_ptr Task::GetError() {
     return ex_error_;
 }
 
-}  // namespace pool
+}  // namespace executors

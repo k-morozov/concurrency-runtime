@@ -2,6 +2,7 @@ executor_sources = files(
     'pool/thread_pool.cpp',
     'manual/manual_executor.cpp',
     'task/task.cpp',
+    'submit.cpp',
 )
 
 executor = library('executor',

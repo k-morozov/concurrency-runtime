@@ -12,7 +12,7 @@ namespace fibers {
 
 class Fiber {
 public:
-    Fiber(pool::IExecutor* executor, coro::Routine routine,
+    Fiber(executors::IExecutor* executor, coro::Routine routine,
           ctx::Buffer&& buffer);
 
     void Schedule();
@@ -23,10 +23,10 @@ public:
 
     static void Yield();
 
-    pool::IExecutor* GetScheduler();
+    executors::IExecutor* GetScheduler();
 
 private:
-    pool::IExecutor* executor_;
+    executors::IExecutor* executor_;
     coro::StackfullCoroutine fiber_coro_;
 };
 
