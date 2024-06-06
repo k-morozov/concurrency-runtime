@@ -10,7 +10,11 @@
 #include <fiber/awaiter.h>
 #include <fiber/fiber_handle.h>
 
+namespace {
+
 thread_local fibers::AwaiterFiber* current_fiber;
+
+}
 
 namespace fibers {
 

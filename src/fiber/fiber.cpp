@@ -9,7 +9,11 @@
 
 #include <executor/task/fiber_task.h>
 
+namespace {
+
 thread_local fibers::Fiber* current_fiber;
+
+}
 
 namespace fibers {
 
