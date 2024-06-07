@@ -15,9 +15,11 @@ AwaiterFiber* FiberHandle::Release() {
     assert(!IsInvalid());
     return std::exchange(fiber_, nullptr);
 }
+
 void FiberHandle::Schedule() {
     Release()->Schedule();
 }
+
 void FiberHandle::Switch() {
     Release()->Switch();
 }
