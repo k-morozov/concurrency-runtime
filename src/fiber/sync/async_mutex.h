@@ -7,29 +7,16 @@
 #include <list>
 #include <mutex>
 
-#include <fiber/awaiter.h>
+#include <fiber/awaiter/mutex_awaiter.h>
 #include <fiber/sync/spinLock.h>
 
 namespace fibers {
 
 class AsyncMutex {
     using Spinlock = SpinLock;
-    using Guard = std::unique_lock<Spinlock>;
+    using Waiter = AsyncMutexWaiter<AsyncMutex>;
 
-    class AsyncMutexWaiter : public IAwaiter {
-    public:
-        AsyncMutexWaiter(AsyncMutex* mutex, Guard guard)
-            : mutex(mutex), guard(std::move(guard)) {};
-
-        void AwaitSuspend(FiberHandle handle) override;
-
-        void Schedule();
-
-    private:
-        AsyncMutex* mutex;
-        FiberHandle stopped_handle;
-        Guard guard;
-    };
+    friend Waiter;
 
 public:
     void lock() { Lock(); };
@@ -41,9 +28,9 @@ public:
 private:
     Spinlock spinlock_;
     bool locked_{false};
-    std::list<AsyncMutexWaiter*> waiters_;
+    std::list<Waiter*> waiters_;
 
-    void Park(AsyncMutexWaiter* waiter);
+    void Park(Waiter* waiter);
 };
 
 }  // namespace fibers

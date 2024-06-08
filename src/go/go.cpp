@@ -5,21 +5,13 @@
 #include "go.h"
 
 #include <context/buffer/buffer.h>
-#include <fiber/awaiter.h>
+#include <fiber/awaiter/suspend.h>
+#include <fiber/awaiter/yield_awaiter.h>
 #include <fiber/awaiter_fiber.h>
 
 static const size_t kDefaultCoroBufferSize = 64 * 1024;
 
 namespace fibers {
-
-namespace {
-
-class YieldAwaiter : public IAwaiter {
-public:
-    void AwaitSuspend(FiberHandle handle) override { handle.Schedule(); }
-};
-
-}  // namespace
 
 void Go(executors::IExecutor& scheduler, coro::Routine routine) {
     auto buffer = ctx::Buffer::AllocBytes(kDefaultCoroBufferSize);
@@ -34,7 +26,7 @@ void Go(coro::Routine routine) {
 
 void Yield() {
     auto* waiter = new YieldAwaiter();
-    AwaiterFiber::Self()->Suspend(waiter);
+    Suspend(waiter);
 }
 
 }  // namespace fibers

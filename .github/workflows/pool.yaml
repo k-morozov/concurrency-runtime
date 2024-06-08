@@ -24,7 +24,7 @@ jobs:
       - run: |
           CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} .
           meson compile -C ${{env.BuidlDir}}
-          meson test -C ${{env.BuidlDir}}
+          meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
 
   ubuntu-debug-sanitize-address:
     timeout-minutes: 15
@@ -43,7 +43,7 @@ jobs:
       - run: |
           CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . -Db_sanitize=address -Db_lundef=false
           meson compile -C ${{env.BuidlDir}}
-          meson test -C ${{env.BuidlDir}}
+          meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
 
   ubuntu-debug-sanitize-thread:
     timeout-minutes: 15

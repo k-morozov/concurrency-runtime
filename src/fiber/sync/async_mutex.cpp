@@ -4,23 +4,23 @@
 
 #include "async_mutex.h"
 
-#include <fiber/suspend.h>
+#include "awaiter/suspend.h"
 
 namespace fibers {
 
 void AsyncMutex::Lock() {
-    Guard guard(spinlock_);
+    Waiter::Guard guard(spinlock_);
     if (locked_) {
-        auto* waiter = new AsyncMutexWaiter(this, std::move(guard));
+        auto* waiter = new Waiter(this, std::move(guard));
         Suspend(waiter);
     } else {
         locked_ = true;
     }
 }
 void AsyncMutex::Unlock() {
-    AsyncMutexWaiter* next_waiter = nullptr;
+    Waiter* next_waiter = nullptr;
     {
-        Guard guard(spinlock_);
+        Waiter::Guard guard(spinlock_);
         if (waiters_.empty()) {
             locked_ = false;
             return;
@@ -34,18 +34,8 @@ void AsyncMutex::Unlock() {
         delete next_waiter;
     }
 }
-void AsyncMutex::Park(AsyncMutex::AsyncMutexWaiter* waiter) {
+void AsyncMutex::Park(Waiter* waiter) {
     waiters_.push_back(waiter);
-}
-
-void AsyncMutex::AsyncMutexWaiter::AwaitSuspend(FiberHandle handle) {
-    stopped_handle = handle;
-    mutex->Park(this);
-    guard.unlock();
-}
-
-void AsyncMutex::AsyncMutexWaiter::Schedule() {
-    stopped_handle.Schedule();
 }
 
 }  // namespace fibers
