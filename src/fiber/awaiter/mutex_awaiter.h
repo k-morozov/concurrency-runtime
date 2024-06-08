@@ -7,12 +7,14 @@
 #include <mutex>
 
 #include <fiber/awaiter/awaiter.h>
+#include <fiber/intrusive/list.h>
 #include <fiber/sync/spinLock.h>
 
 namespace fibers {
 
 template <class M>
-class AsyncMutexWaiter : public IAwaiter {
+class AsyncMutexWaiter : public IAwaiter,
+                         public intrusive::Node<AsyncMutexWaiter<M>> {
 public:
     using Guard = std::unique_lock<typename M::Spinlock>;
 
@@ -20,14 +22,14 @@ public:
         : mutex(mutex), guard(std::move(guard)){};
 
     void AwaitSuspend(FiberHandle handle) override {
+        assert(!handle.IsInvalid());
+
         stopped_handle = handle;
         mutex->Park(this);
         guard.unlock();
     }
 
-    void Schedule() {
-        stopped_handle.Schedule();
-    }
+    void Schedule() { stopped_handle.Schedule(); }
 
 private:
     M* mutex;

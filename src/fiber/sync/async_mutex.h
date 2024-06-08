@@ -9,6 +9,7 @@
 
 #include <fiber/awaiter/mutex_awaiter.h>
 #include <fiber/sync/spinLock.h>
+#include <fiber/intrusive/list.h>
 
 namespace fibers {
 
@@ -28,7 +29,7 @@ public:
 private:
     Spinlock spinlock_;
     bool locked_{false};
-    std::list<Waiter*> waiters_;
+    intrusive::List<Waiter> waiters_;
 
     void Park(Waiter* waiter);
 };
