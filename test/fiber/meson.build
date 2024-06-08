@@ -2,6 +2,7 @@ test_source_files = [
     'main.cpp',
     'test_fiber.cpp',
     'test_mutex.cpp',
+    'test_list.cpp',
 ]
 
 test_fiber = executable(

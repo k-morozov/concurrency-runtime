@@ -11,8 +11,8 @@ namespace fibers {
 void AsyncMutex::Lock() {
     Waiter::Guard guard(spinlock_);
     if (locked_) {
-        auto* waiter = new Waiter(this, std::move(guard));
-        Suspend(waiter);
+        Waiter waiter(this, std::move(guard));
+        Suspend(&waiter);
     } else {
         locked_ = true;
     }
@@ -21,21 +21,19 @@ void AsyncMutex::Unlock() {
     Waiter* next_waiter = nullptr;
     {
         Waiter::Guard guard(spinlock_);
-        if (waiters_.empty()) {
+        if (waiters_.IsEmpty()) {
             locked_ = false;
             return;
         }
-        next_waiter = waiters_.front();
-        waiters_.pop_front();
+        next_waiter = waiters_.Pop();
     }
 
     if (next_waiter) {
         next_waiter->Schedule();
-        delete next_waiter;
     }
 }
 void AsyncMutex::Park(Waiter* waiter) {
-    waiters_.push_back(waiter);
+    waiters_.Push(waiter);
 }
 
 }  // namespace fibers

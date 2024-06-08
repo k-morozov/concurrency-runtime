@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <cassert>
+
 namespace fibers {
 
 class AwaiterFiber;
@@ -23,9 +25,11 @@ public:
     void Switch();
 
 private:
-    AwaiterFiber* fiber_;
+    AwaiterFiber* fiber_{nullptr};
 
-    explicit FiberHandle(AwaiterFiber* fiber) : fiber_(fiber) {}
+    explicit FiberHandle(AwaiterFiber* fiber) : fiber_(fiber) {
+//        assert(fiber_);
+    }
 
     AwaiterFiber* Release();
 };
