@@ -72,8 +72,6 @@ TEST(TestMutex, DoNotWasteCpu) {
 
     fibers::AsyncMutex mutex;
 
-    const auto start = Now();
-
     common::ProcessCPUTimer timer;
 
     fibers::Go(scheduler, [&] {

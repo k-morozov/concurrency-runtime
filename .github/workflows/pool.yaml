@@ -62,6 +62,6 @@ jobs:
       - run: |
           CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . -Db_sanitize=thread -Db_lundef=false
           meson compile -C ${{env.BuidlDir}}
-          meson test -C ${{env.BuidlDir}}
+          meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
 
 
