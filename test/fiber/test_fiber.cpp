@@ -6,14 +6,14 @@
 
 #include <chrono>
 
-#include <go/go.h>
 #include <executor/pool/thread_pool.h>
+#include <go/go.h>
 
 using namespace std::chrono_literals;
 
-auto Now() {
-    return std::chrono::high_resolution_clock::now();
-}
+namespace {
+auto Now() { return std::chrono::high_resolution_clock::now(); }
+}  // namespace
 
 TEST(TestFiber, JustWorks1Go) {
     executors::ThreadPool pool{3};
@@ -98,10 +98,7 @@ TEST(TestFiber, Yield1) {
 TEST(TestFiber, Yield2) {
     executors::ThreadPool pool{1};
 
-    enum State : int {
-        Ping = 0,
-        Pong = 1
-    };
+    enum State : int { Ping = 0, Pong = 1 };
 
     int state = Ping;
 
@@ -154,9 +151,8 @@ TEST(TestFiber, TwoPools1) {
     pool_2.Start();
 
     auto make_tester = [](executors::ThreadPool& pool) {
-        return [&pool]() {
-            ASSERT_EQ(executors::ThreadPool::Current(), &pool);
-        };
+        return
+            [&pool]() { ASSERT_EQ(executors::ThreadPool::Current(), &pool); };
     };
 
     fibers::Go(pool_1, make_tester(pool_1));
