@@ -1,8 +1,9 @@
 fiber_sources = files(
     'fiber.cpp',
-    'fiber_handle.cpp',
+    'handle/fiber_handle.cpp',
     'awaiter_fiber.cpp',
     'sync/async_mutex.cpp',
+    'suspend.cpp',
 )
 fiber = library('fiber',
                 fiber_sources,

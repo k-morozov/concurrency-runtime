@@ -4,13 +4,15 @@
 
 #include "async_mutex.h"
 
+#include <fiber/suspend.h>
+
 namespace fibers {
 
 void AsyncMutex::Lock() {
-    Guard guard;
+    Guard guard(spinlock_);
     if (locked_) {
-        AsyncMutexWaiter waiter(this, std::move(guard));
-        // suspend waiter
+        auto* waiter = new AsyncMutexWaiter(this, std::move(guard));
+        Suspend(waiter);
     } else {
         locked_ = true;
     }
@@ -18,17 +20,32 @@ void AsyncMutex::Lock() {
 void AsyncMutex::Unlock() {
     AsyncMutexWaiter* next_waiter = nullptr;
     {
-        // guard
-        // waiter empty -> lock false
-        // next == front
+        Guard guard(spinlock_);
+        if (waiters_.empty()) {
+            locked_ = false;
+            return;
+        }
+        next_waiter = waiters_.front();
+        waiters_.pop_front();
     }
 
-    if (nullptr != next_waiter) {
-//        next_waiter->Schedule();
+    if (next_waiter) {
+        next_waiter->Schedule();
+        delete next_waiter;
     }
 }
-void AsyncMutex::Park(AsyncMutex::AsyncMutexWaiter* waiter) {}
+void AsyncMutex::Park(AsyncMutex::AsyncMutexWaiter* waiter) {
+    waiters_.push_back(waiter);
+}
 
-void AsyncMutex::AsyncMutexWaiter::AwaitSuspend(FiberHandle current_fiber) {}
+void AsyncMutex::AsyncMutexWaiter::AwaitSuspend(FiberHandle handle) {
+    stopped_handle = handle;
+    mutex->Park(this);
+    guard.unlock();
+}
+
+void AsyncMutex::AsyncMutexWaiter::Schedule() {
+    stopped_handle.Schedule();
+}
 
 }  // namespace fibers

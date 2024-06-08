@@ -9,6 +9,7 @@
 #include <executor/pool/thread_pool.h>
 #include <fiber/sync/async_mutex.h>
 #include <go/go.h>
+#include <common/clock.h>
 
 using namespace std::chrono_literals;
 
@@ -73,6 +74,8 @@ TEST(TestMutex, DoNotWasteCpu) {
 
     const auto start = Now();
 
+    common::ProcessCPUTimer timer;
+
     fibers::Go(scheduler, [&] {
         mutex.Lock();
         std::this_thread::sleep_for(1s);
@@ -86,5 +89,5 @@ TEST(TestMutex, DoNotWasteCpu) {
 
     scheduler.WaitIdle();
 
-    ASSERT_TRUE(Now() - start < 100ms);
+    ASSERT_LE(timer.Elapsed(), 100ms);
 }

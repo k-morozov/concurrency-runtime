@@ -8,7 +8,7 @@
 
 #include <executor/task/fiber_task.h>
 #include <fiber/awaiter.h>
-#include <fiber/fiber_handle.h>
+#include <fiber/handle/fiber_handle.h>
 
 namespace {
 
@@ -35,7 +35,7 @@ void AwaiterFiber::Run() {
         return;
     }
 
-    if (nullptr != awaiter_) {
+    if (awaiter_) {
         awaiter_->AwaitSuspend(FiberHandle{this});
     }
 }
@@ -45,7 +45,7 @@ AwaiterFiber* AwaiterFiber::Self() { return current_fiber; }
 executors::IExecutor* AwaiterFiber::GetScheduler() { return executor_; }
 
 void AwaiterFiber::Suspend(IAwaiter* waiter) {
-    assert(awaiter_);
+    assert(waiter);
     awaiter_ = waiter;
     fiber_coro_.Suspend();
 }

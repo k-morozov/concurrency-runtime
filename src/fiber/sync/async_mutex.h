@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <list>
 #include <mutex>
 
 #include <fiber/awaiter.h>
@@ -19,13 +20,14 @@ class AsyncMutex {
     public:
         AsyncMutexWaiter(AsyncMutex* mutex, Guard guard)
             : mutex(mutex), guard(std::move(guard)) {};
-        void AwaitSuspend(FiberHandle current_fiber) override;
+
+        void AwaitSuspend(FiberHandle handle) override;
 
         void Schedule();
 
     private:
         AsyncMutex* mutex;
-        FiberHandle stopped_fiber;
+        FiberHandle stopped_handle;
         Guard guard;
     };
 
@@ -39,7 +41,7 @@ public:
 private:
     Spinlock spinlock_;
     bool locked_{false};
-    // waiters
+    std::list<AsyncMutexWaiter*> waiters_;
 
     void Park(AsyncMutexWaiter* waiter);
 };

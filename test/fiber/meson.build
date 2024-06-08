@@ -9,7 +9,7 @@ test_fiber = executable(
     sources : test_source_files,
     dependencies : test_dependencies,
     include_directories : [test_inc, runtime_inc],
-    link_with : [context, coro, executor, go]
+    link_with : [context, coro, executor, fiber, go]
 )
 
 test('test_fiber', test_fiber)

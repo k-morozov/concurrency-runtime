@@ -7,7 +7,7 @@
 #include <cassert>
 #include <utility>
 
-#include <fiber/awaiter_fiber.h>
+#include "awaiter_fiber.h"
 
 namespace fibers {
 
