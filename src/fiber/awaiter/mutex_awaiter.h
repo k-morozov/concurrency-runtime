@@ -21,8 +21,8 @@ public:
     AsyncMutexWaiter(M* mutex, Guard guard)
         : mutex(mutex), guard(std::move(guard)){};
 
-    void AwaitSuspend(FiberHandle handle) override {
-        assert(!handle.IsInvalid());
+    void AwaitSuspend(StoppedFiber handle) override {
+        assert(handle.IsValid());
 
         stopped_handle = handle;
         mutex->Park(this);
@@ -33,7 +33,7 @@ public:
 
 private:
     M* mutex;
-    FiberHandle stopped_handle;
+    StoppedFiber stopped_handle;
     Guard guard;
 };
 

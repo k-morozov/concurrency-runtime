@@ -8,7 +8,7 @@
 
 #include <executor/task/fiber_task.h>
 #include <fiber/awaiter/awaiter.h>
-#include <fiber/handle/fiber_handle.h>
+#include <fiber/handle/stopped_fiber.h>
 
 namespace {
 
@@ -36,7 +36,7 @@ void AwaiterFiber::Run() {
     }
 
     if (awaiter_) {
-        awaiter_->AwaitSuspend(FiberHandle{this});
+        awaiter_->AwaitSuspend(StoppedFiber{this});
     }
 }
 
