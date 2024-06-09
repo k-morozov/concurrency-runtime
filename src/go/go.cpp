@@ -25,8 +25,8 @@ void Go(coro::Routine routine) {
 }
 
 void Yield() {
-    auto* waiter = new YieldAwaiter();
-    Suspend(waiter);
+    YieldAwaiter waiter;
+    Suspend(&waiter);
 }
 
 }  // namespace fibers

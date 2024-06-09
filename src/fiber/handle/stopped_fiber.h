@@ -10,13 +10,13 @@ namespace fibers {
 
 class AwaiterFiber;
 
-class FiberHandle {
+class StoppedFiber {
     friend class AwaiterFiber;
 
 public:
-    FiberHandle() : FiberHandle(nullptr) {}
+    StoppedFiber() : StoppedFiber(nullptr) {}
 
-    static FiberHandle Invalid() { return FiberHandle(nullptr); }
+    static StoppedFiber Invalid() { return StoppedFiber(nullptr); }
 
     bool IsInvalid() const { return fiber_ == nullptr; }
 
@@ -27,7 +27,7 @@ public:
 private:
     AwaiterFiber* fiber_{nullptr};
 
-    explicit FiberHandle(AwaiterFiber* fiber) : fiber_(fiber) {
+    explicit StoppedFiber(AwaiterFiber* fiber) : fiber_(fiber) {
 //        assert(fiber_);
     }
 

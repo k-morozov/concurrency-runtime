@@ -4,14 +4,14 @@
 
 #pragma once
 
-#include "fiber/handle/fiber_handle.h"
+#include <fiber/handle/stopped_fiber.h>
 
 namespace fibers {
 
 class IAwaiter {
 public:
     virtual ~IAwaiter() = default;
-    virtual void AwaitSuspend(FiberHandle handle) = 0;
+    virtual void AwaitSuspend(StoppedFiber handle) = 0;
 };
 
 }  // namespace fibers

@@ -10,7 +10,7 @@ namespace fibers {
 
 class YieldAwaiter : public IAwaiter {
 public:
-    void AwaitSuspend(FiberHandle handle) override { handle.Schedule(); }
+    void AwaitSuspend(StoppedFiber handle) override { handle.Schedule(); }
 };
 
 }  // namespace fibers
