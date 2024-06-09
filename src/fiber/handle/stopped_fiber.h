@@ -18,7 +18,7 @@ public:
 
     static StoppedFiber Invalid() { return StoppedFiber(nullptr); }
 
-    bool IsInvalid() const { return fiber_ == nullptr; }
+    bool IsValid() const { return fiber_ != nullptr; }
 
     void Schedule();
 

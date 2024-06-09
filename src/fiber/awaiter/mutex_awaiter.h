@@ -22,7 +22,7 @@ public:
         : mutex(mutex), guard(std::move(guard)){};
 
     void AwaitSuspend(StoppedFiber handle) override {
-        assert(!handle.IsInvalid());
+        assert(handle.IsValid());
 
         stopped_handle = handle;
         mutex->Park(this);

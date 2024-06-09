@@ -11,7 +11,7 @@
 namespace fibers {
 
 AwaiterFiber* StoppedFiber::Release() {
-    assert(!IsInvalid());
+    assert(IsValid());
     return std::exchange(fiber_, nullptr);
 }
 

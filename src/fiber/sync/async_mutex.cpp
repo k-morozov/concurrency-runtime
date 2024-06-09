@@ -4,7 +4,7 @@
 
 #include "async_mutex.h"
 
-#include "awaiter/suspend.h"
+#include <fiber/awaiter/suspend.h>
 
 namespace fibers {
 
@@ -17,6 +17,7 @@ void AsyncMutex::Lock() {
         locked_ = true;
     }
 }
+
 void AsyncMutex::Unlock() {
     Waiter* next_waiter = nullptr;
     {
@@ -32,6 +33,7 @@ void AsyncMutex::Unlock() {
         next_waiter->Schedule();
     }
 }
+
 void AsyncMutex::Park(Waiter* waiter) {
     waiters_.Push(waiter);
 }
