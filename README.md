@@ -1,6 +1,12 @@
-### Goroutine in C++
+## Fibers in C++
 
-I try to make this code is true in C++.
+## Requirements
+
+- x86-64
+- Linux
+- Clang++
+
+## Example
 
 [example_go.cpp](example%2Fgo/%2Fexample_go.cpp)
 
