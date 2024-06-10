@@ -10,6 +10,7 @@
 namespace fibers::ctx {
 
 class SanitizerContext {
+public:
     void Setup(BufferView stack) {
         stack_ = stack.data();
         stack_size_ = stack.size();
