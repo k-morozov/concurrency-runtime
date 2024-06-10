@@ -15,14 +15,13 @@ template <class T>
 class TestCoro : private fibers::ctx::Runner {
     struct SuspendCtx {
         TestCoro* coro;
-        void Suspend() {
-            coro->Suspend();
-        }
+        void Suspend() { coro->Suspend(); }
     };
 
 public:
-    explicit TestCoro(T&& body) : body_(std::move(body)) {
-        ctx_.Setup(buffer_, this);
+    explicit TestCoro(T&& body)
+        : body_(std::move(body)), buffer_(Buffer::AllocBytes(64 * 1024)) {
+        ctx_.Setup(buffer_.GetSpan(), this);
     };
 
     void Resume() {
@@ -30,15 +29,13 @@ public:
         caller_ctx_.SwitchTo(ctx_);
     }
 
-    void Suspend() {
-        ctx_.SwitchTo(caller_ctx_);
-    }
+    void Suspend() { ctx_.SwitchTo(caller_ctx_); }
 
     bool IsDone() const noexcept { return done_; }
 
 private:
     T body_;
-    std::byte buffer_[1024];
+    Buffer buffer_;
     Ctx ctx_;
     Ctx caller_ctx_;
     bool done_{false};
@@ -51,9 +48,7 @@ private:
         }
         done_ = true;
 
-        // @todo change to ExitTo
-        ctx_.SwitchTo(caller_ctx_);
-//        ctx_.ExitTo(caller_ctx_);
+        ctx_.ExitTo(caller_ctx_);
     }
 };
 

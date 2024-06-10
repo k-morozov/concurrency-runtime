@@ -7,6 +7,7 @@
 #include <context/buffer/buffer.h>
 #include <context/buffer/buffer_context.h>
 #include <context/runner.h>
+#include <context/sanitizer/sanitizer_context.h>
 
 namespace fibers::ctx {
 
@@ -27,6 +28,7 @@ public:
 private:
     void Run() override;
 
+    SanitizerContext sanitizer_ctx_{};
     BufferContext buffer_ctx_{};
 
     Runner* runner_{nullptr};

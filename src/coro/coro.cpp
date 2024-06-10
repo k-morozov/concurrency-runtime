@@ -26,7 +26,7 @@ void Coroutine::Run() {
     }
 
     is_completed_ = true;
-    coro_ctx_.SwitchTo(caller_ctx_);
+    coro_ctx_.ExitTo(caller_ctx_);
 }
 
 void Coroutine::Resume() {
