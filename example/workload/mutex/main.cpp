@@ -10,10 +10,10 @@
 #include <go/go.h>
 
 int main() {
-    executors::ThreadPool scheduler{32};
+    executors::ThreadPool scheduler{4};
     scheduler.Start();
 
-    constexpr size_t kFibers = 1024;
+    constexpr size_t kFibers = 128;
     constexpr size_t kTasks = 1024;
 
     fibers::Go(scheduler, [] {

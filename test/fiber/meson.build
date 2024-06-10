@@ -4,6 +4,7 @@ test_source_files = [
     'test_mutex.cpp',
     'test_list.cpp',
     'test_wait_group.cpp',
+    'test_event.cpp',
 ]
 
 test_fiber = executable(
