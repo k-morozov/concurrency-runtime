@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <list>
 #include <mutex>
 
 #include <fiber/awaiter/mutex_awaiter.h>

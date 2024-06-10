@@ -5,6 +5,7 @@ fiber_sources = files(
     'awaiter/suspend.cpp',
     'sync/async_mutex.cpp',
     'sync/wait_group.cpp',
+    'sync/event.cpp',
     'intrusive/list.cpp',
 )
 fiber = library('fiber',

@@ -1,35 +1,31 @@
 //
-// Created by konstantin on 09.06.24.
+// Created by konstantin on 10.06.24.
 //
 
 #pragma once
 
 #include <mutex>
 
+#include <fiber/awaiter/event_awaiter.h>
 #include <fiber/intrusive/list.h>
 #include <fiber/sync/spinLock.h>
-#include <fiber/awaiter/wait_group_awaiter.h>
 
 namespace fibers {
 
-class WaitGroup {
+class Event {
     using Spinlock = SpinLock;
-    using Waiter = WaitGroupWaiter<WaitGroup>;
+    using Waiter = EventWaiter<Event>;
 
     friend Waiter;
 
 public:
-    void Add(size_t);
-    void Done();
     void Wait();
+    void Fire();
 
 private:
-    size_t counter_{0};
     Spinlock spinlock_;
-
-    intrusive::List<Waiter> wg_waiters_;
+    intrusive::List<Waiter> event_waiters_;
 
     void Park(Waiter* waiter);
 };
-
 }  // namespace fibers
