@@ -48,6 +48,7 @@ public:
     }
 
     void Close() {
+        std::unique_lock lock(m_);
         close_.store(true);
         empty_data_.notify_all();
     };
