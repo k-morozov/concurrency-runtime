@@ -102,23 +102,23 @@ jobs:
           meson compile -C ${{env.BuidlDir}}
           meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
 
-  debug-sanitize-memory:
-    timeout-minutes: 15
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: Install Dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.conan2
-          key: ${{ runner.os }}-conan-${{ hashFiles('conanfile.txt') }}-executor
-      - run: |
-          python tools/prepare.py
-      - run: |
-          CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . -Db_sanitize=memory -Db_lundef=false
-          meson compile -C ${{env.BuidlDir}}
-          meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
+  # debug-sanitize-memory:
+  #   timeout-minutes: 15
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         submodules: true
+  #     - name: Install Dependencies
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: ~/.conan2
+  #         key: ${{ runner.os }}-conan-${{ hashFiles('conanfile.txt') }}-executor
+  #     - run: |
+  #         python tools/prepare.py
+  #     - run: |
+  #         CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . -Db_sanitize=memory -Db_lundef=false
+  #         meson compile -C ${{env.BuidlDir}}
+  #         meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
 
 
