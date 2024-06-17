@@ -1,7 +1,8 @@
 test_source_files = [
     'main.cpp',
     'test_thread_pool.cpp',
-    'test_manual_executor.cpp'
+    'test_manual_executor.cpp',
+    'test_strand.cpp',
 ]
 
 test_pool = executable(
