@@ -7,13 +7,14 @@
 #include <mutex>
 
 #include <fiber/awaiter/mutex_awaiter.h>
-#include <fiber/sync/spinLock.h>
 #include <fiber/intrusive/list.h>
+
+#include <sync/spinLock.h>
 
 namespace fibers {
 
 class AsyncMutex {
-    using Spinlock = SpinLock;
+    using Spinlock = NSync::SpinLock;
     using Waiter = AsyncMutexWaiter<AsyncMutex>;
 
     friend Waiter;

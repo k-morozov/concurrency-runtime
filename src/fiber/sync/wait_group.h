@@ -6,14 +6,14 @@
 
 #include <mutex>
 
-#include <fiber/intrusive/list.h>
-#include <fiber/sync/spinLock.h>
 #include <fiber/awaiter/wait_group_awaiter.h>
+#include <fiber/intrusive/list.h>
+#include <sync/spinLock.h>
 
 namespace fibers {
 
 class WaitGroup {
-    using Spinlock = SpinLock;
+    using Spinlock = NSync::SpinLock;
     using Waiter = WaitGroupWaiter<WaitGroup>;
 
     friend Waiter;

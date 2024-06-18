@@ -8,12 +8,12 @@
 
 #include <fiber/awaiter/event_awaiter.h>
 #include <fiber/intrusive/list.h>
-#include <fiber/sync/spinLock.h>
+#include <sync/spinLock.h>
 
 namespace fibers {
 
 class Event {
-    using Spinlock = SpinLock;
+    using Spinlock = NSync::SpinLock;
     using Waiter = EventWaiter<Event>;
 
     friend Waiter;
