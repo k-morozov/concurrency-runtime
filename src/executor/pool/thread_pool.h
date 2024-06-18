@@ -11,7 +11,7 @@
 
 #include <executor/executor.h>
 #include <executor/task/task.h>
-#include <pool_queue/blocking_queue/queue.h>
+#include <components/queue/blocking_queue/queue.h>
 
 namespace executors {
 

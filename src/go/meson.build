@@ -4,5 +4,5 @@ go_sources = files(
 go = library('go',
              go_sources,
              include_directories : [runtime_inc],
-             link_with : [fiber, coro, context, pool_queue],
+             link_with : [fiber, coro, context, components],
 )

@@ -8,7 +8,7 @@
 #include <thread>
 
 #include <common/clock.h>
-#include <pool_queue/blocking_queue/queue.h>
+#include <components/queue/blocking_queue/queue.h>
 
 using namespace std::chrono_literals;
 
