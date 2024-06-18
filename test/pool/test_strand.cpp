@@ -7,6 +7,7 @@
 #include <chrono>
 #include <memory>
 
+#include <common/clock.h>
 #include <executor/manual/manual_executor.h>
 #include <executor/pool/thread_pool.h>
 #include <executor/strand/strand.h>
@@ -279,12 +280,12 @@ TEST(TestStrand, NonBlockingSubmit) {
     std::this_thread::sleep_for(256ms);
 
     {
-        //        wheels::StopWatch stop_watch;
+        common::StopWatch stop_watch;
         executors::Submit(strand, std::make_shared<executors::FiberTask>([&] {
                               // Do nothing
                           }));
 
-        //        ASSERT_LE(stop_watch.Elapsed(), 100ms);
+        ASSERT_LE(stop_watch.Elapsed(), 100ms);
     }
 
     pool.WaitIdle();
