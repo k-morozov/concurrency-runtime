@@ -8,7 +8,7 @@
 #include <mutex>
 
 #include <executor/executor.h>
-#include <sync/spinLock.h>
+#include <components/sync/spinLock.h>
 
 namespace executors {
 

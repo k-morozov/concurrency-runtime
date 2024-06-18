@@ -8,7 +8,7 @@
 
 #include <fiber/awaiter/event_awaiter.h>
 #include <fiber/intrusive/list.h>
-#include <sync/spinLock.h>
+#include <components/sync/spinLock.h>
 
 namespace fibers {
 

@@ -9,7 +9,7 @@
 #include <fiber/awaiter/mutex_awaiter.h>
 #include <fiber/intrusive/list.h>
 
-#include <sync/spinLock.h>
+#include <components/sync/spinLock.h>
 
 namespace fibers {
 

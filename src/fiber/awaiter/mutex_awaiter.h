@@ -6,10 +6,9 @@
 
 #include <mutex>
 
+#include <components/sync/spinLock.h>
 #include <fiber/awaiter/awaiter.h>
 #include <fiber/intrusive/list.h>
-
-#include "sync/spinLock.h"
 
 namespace fibers {
 

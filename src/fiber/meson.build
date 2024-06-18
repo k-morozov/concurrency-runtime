@@ -11,5 +11,5 @@ fiber_sources = files(
 fiber = library('fiber',
                 fiber_sources,
                 include_directories : [runtime_inc],
-                link_with : [coro, context, pool_queue, executor, sync],
+                link_with : [coro, context, executor, components],
 )
