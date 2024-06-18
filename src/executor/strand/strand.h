@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include <deque>
+#include <list>
+#include <mutex>
 
 #include <executor/executor.h>
 #include <sync/spinLock.h>
@@ -13,6 +14,8 @@ namespace executors {
 
 class Strand : public IExecutor {
 public:
+    using TaskList = std::list<TaskPtr>;
+
     explicit Strand(IExecutor& underlying);
 
     Strand(const Strand&) = delete;
@@ -26,7 +29,11 @@ public:
 private:
     IExecutor& underlying;
     NSync::SpinLock spinlock;
-    std::deque<TaskPtr> tasks;
+    TaskList tasks;
+
+    std::atomic<bool> is_schedule{false};
+
+    void SubmitInternal();
 };
 
 }  // namespace executors

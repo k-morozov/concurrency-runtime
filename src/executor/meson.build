@@ -10,5 +10,5 @@ executor = library('executor',
                    executor_sources,
                    install : true,
                    include_directories : [runtime_inc],
-                   link_with : [context, pool_queue],
+                   link_with : [context, pool_queue, sync],
 )
