@@ -6,7 +6,6 @@ fiber_sources = files(
     'sync/async_mutex.cpp',
     'sync/wait_group.cpp',
     'sync/event.cpp',
-    'intrusive/list.cpp',
 )
 fiber = library('fiber',
                 fiber_sources,

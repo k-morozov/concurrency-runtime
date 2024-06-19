@@ -7,7 +7,7 @@
 #include <mutex>
 
 #include <fiber/awaiter/wait_group_awaiter.h>
-#include <fiber/intrusive/list.h>
+#include <components/intrusive/list.h>
 #include <components/sync/spinLock.h>
 
 namespace fibers {

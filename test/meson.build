@@ -6,8 +6,8 @@ test_dependencies = dependency(
     ]
 )
 
+subdir('components')
 subdir('pool')
-subdir('queue')
 subdir('ctx')
 subdir('coro')
 subdir('fiber')
