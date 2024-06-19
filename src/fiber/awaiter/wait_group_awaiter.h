@@ -6,8 +6,8 @@
 
 #include <mutex>
 
+#include <components/intrusive/list.h>
 #include <fiber/awaiter/awaiter.h>
-#include <fiber/intrusive/list.h>
 
 namespace fibers {
 

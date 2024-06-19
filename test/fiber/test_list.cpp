@@ -4,7 +4,7 @@
 
 #include "gtest/gtest.h"
 
-#include <fiber/intrusive/list.h>
+#include <components/intrusive/list.h>
 
 struct TestIntrusiveNode : intrusive::Node<TestIntrusiveNode> {
     explicit TestIntrusiveNode(size_t n)
