@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include <functional>
+#include <components/function/basic_function.h>
 
 namespace fibers::coro {
 
-using Routine = std::function<void()>;
+using Routine = NComponents::BasicFunction<void()>;
 
 }
