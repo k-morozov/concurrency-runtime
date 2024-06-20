@@ -23,11 +23,12 @@ AwaiterFiber::AwaiterFiber(executors::IExecutor* executor,
     : executor_(executor), fiber_coro_(std::move(routine), std::move(buffer)) {}
 
 void AwaiterFiber::Schedule() {
-    executor_->Submit(
-        std::make_shared<executors::FiberTask>(([this]() { Run(); })));
+//    executor_->Submit(
+//        std::make_shared<executors::FiberTask>(([this]() { Run(); })));
+    executor_->Submit(this);
 }
 
-void AwaiterFiber::Run() {
+void AwaiterFiber::Run() noexcept {
     Switch();
 
     if (fiber_coro_.IsCompleted()) {

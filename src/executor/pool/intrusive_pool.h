@@ -1,5 +1,5 @@
 //
-// Created by konstantin on 09.05.24.
+// Created by konstantin on 19.06.24.
 //
 
 #pragma once
@@ -11,19 +11,23 @@
 
 #include <executor/executor.h>
 #include <executor/task/task.h>
-#include <components/queue/blocking_queue.h>
+#include <executor/task/task_base.h>
+#include <components/sync/spinLock.h>
 
 namespace executors {
 
-class ThreadPool;
-std::shared_ptr<ThreadPool> MakeThreadPool(size_t count);
-
-class ThreadPool final : public IExecutor {
+class IntrusiveThreadPool final : public IExecutor {
 public:
-    explicit ThreadPool(size_t count);
-    ~ThreadPool() override;
+    explicit IntrusiveThreadPool(size_t count);
+    ~IntrusiveThreadPool() override;
 
     void Start();
+
+    void Submit(TaskPtr /*task*/) override;
+
+    void Submit(NExecutors::TaskBase* task) override;
+
+    static IExecutor* Current();
 
     void StartShutdown();
 
@@ -31,15 +35,12 @@ public:
 
     void WaitIdle();
 
-    void Submit(TaskPtr /*task*/) override;
-
-    static IExecutor* Current();
-
 private:
     const size_t workers_count_;
 
     std::vector<std::unique_ptr<std::thread>> workers_;
-    UnboundedBlockingQueue<TaskPtr> queue_;
+    NSync::SpinLock spinlock;
+    intrusive::List<NExecutors::TaskBase> tasks;
 
     std::atomic<bool> shutdown_{false};
 
