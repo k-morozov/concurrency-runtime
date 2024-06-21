@@ -7,6 +7,7 @@
 #include <chrono>
 
 #include <executor/pool/thread_pool.h>
+#include <executor/pool/intrusive_pool.h>
 #include <go/go.h>
 
 using namespace std::chrono_literals;
@@ -16,13 +17,13 @@ auto Now() { return std::chrono::high_resolution_clock::now(); }
 }  // namespace
 
 TEST(TestFiber, JustWorks1Go) {
-    executors::ThreadPool pool{3};
+    executors::IntrusiveThreadPool pool{3};
     pool.Start();
 
     bool done = false;
 
     fibers::Go(pool, [&]() {
-        ASSERT_EQ(executors::ThreadPool::Current(), &pool);
+        ASSERT_EQ(executors::IntrusiveThreadPool::Current(), &pool);
         done = true;
     });
 
@@ -32,16 +33,16 @@ TEST(TestFiber, JustWorks1Go) {
 }
 
 TEST(TestFiber, Child) {
-    executors::ThreadPool pool{3};
+    executors::IntrusiveThreadPool pool{3};
     pool.Start();
 
     std::atomic<size_t> done{0};
 
     auto init = [&]() {
-        ASSERT_EQ(executors::ThreadPool::Current(), &pool);
+        ASSERT_EQ(executors::IntrusiveThreadPool::Current(), &pool);
 
         fibers::Go([&]() {
-            ASSERT_EQ(executors::ThreadPool::Current(), &pool);
+            ASSERT_EQ(executors::IntrusiveThreadPool::Current(), &pool);
             ++done;
         });
 
@@ -56,7 +57,7 @@ TEST(TestFiber, Child) {
 }
 
 TEST(TestFiber, RunInParallel) {
-    executors::ThreadPool pool{3};
+    executors::IntrusiveThreadPool pool{3};
     pool.Start();
 
     std::atomic<size_t> completed{0};
@@ -79,7 +80,7 @@ TEST(TestFiber, RunInParallel) {
 }
 
 TEST(TestFiber, Yield1) {
-    executors::ThreadPool pool{1};
+    executors::IntrusiveThreadPool pool{1};
     pool.Start();
 
     bool done = false;
@@ -87,7 +88,7 @@ TEST(TestFiber, Yield1) {
     fibers::Go(pool, [&] {
         fibers::Yield();
 
-        ASSERT_EQ(executors::ThreadPool::Current(), &pool);
+        ASSERT_EQ(executors::IntrusiveThreadPool::Current(), &pool);
         done = true;
     });
 
@@ -96,7 +97,7 @@ TEST(TestFiber, Yield1) {
 }
 
 TEST(TestFiber, Yield2) {
-    executors::ThreadPool pool{1};
+    executors::IntrusiveThreadPool pool{1};
 
     enum State : int { Ping = 0, Pong = 1 };
 
@@ -124,8 +125,9 @@ TEST(TestFiber, Yield2) {
 
     pool.WaitIdle();
 }
+
 TEST(TestFiber, Yield3) {
-    executors::ThreadPool pool{4};
+    executors::IntrusiveThreadPool pool{4};
 
     static const size_t kYields = 1024;
 
@@ -144,15 +146,15 @@ TEST(TestFiber, Yield3) {
 }
 
 TEST(TestFiber, TwoPools1) {
-    executors::ThreadPool pool_1{4};
-    executors::ThreadPool pool_2{4};
+    executors::IntrusiveThreadPool pool_1{4};
+    executors::IntrusiveThreadPool pool_2{4};
 
     pool_1.Start();
     pool_2.Start();
 
-    auto make_tester = [](executors::ThreadPool& pool) {
+    auto make_tester = [](executors::IntrusiveThreadPool& pool) {
         return
-            [&pool]() { ASSERT_EQ(executors::ThreadPool::Current(), &pool); };
+            [&pool]() { ASSERT_EQ(executors::IntrusiveThreadPool::Current(), &pool); };
     };
 
     fibers::Go(pool_1, make_tester(pool_1));
@@ -163,23 +165,23 @@ TEST(TestFiber, TwoPools1) {
 }
 
 TEST(TestFiber, TwoPools2) {
-    executors::ThreadPool pool_1{4};
+    executors::IntrusiveThreadPool pool_1{4};
     pool_1.Start();
 
-    executors::ThreadPool pool_2{4};
+    executors::IntrusiveThreadPool pool_2{4};
     pool_2.Start();
 
-    auto make_tester = [](executors::ThreadPool& pool) {
+    auto make_tester = [](executors::IntrusiveThreadPool& pool) {
         return [&pool]() {
             static const size_t kIterations = 128;
 
             for (size_t i = 0; i < kIterations; ++i) {
-                ASSERT_EQ(executors::ThreadPool::Current(), &pool);
+                ASSERT_EQ(executors::IntrusiveThreadPool::Current(), &pool);
 
                 fibers::Yield();
 
                 fibers::Go(pool, [&pool]() {
-                    ASSERT_EQ(executors::ThreadPool::Current(), &pool);
+                    ASSERT_EQ(executors::IntrusiveThreadPool::Current(), &pool);
                 });
             }
         };

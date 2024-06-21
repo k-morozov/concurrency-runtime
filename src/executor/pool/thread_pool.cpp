@@ -8,9 +8,11 @@
 #include <memory>
 #include <thread>
 
-thread_local executors::ThreadPool* CurrentPool;
-
 namespace executors {
+
+namespace {
+thread_local executors::IExecutor* CurrentPool;
+}
 
 std::shared_ptr<ThreadPool> MakeThreadPool(const size_t count) {
     auto pool = std::make_shared<ThreadPool>(count);
@@ -98,6 +100,7 @@ void ThreadPool::Submit(TaskPtr task) {
     count_tasks_.fetch_add(1);
     [[maybe_unused]] bool status = queue_.Put(std::move(task));
 }
-ThreadPool* ThreadPool::Current() { return CurrentPool; }
+
+IExecutor* ThreadPool::Current() { return CurrentPool; }
 
 }  // namespace executors

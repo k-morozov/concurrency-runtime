@@ -7,12 +7,13 @@
 #include <context/buffer/buffer.h>
 #include <coro/stackfull_coro.h>
 #include <executor/executor.h>
+#include <executor/task/task_base.h>
 
 namespace fibers {
 
 class IAwaiter;
 
-class AwaiterFiber final {
+class AwaiterFiber final : public NExecutors::TaskBase {
 public:
     AwaiterFiber(executors::IExecutor* executor, coro::Routine routine,
                  ctx::Buffer&& buffer);
@@ -22,7 +23,7 @@ public:
     void Suspend(IAwaiter* waiter);
     void Switch();
 
-    void Run();
+    void Run() noexcept override;
 
     static AwaiterFiber* Self();
 
