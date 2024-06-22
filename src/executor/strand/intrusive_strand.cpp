@@ -4,7 +4,7 @@
 
 #include "intrusive_strand.h"
 
-#include <format>
+//#include <format>
 #include <memory>
 
 #include <executor/submit.h>
