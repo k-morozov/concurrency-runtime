@@ -15,11 +15,17 @@ namespace NExecutors {
 class IntrusiveStrand : public IExecutor {
     using TaskList = intrusive::List<TaskBase>;
 
+    enum class State : uint32_t {
+        READY,
+        PLAN,
+        RUNNING
+    };
+
     IExecutor& underlying;
     NSync::SpinLock spinlock;
     TaskList tasks;
 
-    std::atomic<bool> is_schedule{false};
+    std::atomic<State> state{State::READY};
 
 public:
     explicit IntrusiveStrand(IExecutor& underlying);
@@ -34,6 +40,12 @@ public:
 
 private:
     void SubmitInternal();
+
+    void PlanTaskFromReadyState();
+
+    void ChangeStateToRun();
+    void ChangeStateToReady();
+    void ChangeStateToPlan();
 };
 
 }  // namespace NExecutors
