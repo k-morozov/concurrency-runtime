@@ -8,18 +8,17 @@
 #include <memory>
 
 #include <common/clock.h>
-#include <executor/manual/manual_executor.h>
-#include <executor/pool/thread_pool.h>
-#include <executor/strand/strand.h>
+#include <executor/manual/intrusive_manual_executor.h>
+#include <executor/pool/intrusive_pool.h>
+#include <executor/strand/intrusive_strand.h>
 #include <executor/submit.h>
-#include <executor/task/fiber_task.h>
 
 using namespace std::chrono_literals;
 
 namespace {
 
-void AssertRunningOn(executors::ThreadPool& pool) {
-    ASSERT_TRUE(executors::ThreadPool::Current() == &pool);
+void AssertRunningOn(executors::IntrusiveThreadPool& pool) {
+    ASSERT_TRUE(executors::IntrusiveThreadPool::Current() == &pool);
 }
 
 class Robot {
@@ -27,29 +26,27 @@ public:
     explicit Robot(executors::IExecutor& executor) : strand_(executor) {}
 
     void Push() {
-        executors::Submit(strand_, std::make_shared<executors::FiberTask>(
-                                       [this] { ++steps_; }));
+        executors::Submit(strand_, [this] { ++steps_; });
     }
 
     size_t Steps() const { return steps_; }
 
 private:
-    executors::Strand strand_;
+    executors::IntrusiveStrand strand_;
     size_t steps_{0};
 };
 
 }  // namespace
 
 TEST(TestStrand, JustWorks) {
-    executors::ThreadPool pool{4};
+    executors::IntrusiveThreadPool pool{4};
     pool.Start();
 
-    executors::Strand strand{pool};
+    executors::IntrusiveStrand strand{pool};
 
     bool done = false;
 
-    executors::Submit(
-        strand, std::make_shared<executors::FiberTask>([&] { done = true; }));
+    executors::Submit(strand, [&] { done = true; });
 
     pool.WaitIdle();
 
@@ -57,18 +54,18 @@ TEST(TestStrand, JustWorks) {
 }
 
 TEST(TestStrand, Decorator) {
-    executors::ThreadPool pool{4};
+    executors::IntrusiveThreadPool pool{4};
     pool.Start();
 
-    executors::Strand strand{pool};
+    executors::IntrusiveStrand strand{pool};
 
     bool done{false};
 
     for (size_t i = 0; i < 128; ++i) {
-        executors::Submit(strand, std::make_shared<executors::FiberTask>([&] {
-                              AssertRunningOn(pool);
-                              done = true;
-                          }));
+        executors::Submit(strand, [&] {
+            AssertRunningOn(pool);
+            done = true;
+        });
     }
 
     pool.WaitIdle();
@@ -77,20 +74,20 @@ TEST(TestStrand, Decorator) {
 }
 
 TEST(TestStrand, Counter) {
-    executors::ThreadPool pool{13};
+    executors::IntrusiveThreadPool pool{13};
     pool.Start();
 
     size_t counter = 0;
 
-    executors::Strand strand{pool};
+    executors::IntrusiveStrand strand{pool};
 
     static const size_t kIncrements = 1234;
 
     for (size_t i = 0; i < kIncrements; ++i) {
-        executors::Submit(strand, std::make_shared<executors::FiberTask>([&] {
-                              AssertRunningOn(pool);
-                              ++counter;
-                          }));
+        executors::Submit(strand, [&] {
+            AssertRunningOn(pool);
+            ++counter;
+        });
     };
 
     pool.WaitIdle();
@@ -99,21 +96,20 @@ TEST(TestStrand, Counter) {
 }
 
 TEST(TestStrand, Fifo) {
-    executors::ThreadPool pool{13};
+    executors::IntrusiveThreadPool pool{13};
     pool.Start();
 
-    executors::Strand strand{pool};
+    executors::IntrusiveStrand strand{pool};
 
     size_t done = 0;
 
     static const size_t kTasks = 12345;
 
     for (size_t i = 0; i < kTasks; ++i) {
-        executors::Submit(strand,
-                          std::make_shared<executors::FiberTask>([&, i] {
-                              AssertRunningOn(pool);
-                              ASSERT_EQ(done++, i);
-                          }));
+        executors::Submit(strand, [&, i] {
+            AssertRunningOn(pool);
+            ASSERT_EQ(done++, i);
+        });
     };
 
     pool.WaitIdle();
@@ -122,7 +118,7 @@ TEST(TestStrand, Fifo) {
 }
 
 TEST(TestStrand, ConcurrentStrands) {
-    executors::ThreadPool pool{16};
+    executors::IntrusiveThreadPool pool{16};
     pool.Start();
 
     static const size_t kStrands = 50;
@@ -151,10 +147,10 @@ TEST(TestStrand, ConcurrentStrands) {
 }
 
 TEST(TestStrand, ConcurrentSubmits) {
-    executors::ThreadPool workers{2};
-    executors::Strand strand{workers};
+    executors::IntrusiveThreadPool workers{2};
+    executors::IntrusiveStrand strand{workers};
 
-    executors::ThreadPool clients{4};
+    executors::IntrusiveThreadPool clients{4};
 
     workers.Start();
     clients.Start();
@@ -164,14 +160,12 @@ TEST(TestStrand, ConcurrentSubmits) {
     size_t task_count{0};
 
     for (size_t i = 0; i < kTasks; ++i) {
-        executors::Submit(clients, std::make_shared<executors::FiberTask>([&] {
-                              executors::Submit(
-                                  strand,
-                                  std::make_shared<executors::FiberTask>([&] {
-                                      AssertRunningOn(workers);
-                                      ++task_count;
-                                  }));
-                          }));
+        executors::Submit(clients, [&] {
+            executors::Submit(strand, [&] {
+                AssertRunningOn(workers);
+                ++task_count;
+            });
+        });
     }
 
     clients.WaitIdle();
@@ -181,16 +175,15 @@ TEST(TestStrand, ConcurrentSubmits) {
 }
 
 TEST(TestStrand, StrandOverManual) {
-    executors::ManualExecutor manual;
-    executors::Strand strand{manual};
+    executors::IntrusiveManualExecutor manual;
+    executors::IntrusiveStrand strand{manual};
 
     static const size_t kTasks = 117;
 
     size_t tasks = 0;
 
     for (size_t i = 0; i < kTasks; ++i) {
-        executors::Submit(
-            strand, std::make_shared<executors::FiberTask>([&] { ++tasks; }));
+        executors::Submit(strand, [&] { ++tasks; });
     }
 
     manual.Drain();
@@ -199,15 +192,14 @@ TEST(TestStrand, StrandOverManual) {
 }
 
 TEST(TestStrand, Batching) {
-    executors::ManualExecutor manual;
-    executors::Strand strand{manual};
+    executors::IntrusiveManualExecutor manual;
+    executors::IntrusiveStrand strand{manual};
 
     static const size_t kTasks = 100;
 
     size_t completed = 0;
     for (size_t i = 0; i < kTasks; ++i) {
-        executors::Submit(strand, std::make_shared<executors::FiberTask>(
-                                      [&completed] { ++completed; }));
+        executors::Submit(strand, [&completed] { ++completed; });
     };
 
     size_t tasks = manual.Drain();
@@ -215,19 +207,18 @@ TEST(TestStrand, Batching) {
 }
 
 TEST(TestStrand, StrandOverStrand) {
-    executors::ThreadPool pool{4};
+    executors::IntrusiveThreadPool pool{4};
     pool.Start();
 
-    executors::Strand strand_1{pool};
-    executors::Strand strand_2{(executors::IExecutor&)strand_1};
+    executors::IntrusiveStrand strand_1{pool};
+    executors::IntrusiveStrand strand_2{(executors::IExecutor&)strand_1};
 
     static const size_t kTasks = 17;
 
     size_t tasks = 0;
 
     for (size_t i = 0; i < kTasks; ++i) {
-        executors::Submit(strand_2, std::make_shared<executors::FiberTask>(
-                                        [&tasks] { ++tasks; }));
+        executors::Submit(strand_2, [&tasks] { ++tasks; });
     }
 
     pool.WaitIdle();
@@ -236,30 +227,25 @@ TEST(TestStrand, StrandOverStrand) {
 }
 
 TEST(TestStrand, DoNotOccupyThread) {
-    executors::ThreadPool pool{1};
+    executors::IntrusiveThreadPool pool{1};
     pool.Start();
 
-    executors::Strand strand{pool};
+    executors::IntrusiveStrand strand{pool};
 
-    executors::Submit(pool, std::make_shared<executors::FiberTask>(
-                                [] { std::this_thread::sleep_for(1s); }));
+    executors::Submit(pool, [] { std::this_thread::sleep_for(1s); });
 
     std::atomic<bool> stop_requested{false};
 
     auto snooze = []() { std::this_thread::sleep_for(10ms); };
 
     for (size_t i = 0; i < 100; ++i) {
-        executors::Submit(strand,
-                          std::make_shared<executors::FiberTask>(snooze));
+        executors::Submit(strand, snooze);
     }
 
-    executors::Submit(pool,
-                      std::make_shared<executors::FiberTask>(
-                          [&stop_requested] { stop_requested.store(true); }));
+    executors::Submit(pool, [&stop_requested] { stop_requested.store(true); });
 
     while (!stop_requested.load()) {
-        executors::Submit(strand,
-                          std::make_shared<executors::FiberTask>(snooze));
+        executors::Submit(strand, snooze);
         std::this_thread::sleep_for(10ms);
     }
 
@@ -267,23 +253,23 @@ TEST(TestStrand, DoNotOccupyThread) {
 }
 
 TEST(TestStrand, NonBlockingSubmit) {
-    executors::ThreadPool pool{1};
-    executors::Strand strand{pool};
+    executors::IntrusiveThreadPool pool{1};
+    executors::IntrusiveStrand strand{pool};
 
     pool.Start();
 
-    executors::Submit(strand, std::make_shared<executors::FiberTask>([&] {
-                          // Bubble
-                          std::this_thread::sleep_for(3s);
-                      }));
+    executors::Submit(strand, [&] {
+        // Bubble
+        std::this_thread::sleep_for(3s);
+    });
 
     std::this_thread::sleep_for(256ms);
 
     {
         common::StopWatch stop_watch;
-        executors::Submit(strand, std::make_shared<executors::FiberTask>([&] {
-                              // Do nothing
-                          }));
+        executors::Submit(strand, [&] {
+            // Do nothing
+        });
 
         ASSERT_LE(stop_watch.Elapsed(), 100ms);
     }

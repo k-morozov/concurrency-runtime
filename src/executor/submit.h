@@ -4,11 +4,15 @@
 
 #pragma once
 
+#include <coro/routine.h>
 #include <executor/executor.h>
 #include <executor/task/task.h>
 
 namespace executors {
 
-void Submit(IExecutor& executor, TaskPtr task);
+[[deprecated("use intrusive executor")]] void Submit(IExecutor& executor,
+                                                     TaskPtr task);
 
-}
+void Submit(IExecutor& executor, fibers::coro::Routine routine);
+
+}  // namespace executors
