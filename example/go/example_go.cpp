@@ -1,14 +1,15 @@
 #include <iostream>
 
-#include <executor/pool/thread_pool.h>
+#include <executor/pool/intrusive_pool.h>
 #include <go/go.h>
 
 int main() {
     std::cout << "Hello, world!" << std::endl;
 
-    auto ex = NExecutors::MakeThreadPool(1);
+    NExecutors::IntrusiveThreadPool pool(1);
+    pool.Start();
 
-    fibers::Go(*ex, [](){
+    fibers::Go(pool, [](){
         std::cout << "1" << std::endl;
 
         fibers::Go([] {
@@ -33,6 +34,6 @@ int main() {
         std::cout << "6" << std::endl;
     });
 
-    ex->WaitIdle();
+    pool.WaitIdle();
     return 0;
 }

@@ -27,7 +27,7 @@ void IntrusiveStrand::Submit(TaskBase* task) {
 
 void IntrusiveStrand::SubmitInternal() {
     NExecutors::Submit(underlying, [this]() {
-        intrusive::List<TaskBase> scheduled_tasks;
+        TaskList scheduled_tasks;
         {
             std::lock_guard lock(spinlock);
             std::swap(scheduled_tasks, tasks);

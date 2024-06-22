@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <list>
 #include <mutex>
 
 #include <components/intrusive/list.h>
@@ -14,15 +13,15 @@
 namespace NExecutors {
 
 class IntrusiveStrand : public IExecutor {
+    using TaskList = intrusive::List<TaskBase>;
+
     IExecutor& underlying;
     NSync::SpinLock spinlock;
-    intrusive::List<TaskBase> tasks;
+    TaskList tasks;
 
     std::atomic<bool> is_schedule{false};
 
 public:
-    using TaskList = std::list<TaskPtr>;
-
     explicit IntrusiveStrand(IExecutor& underlying);
 
     IntrusiveStrand(const IntrusiveStrand&) = delete;

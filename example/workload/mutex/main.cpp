@@ -4,13 +4,13 @@
 
 #include <iostream>
 
-#include <executor/pool/thread_pool.h>
+#include <executor/pool/intrusive_pool.h>
 #include <fiber/sync/async_mutex.h>
 #include <fiber/sync/wait_group.h>
 #include <go/go.h>
 
 int main() {
-    NExecutors::ThreadPool scheduler{4};
+    NExecutors::IntrusiveThreadPool scheduler{4};
     scheduler.Start();
 
     constexpr size_t kFibers = 128;
