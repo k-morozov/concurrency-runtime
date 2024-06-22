@@ -9,16 +9,13 @@
 #include <executor/executor.h>
 #include <components/sync/spinLock.h>
 
-namespace executors {
+namespace NExecutors {
 
 class IntrusiveManualExecutor final : public IExecutor {
 public:
     IntrusiveManualExecutor() = default;
 
-    [[deprecated]]
-    void Submit(TaskPtr /*task*/) override;
-
-    void Submit(NExecutors::TaskBase* /*task*/) override;
+    void Submit(TaskBase* /*task*/) override;
 
     size_t RunAtMost(size_t limit);
 
@@ -34,7 +31,7 @@ public:
 
 private:
     mutable NSync::SpinLock spinlock;
-    intrusive::List<NExecutors::TaskBase> tasks;
+    intrusive::List<TaskBase> tasks;
     size_t count_tasks{};
 };
 

@@ -6,17 +6,14 @@
 
 #include <memory>
 
-#include <executor/task/internal/task_free_function.h>
+#include <executor/submit.h>
 
-namespace executors {
+namespace NExecutors {
 
-IntrusiveStrand::IntrusiveStrand(IExecutor& underlying_) : underlying(underlying_) {}
+IntrusiveStrand::IntrusiveStrand(IExecutor& underlying_)
+    : underlying(underlying_) {}
 
-void IntrusiveStrand::Submit(TaskPtr /*task_*/) {
-    throw std::runtime_error("IntrusiveStrand doesn't implemented simple task");
-}
-
-void IntrusiveStrand::Submit(NExecutors::TaskBase* task) {
+void IntrusiveStrand::Submit(TaskBase* task) {
     {
         std::lock_guard lock(spinlock);
         tasks.Push(task);
@@ -29,12 +26,16 @@ void IntrusiveStrand::Submit(NExecutors::TaskBase* task) {
 }
 
 void IntrusiveStrand::SubmitInternal() {
-    underlying.Submit(NExecutors::TaskFreeFunction::Make([this]() {
-        intrusive::List<NExecutors::TaskBase> scheduled_tasks;
+    NExecutors::Submit(underlying, [this]() {
+        intrusive::List<TaskBase> scheduled_tasks;
         {
             std::lock_guard lock(spinlock);
             std::swap(scheduled_tasks, tasks);
+            tasks = {};
         }
+
+        assert(!scheduled_tasks.IsEmpty());
+
         while (!scheduled_tasks.IsEmpty()) {
             auto task = scheduled_tasks.Pop();
             task->Run();
@@ -46,7 +47,7 @@ void IntrusiveStrand::SubmitInternal() {
             return;
         }
         SubmitInternal();
-    }));
+    });
 }
 
-}  // namespace executors
+}  // namespace NExecutors

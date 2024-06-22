@@ -17,36 +17,36 @@ using namespace std::chrono_literals;
 
 namespace {
 
-void AssertRunningOn(executors::IntrusiveThreadPool& pool) {
-    ASSERT_TRUE(executors::IntrusiveThreadPool::Current() == &pool);
+void AssertRunningOn(NExecutors::IntrusiveThreadPool& pool) {
+    ASSERT_TRUE(NExecutors::IntrusiveThreadPool::Current() == &pool);
 }
 
 class Robot {
 public:
-    explicit Robot(executors::IExecutor& executor) : strand_(executor) {}
+    explicit Robot(NExecutors::IExecutor& executor) : strand_(executor) {}
 
     void Push() {
-        executors::Submit(strand_, [this] { ++steps_; });
+        NExecutors::Submit(strand_, [this] { ++steps_; });
     }
 
     size_t Steps() const { return steps_; }
 
 private:
-    executors::IntrusiveStrand strand_;
+    NExecutors::IntrusiveStrand strand_;
     size_t steps_{0};
 };
 
 }  // namespace
 
 TEST(TestStrand, JustWorks) {
-    executors::IntrusiveThreadPool pool{4};
+    NExecutors::IntrusiveThreadPool pool{4};
     pool.Start();
 
-    executors::IntrusiveStrand strand{pool};
+    NExecutors::IntrusiveStrand strand{pool};
 
     bool done = false;
 
-    executors::Submit(strand, [&] { done = true; });
+    NExecutors::Submit(strand, [&] { done = true; });
 
     pool.WaitIdle();
 
@@ -54,15 +54,15 @@ TEST(TestStrand, JustWorks) {
 }
 
 TEST(TestStrand, Decorator) {
-    executors::IntrusiveThreadPool pool{4};
+    NExecutors::IntrusiveThreadPool pool{4};
     pool.Start();
 
-    executors::IntrusiveStrand strand{pool};
+    NExecutors::IntrusiveStrand strand{pool};
 
     bool done{false};
 
     for (size_t i = 0; i < 128; ++i) {
-        executors::Submit(strand, [&] {
+        NExecutors::Submit(strand, [&] {
             AssertRunningOn(pool);
             done = true;
         });
@@ -74,17 +74,17 @@ TEST(TestStrand, Decorator) {
 }
 
 TEST(TestStrand, Counter) {
-    executors::IntrusiveThreadPool pool{13};
+    NExecutors::IntrusiveThreadPool pool{13};
     pool.Start();
 
     size_t counter = 0;
 
-    executors::IntrusiveStrand strand{pool};
+    NExecutors::IntrusiveStrand strand{pool};
 
     static const size_t kIncrements = 1234;
 
     for (size_t i = 0; i < kIncrements; ++i) {
-        executors::Submit(strand, [&] {
+        NExecutors::Submit(strand, [&] {
             AssertRunningOn(pool);
             ++counter;
         });
@@ -96,17 +96,17 @@ TEST(TestStrand, Counter) {
 }
 
 TEST(TestStrand, Fifo) {
-    executors::IntrusiveThreadPool pool{13};
+    NExecutors::IntrusiveThreadPool pool{13};
     pool.Start();
 
-    executors::IntrusiveStrand strand{pool};
+    NExecutors::IntrusiveStrand strand{pool};
 
     size_t done = 0;
 
     static const size_t kTasks = 12345;
 
     for (size_t i = 0; i < kTasks; ++i) {
-        executors::Submit(strand, [&, i] {
+        NExecutors::Submit(strand, [&, i] {
             AssertRunningOn(pool);
             ASSERT_EQ(done++, i);
         });
@@ -118,7 +118,7 @@ TEST(TestStrand, Fifo) {
 }
 
 TEST(TestStrand, ConcurrentStrands) {
-    executors::IntrusiveThreadPool pool{16};
+    NExecutors::IntrusiveThreadPool pool{16};
     pool.Start();
 
     static const size_t kStrands = 50;
@@ -131,10 +131,10 @@ TEST(TestStrand, ConcurrentStrands) {
     static const size_t kPushes = 25;
     static const size_t kIterations = 25;
 
-    for (size_t i = 0; i < kIterations; ++i) {
-        for (size_t j = 0; j < kStrands; ++j) {
-            for (size_t k = 0; k < kPushes; ++k) {
-                robots[j].Push();
+    for (size_t iteration = 0; iteration < kIterations; ++iteration) {
+        for (size_t strand = 0; strand < kStrands; ++strand) {
+            for (size_t push = 0; push < kPushes; ++push) {
+                robots[strand].Push();
             }
         }
     }
@@ -147,10 +147,10 @@ TEST(TestStrand, ConcurrentStrands) {
 }
 
 TEST(TestStrand, ConcurrentSubmits) {
-    executors::IntrusiveThreadPool workers{2};
-    executors::IntrusiveStrand strand{workers};
+    NExecutors::IntrusiveThreadPool workers{2};
+    NExecutors::IntrusiveStrand strand{workers};
 
-    executors::IntrusiveThreadPool clients{4};
+    NExecutors::IntrusiveThreadPool clients{4};
 
     workers.Start();
     clients.Start();
@@ -160,8 +160,8 @@ TEST(TestStrand, ConcurrentSubmits) {
     size_t task_count{0};
 
     for (size_t i = 0; i < kTasks; ++i) {
-        executors::Submit(clients, [&] {
-            executors::Submit(strand, [&] {
+        NExecutors::Submit(clients, [&] {
+            NExecutors::Submit(strand, [&] {
                 AssertRunningOn(workers);
                 ++task_count;
             });
@@ -175,15 +175,15 @@ TEST(TestStrand, ConcurrentSubmits) {
 }
 
 TEST(TestStrand, StrandOverManual) {
-    executors::IntrusiveManualExecutor manual;
-    executors::IntrusiveStrand strand{manual};
+    NExecutors::IntrusiveManualExecutor manual;
+    NExecutors::IntrusiveStrand strand{manual};
 
     static const size_t kTasks = 117;
 
     size_t tasks = 0;
 
     for (size_t i = 0; i < kTasks; ++i) {
-        executors::Submit(strand, [&] { ++tasks; });
+        NExecutors::Submit(strand, [&] { ++tasks; });
     }
 
     manual.Drain();
@@ -192,14 +192,14 @@ TEST(TestStrand, StrandOverManual) {
 }
 
 TEST(TestStrand, Batching) {
-    executors::IntrusiveManualExecutor manual;
-    executors::IntrusiveStrand strand{manual};
+    NExecutors::IntrusiveManualExecutor manual;
+    NExecutors::IntrusiveStrand strand{manual};
 
     static const size_t kTasks = 100;
 
     size_t completed = 0;
     for (size_t i = 0; i < kTasks; ++i) {
-        executors::Submit(strand, [&completed] { ++completed; });
+        NExecutors::Submit(strand, [&completed] { ++completed; });
     };
 
     size_t tasks = manual.Drain();
@@ -207,18 +207,18 @@ TEST(TestStrand, Batching) {
 }
 
 TEST(TestStrand, StrandOverStrand) {
-    executors::IntrusiveThreadPool pool{4};
+    NExecutors::IntrusiveThreadPool pool{4};
     pool.Start();
 
-    executors::IntrusiveStrand strand_1{pool};
-    executors::IntrusiveStrand strand_2{(executors::IExecutor&)strand_1};
+    NExecutors::IntrusiveStrand strand_1{pool};
+    NExecutors::IntrusiveStrand strand_2{(NExecutors::IExecutor&)strand_1};
 
     static const size_t kTasks = 17;
 
     size_t tasks = 0;
 
     for (size_t i = 0; i < kTasks; ++i) {
-        executors::Submit(strand_2, [&tasks] { ++tasks; });
+        NExecutors::Submit(strand_2, [&tasks] { ++tasks; });
     }
 
     pool.WaitIdle();
@@ -227,25 +227,25 @@ TEST(TestStrand, StrandOverStrand) {
 }
 
 TEST(TestStrand, DoNotOccupyThread) {
-    executors::IntrusiveThreadPool pool{1};
+    NExecutors::IntrusiveThreadPool pool{1};
     pool.Start();
 
-    executors::IntrusiveStrand strand{pool};
+    NExecutors::IntrusiveStrand strand{pool};
 
-    executors::Submit(pool, [] { std::this_thread::sleep_for(1s); });
+    NExecutors::Submit(pool, [] { std::this_thread::sleep_for(1s); });
 
     std::atomic<bool> stop_requested{false};
 
     auto snooze = []() { std::this_thread::sleep_for(10ms); };
 
     for (size_t i = 0; i < 100; ++i) {
-        executors::Submit(strand, snooze);
+        NExecutors::Submit(strand, snooze);
     }
 
-    executors::Submit(pool, [&stop_requested] { stop_requested.store(true); });
+    NExecutors::Submit(pool, [&stop_requested] { stop_requested.store(true); });
 
     while (!stop_requested.load()) {
-        executors::Submit(strand, snooze);
+        NExecutors::Submit(strand, snooze);
         std::this_thread::sleep_for(10ms);
     }
 
@@ -253,12 +253,12 @@ TEST(TestStrand, DoNotOccupyThread) {
 }
 
 TEST(TestStrand, NonBlockingSubmit) {
-    executors::IntrusiveThreadPool pool{1};
-    executors::IntrusiveStrand strand{pool};
+    NExecutors::IntrusiveThreadPool pool{1};
+    NExecutors::IntrusiveStrand strand{pool};
 
     pool.Start();
 
-    executors::Submit(strand, [&] {
+    NExecutors::Submit(strand, [&] {
         // Bubble
         std::this_thread::sleep_for(3s);
     });
@@ -267,7 +267,7 @@ TEST(TestStrand, NonBlockingSubmit) {
 
     {
         common::StopWatch stop_watch;
-        executors::Submit(strand, [&] {
+        NExecutors::Submit(strand, [&] {
             // Do nothing
         });
 

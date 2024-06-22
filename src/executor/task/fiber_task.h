@@ -8,7 +8,7 @@
 
 #include <executor/task/task.h>
 
-namespace executors {
+namespace NExecutors {
 
 class FiberTask : public Task {
 public:

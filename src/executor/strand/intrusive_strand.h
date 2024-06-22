@@ -7,13 +7,19 @@
 #include <list>
 #include <mutex>
 
-#include <executor/executor.h>
-#include <components/sync/spinLock.h>
 #include <components/intrusive/list.h>
+#include <components/sync/spinLock.h>
+#include <executor/executor.h>
 
-namespace executors {
+namespace NExecutors {
 
 class IntrusiveStrand : public IExecutor {
+    IExecutor& underlying;
+    NSync::SpinLock spinlock;
+    intrusive::List<TaskBase> tasks;
+
+    std::atomic<bool> is_schedule{false};
+
 public:
     using TaskList = std::list<TaskPtr>;
 
@@ -25,17 +31,10 @@ public:
     IntrusiveStrand(IntrusiveStrand&&) = delete;
     IntrusiveStrand& operator=(IntrusiveStrand&&) = delete;
 
-    void Submit(TaskPtr task) override;
-    void Submit(NExecutors::TaskBase* task) override;
+    void Submit(TaskBase* task) override;
 
 private:
-    IExecutor& underlying;
-    NSync::SpinLock spinlock;
-    intrusive::List<NExecutors::TaskBase> tasks;
-
-    std::atomic<bool> is_schedule{false};
-
     void SubmitInternal();
 };
 
-}  // namespace executors
+}  // namespace NExecutors

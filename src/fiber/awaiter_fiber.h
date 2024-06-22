@@ -15,7 +15,7 @@ class IAwaiter;
 
 class AwaiterFiber final : public NExecutors::TaskBase {
 public:
-    AwaiterFiber(executors::IExecutor* executor, coro::Routine routine,
+    AwaiterFiber(NExecutors::IExecutor* executor, coro::Routine routine,
                  ctx::Buffer&& buffer);
 
     void Schedule();
@@ -27,10 +27,10 @@ public:
 
     static AwaiterFiber* Self();
 
-    executors::IExecutor* GetScheduler();
+    NExecutors::IExecutor* GetScheduler();
 
 private:
-    executors::IExecutor* executor_;
+    NExecutors::IExecutor* executor_;
     coro::StackfullCoroutine fiber_coro_;
     IAwaiter* awaiter_{nullptr};
 };

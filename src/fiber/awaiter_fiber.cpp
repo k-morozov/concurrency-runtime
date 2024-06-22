@@ -18,7 +18,7 @@ thread_local fibers::AwaiterFiber* current_fiber;
 
 namespace fibers {
 
-AwaiterFiber::AwaiterFiber(executors::IExecutor* executor,
+AwaiterFiber::AwaiterFiber(NExecutors::IExecutor* executor,
                            coro::Routine routine, ctx::Buffer&& buffer)
     : executor_(executor), fiber_coro_(std::move(routine), std::move(buffer)) {}
 
@@ -41,7 +41,7 @@ void AwaiterFiber::Run() noexcept {
 
 AwaiterFiber* AwaiterFiber::Self() { return current_fiber; }
 
-executors::IExecutor* AwaiterFiber::GetScheduler() { return executor_; }
+NExecutors::IExecutor* AwaiterFiber::GetScheduler() { return executor_; }
 
 void AwaiterFiber::Suspend(IAwaiter* waiter) {
     assert(waiter);

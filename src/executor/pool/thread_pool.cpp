@@ -8,10 +8,10 @@
 #include <memory>
 #include <thread>
 
-namespace executors {
+namespace NExecutors {
 
 namespace {
-thread_local executors::IExecutor* CurrentPool;
+thread_local ThreadPool* CurrentPool;
 }
 
 std::shared_ptr<ThreadPool> MakeThreadPool(const size_t count) {
@@ -101,6 +101,6 @@ void ThreadPool::Submit(TaskPtr task) {
     [[maybe_unused]] bool status = queue_.Put(std::move(task));
 }
 
-IExecutor* ThreadPool::Current() { return CurrentPool; }
+ThreadPool* ThreadPool::Current() { return CurrentPool; }
 
 }  // namespace executors

@@ -14,7 +14,7 @@
 #include <executor/task/task_base.h>
 #include <components/sync/spinLock.h>
 
-namespace executors {
+namespace NExecutors {
 
 class IntrusiveThreadPool final : public IExecutor {
 public:
@@ -23,9 +23,7 @@ public:
 
     void Start();
 
-    void Submit(TaskPtr /*task*/) override;
-
-    void Submit(NExecutors::TaskBase* task) override;
+    void Submit(TaskBase* task) override;
 
     static IExecutor* Current();
 
@@ -39,8 +37,8 @@ private:
     const size_t workers_count_;
 
     std::vector<std::unique_ptr<std::thread>> workers_;
-    NSync::SpinLock spinlock;
-    intrusive::List<NExecutors::TaskBase> tasks;
+    std::mutex mutex;
+    intrusive::List<TaskBase> tasks;
 
     std::atomic<bool> shutdown_{false};
 

@@ -10,7 +10,7 @@
 #include <go/go.h>
 
 int main() {
-    executors::ThreadPool scheduler{4};
+    NExecutors::ThreadPool scheduler{4};
     scheduler.Start();
 
     constexpr size_t kFibers = 128;

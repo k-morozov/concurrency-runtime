@@ -6,7 +6,7 @@
 int main() {
     std::cout << "Hello, world!" << std::endl;
 
-    auto ex = executors::MakeThreadPool(1);
+    auto ex = NExecutors::MakeThreadPool(1);
 
     fibers::Go(*ex, [](){
         std::cout << "1" << std::endl;

@@ -13,7 +13,7 @@ static const size_t kDefaultCoroBufferSize = 64 * 1024;
 
 namespace fibers {
 
-void Go(executors::IExecutor& scheduler, coro::Routine routine) {
+void Go(NExecutors::IExecutor& scheduler, coro::Routine routine) {
     auto buffer = ctx::Buffer::AllocBytes(kDefaultCoroBufferSize);
     auto* fiber =
         new AwaiterFiber(&scheduler, std::move(routine), std::move(buffer));

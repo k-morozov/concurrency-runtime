@@ -10,7 +10,7 @@
 #include <optional>
 #include <queue>
 
-namespace executors {
+namespace NExecutors {
 
 // UnboundedBlockingQueue
 template <class T>

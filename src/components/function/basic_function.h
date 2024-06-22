@@ -23,6 +23,10 @@ public:
         return invoker->invoke(std::forward<Args...>(args)...);
     }
 
+    explicit operator bool() const {
+        return invoker.operator bool();
+    }
+
 private:
     class function_holder_base {
     public:

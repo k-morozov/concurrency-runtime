@@ -8,11 +8,12 @@
 #include <exception>
 #include <mutex>
 
-namespace executors {
+namespace NExecutors {
 
 class Task;
 using TaskPtr = std::shared_ptr<Task>;
 
+// deprecated
 class Task {
 public:
     virtual ~Task() = default;
