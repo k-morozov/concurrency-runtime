@@ -6,15 +6,14 @@
 
 #include <memory>
 
-#include <executor/manual/manual_executor.h>
+#include <executor/manual/intrusive_manual_executor.h>
 #include <executor/submit.h>
-#include <executor/task/fiber_task.h>
 
 namespace {
 
 class Looper {
 public:
-    explicit Looper(executors::IExecutor& e, size_t iters)
+    explicit Looper(NExecutors::IExecutor& e, size_t iters)
         : executor_(e), iters_left_(iters) {}
 
     void Start() { Submit(); }
@@ -28,40 +27,36 @@ public:
 
 private:
     void Submit() {
-        executors::Submit(executor_, std::make_shared<executors::FiberTask>(
-                                         [this] { Iter(); }));
+        NExecutors::Submit(executor_, [this] { Iter(); });
     }
 
 private:
-    executors::IExecutor& executor_;
+    NExecutors::IExecutor& executor_;
     size_t iters_left_;
 };
 
 class LooperManyTasks {
 public:
-    explicit LooperManyTasks(executors::IExecutor& e, size_t count)
+    explicit LooperManyTasks(NExecutors::IExecutor& e, size_t count)
         : executor_(e), count_(count) {}
 
     void Start() {
-        for (size_t i=0; i<count_; i++) {
+        for (size_t i = 0; i < count_; i++) {
             Submit();
         }
     }
 
-    void Iter() {
-        counter_++;
-    }
+    void Iter() { counter_++; }
 
     size_t GetCount() const { return counter_; }
 
 private:
     void Submit() {
-        executors::Submit(executor_, std::make_shared<executors::FiberTask>(
-                                         [this] { Iter(); }));
+        NExecutors::Submit(executor_, [this] { Iter(); });
     }
 
 private:
-    executors::IExecutor& executor_;
+    NExecutors::IExecutor& executor_;
     const size_t count_;
     size_t counter_{0};
 };
@@ -69,7 +64,7 @@ private:
 }  // namespace
 
 TEST(TestManualExecutor, JustWorks) {
-    executors::ManualExecutor manual;
+    NExecutors::IntrusiveManualExecutor manual;
 
     size_t step = 0;
 
@@ -79,8 +74,7 @@ TEST(TestManualExecutor, JustWorks) {
     ASSERT_FALSE(manual.RunNext());
     ASSERT_EQ(manual.RunAtMost(99), 0u);
 
-    executors::Submit(
-        manual, std::make_shared<executors::FiberTask>([&] { step = 1; }));
+    NExecutors::Submit(manual, [&] { step = 1; });
 
     ASSERT_FALSE(manual.IsEmpty());
     ASSERT_TRUE(manual.NonEmpty());
@@ -88,8 +82,7 @@ TEST(TestManualExecutor, JustWorks) {
 
     ASSERT_EQ(step, 0u);
 
-    executors::Submit(
-        manual, std::make_shared<executors::FiberTask>([&] { step = 2; }));
+    NExecutors::Submit(manual, [&] { step = 2; });
 
     ASSERT_EQ(manual.TaskCount(), 2u);
 
@@ -103,8 +96,7 @@ TEST(TestManualExecutor, JustWorks) {
     ASSERT_TRUE(manual.NonEmpty());
     ASSERT_EQ(manual.TaskCount(), 1u);
 
-    executors::Submit(
-        manual, std::make_shared<executors::FiberTask>([&] { step = 3u; }));
+    NExecutors::Submit(manual, [&] { step = 3u; });
 
     ASSERT_EQ(manual.TaskCount(), 2u);
 
@@ -117,7 +109,7 @@ TEST(TestManualExecutor, JustWorks) {
 }
 
 TEST(TestManualExecutor, RunAtMost1) {
-    executors::ManualExecutor manual;
+    NExecutors::IntrusiveManualExecutor manual;
 
     const size_t all_tasks = 256;
 
@@ -134,7 +126,7 @@ TEST(TestManualExecutor, RunAtMost1) {
 }
 
 TEST(TestManualExecutor, RunAtMost2) {
-    executors::ManualExecutor manual;
+    NExecutors::IntrusiveManualExecutor manual;
 
     const size_t all_tasks = 256;
     size_t remaining_tasks = all_tasks;
@@ -156,7 +148,7 @@ TEST(TestManualExecutor, RunAtMost2) {
 }
 
 TEST(TestManualExecutor, Drain) {
-    executors::ManualExecutor manual;
+    NExecutors::IntrusiveManualExecutor manual;
 
     Looper looper{manual, 117};
     looper.Start();

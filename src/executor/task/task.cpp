@@ -7,7 +7,7 @@
 #include <cassert>
 #include <mutex>
 
-namespace executors {
+namespace NExecutors {
 
 void Task::Cancel() {
     std::lock_guard lock(task_mutex_);

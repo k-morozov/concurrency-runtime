@@ -14,7 +14,7 @@
 using namespace std::chrono_literals;
 
 template <typename T>
-using Queue = executors::UnboundedBlockingQueue<T>;
+using Queue = NExecutors::UnboundedBlockingQueue<T>;
 
 TEST(TestPoolSimple, JustWorks) {
     Queue<int> queue;

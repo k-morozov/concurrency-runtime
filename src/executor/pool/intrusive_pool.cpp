@@ -3,10 +3,10 @@
 //
 #include "intrusive_pool.h"
 
-namespace executors {
+namespace NExecutors {
 
 namespace {
-thread_local executors::IExecutor* CurrentPool;
+thread_local IExecutor* CurrentPool;
 }
 
 IntrusiveThreadPool::IntrusiveThreadPool(size_t count)
@@ -34,11 +34,11 @@ void IntrusiveThreadPool::Start() {
         workers_.push_back(std::make_unique<std::thread>([this] {
             CurrentPool = this;
             while (true) {
-                NExecutors::TaskBase* task{nullptr};
-                std::unique_lock lock(spinlock);
-
-                task = tasks.Pop();
-                lock.unlock();
+                TaskBase* task{nullptr};
+                {
+                    std::lock_guard lock(mutex);
+                    task = tasks.Pop();
+                }
 
                 if (task) {
                     task->Run();
@@ -61,17 +61,13 @@ void IntrusiveThreadPool::Start() {
     }
 }
 
-void IntrusiveThreadPool::Submit(TaskPtr /*task*/) {
-    throw std::runtime_error("not implemented");
-};
-
-void IntrusiveThreadPool::Submit(NExecutors::TaskBase* task) {
+void IntrusiveThreadPool::Submit(TaskBase* task) {
     if (shutdown_.load()) {
         return;
     }
     count_tasks_.fetch_add(1);
 
-    std::lock_guard lock(spinlock);
+    std::lock_guard lock(mutex);
     tasks.Push(task);
 }
 
@@ -93,4 +89,4 @@ void IntrusiveThreadPool::WaitIdle() {
     }
 }
 
-}  // namespace executors
+}  // namespace NExecutors

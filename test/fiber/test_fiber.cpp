@@ -17,13 +17,13 @@ auto Now() { return std::chrono::high_resolution_clock::now(); }
 }  // namespace
 
 TEST(TestFiber, JustWorks1Go) {
-    executors::IntrusiveThreadPool pool{3};
+    NExecutors::IntrusiveThreadPool pool{3};
     pool.Start();
 
     bool done = false;
 
     fibers::Go(pool, [&]() {
-        ASSERT_EQ(executors::IntrusiveThreadPool::Current(), &pool);
+        ASSERT_EQ(NExecutors::IntrusiveThreadPool::Current(), &pool);
         done = true;
     });
 
@@ -33,16 +33,16 @@ TEST(TestFiber, JustWorks1Go) {
 }
 
 TEST(TestFiber, Child) {
-    executors::IntrusiveThreadPool pool{3};
+    NExecutors::IntrusiveThreadPool pool{3};
     pool.Start();
 
     std::atomic<size_t> done{0};
 
     auto init = [&]() {
-        ASSERT_EQ(executors::IntrusiveThreadPool::Current(), &pool);
+        ASSERT_EQ(NExecutors::IntrusiveThreadPool::Current(), &pool);
 
         fibers::Go([&]() {
-            ASSERT_EQ(executors::IntrusiveThreadPool::Current(), &pool);
+            ASSERT_EQ(NExecutors::IntrusiveThreadPool::Current(), &pool);
             ++done;
         });
 
@@ -57,7 +57,7 @@ TEST(TestFiber, Child) {
 }
 
 TEST(TestFiber, RunInParallel) {
-    executors::IntrusiveThreadPool pool{3};
+    NExecutors::IntrusiveThreadPool pool{3};
     pool.Start();
 
     std::atomic<size_t> completed{0};
@@ -80,7 +80,7 @@ TEST(TestFiber, RunInParallel) {
 }
 
 TEST(TestFiber, Yield1) {
-    executors::IntrusiveThreadPool pool{1};
+    NExecutors::IntrusiveThreadPool pool{1};
     pool.Start();
 
     bool done = false;
@@ -88,7 +88,7 @@ TEST(TestFiber, Yield1) {
     fibers::Go(pool, [&] {
         fibers::Yield();
 
-        ASSERT_EQ(executors::IntrusiveThreadPool::Current(), &pool);
+        ASSERT_EQ(NExecutors::IntrusiveThreadPool::Current(), &pool);
         done = true;
     });
 
@@ -97,7 +97,7 @@ TEST(TestFiber, Yield1) {
 }
 
 TEST(TestFiber, Yield2) {
-    executors::IntrusiveThreadPool pool{1};
+    NExecutors::IntrusiveThreadPool pool{1};
 
     enum State : int { Ping = 0, Pong = 1 };
 
@@ -127,7 +127,7 @@ TEST(TestFiber, Yield2) {
 }
 
 TEST(TestFiber, Yield3) {
-    executors::IntrusiveThreadPool pool{4};
+    NExecutors::IntrusiveThreadPool pool{4};
 
     static const size_t kYields = 1024;
 
@@ -146,15 +146,15 @@ TEST(TestFiber, Yield3) {
 }
 
 TEST(TestFiber, TwoPools1) {
-    executors::IntrusiveThreadPool pool_1{4};
-    executors::IntrusiveThreadPool pool_2{4};
+    NExecutors::IntrusiveThreadPool pool_1{4};
+    NExecutors::IntrusiveThreadPool pool_2{4};
 
     pool_1.Start();
     pool_2.Start();
 
-    auto make_tester = [](executors::IntrusiveThreadPool& pool) {
+    auto make_tester = [](NExecutors::IntrusiveThreadPool& pool) {
         return
-            [&pool]() { ASSERT_EQ(executors::IntrusiveThreadPool::Current(), &pool); };
+            [&pool]() { ASSERT_EQ(NExecutors::IntrusiveThreadPool::Current(), &pool); };
     };
 
     fibers::Go(pool_1, make_tester(pool_1));
@@ -165,23 +165,23 @@ TEST(TestFiber, TwoPools1) {
 }
 
 TEST(TestFiber, TwoPools2) {
-    executors::IntrusiveThreadPool pool_1{4};
+    NExecutors::IntrusiveThreadPool pool_1{4};
     pool_1.Start();
 
-    executors::IntrusiveThreadPool pool_2{4};
+    NExecutors::IntrusiveThreadPool pool_2{4};
     pool_2.Start();
 
-    auto make_tester = [](executors::IntrusiveThreadPool& pool) {
+    auto make_tester = [](NExecutors::IntrusiveThreadPool& pool) {
         return [&pool]() {
             static const size_t kIterations = 128;
 
             for (size_t i = 0; i < kIterations; ++i) {
-                ASSERT_EQ(executors::IntrusiveThreadPool::Current(), &pool);
+                ASSERT_EQ(NExecutors::IntrusiveThreadPool::Current(), &pool);
 
                 fibers::Yield();
 
                 fibers::Go(pool, [&pool]() {
-                    ASSERT_EQ(executors::IntrusiveThreadPool::Current(), &pool);
+                    ASSERT_EQ(NExecutors::IntrusiveThreadPool::Current(), &pool);
                 });
             }
         };

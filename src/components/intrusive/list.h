@@ -14,17 +14,11 @@ class Node {
 public:
     using TNode = Node<T>;
 
-    TNode* Next() {
-        return next_;
-    }
+    TNode* Next() { return next_; }
 
-    T* Cast() {
-        return static_cast<T*>(this);
-    }
+    T* Cast() { return static_cast<T*>(this); }
 
-    void LinkAfter(TNode* prev) {
-        prev->next_ = this;
-    }
+    void LinkAfter(TNode* prev) { prev->next_ = this; }
 
 private:
     TNode* next_{nullptr};
@@ -36,9 +30,9 @@ public:
     using Node = Node<T>;
 
     List() = default;
-    ~List() noexcept {
-        assert(IsEmpty());
-    }
+    ~List() noexcept { assert(IsEmpty()); }
+
+    List(const List<T>& o) : size_(o.size_), head_(o.head_), tail_(o.tail_) {}
 
     bool IsEmpty() const { return 0 == size_; }
 

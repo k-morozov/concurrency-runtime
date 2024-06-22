@@ -1,5 +1,4 @@
 fiber_sources = files(
-    'fiber.cpp',
     'awaiter_fiber.cpp',
     'handle/stopped_fiber.cpp',
     'awaiter/suspend.cpp',

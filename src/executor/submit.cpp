@@ -4,10 +4,12 @@
 
 #include "submit.h"
 
-namespace executors {
+#include <executor/task/internal/task_free_function.h>
 
-void Submit(IExecutor& executor, TaskPtr task) {
-    executor.Submit(std::move(task));
+namespace NExecutors {
+
+void Submit(IExecutor& executor, fibers::coro::Routine routine) {
+    executor.Submit(NExecutors::TaskFreeFunction::Make(std::move(routine)));
 }
 
 }  // namespace executors

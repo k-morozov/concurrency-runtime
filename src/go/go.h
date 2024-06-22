@@ -9,7 +9,7 @@
 
 namespace fibers {
 
-void Go(executors::IExecutor& scheduler, coro::Routine routine);
+void Go(NExecutors::IExecutor& scheduler, coro::Routine routine);
 
 void Go(coro::Routine routine);
 
