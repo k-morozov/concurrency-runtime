@@ -11,4 +11,4 @@ namespace NExecutors {
 
 void Submit(IExecutor& executor, fibers::coro::Routine routine);
 
-}  // namespace executors
+}  // namespace NExecutors

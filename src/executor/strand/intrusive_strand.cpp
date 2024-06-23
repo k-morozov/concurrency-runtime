@@ -4,7 +4,6 @@
 
 #include "intrusive_strand.h"
 
-//#include <format>
 #include <memory>
 
 #include <executor/submit.h>
@@ -15,70 +14,51 @@ IntrusiveStrand::IntrusiveStrand(IExecutor& underlying_)
     : underlying(underlying_) {}
 
 void IntrusiveStrand::Submit(TaskBase* task) {
-    assert(task);
-    {
-        std::lock_guard lock(spinlock);
-        tasks.Push(task);
-    }
+    std::lock_guard lock(spinlock);
+    tasks.Push(task);
 
-    PlanTaskFromReadyState();
+    // @todo why plan should be with lock?
+    PlanTask(State::READY);
 }
 
 void IntrusiveStrand::SubmitInternal() {
-    NExecutors::Submit(underlying, [this]() {
-        ChangeStateToRun();
-
-        TaskList scheduled_tasks;
-        {
-            std::lock_guard lock(spinlock);
-//            if (tasks.IsEmpty()) {
-//                throw std::runtime_error(
-//                    std::format("tasks is empty, state={}",
-//                                static_cast<uint32_t>(state.load())));
-//            }
-            std::swap(scheduled_tasks, tasks);
-            assert(tasks.IsEmpty());
-        }
-
-        while (!scheduled_tasks.IsEmpty()) {
-            auto task = scheduled_tasks.Pop();
-            task->Run();
-        }
-
-        std::lock_guard lock(spinlock);
-        if (tasks.IsEmpty()) {
-            ChangeStateToReady();
-            return;
-        }
-
-        ChangeStateToPlan();
-        SubmitInternal();
-    });
+    NExecutors::Submit(underlying, [this]() { RunBatch(); });
 }
 
-void IntrusiveStrand::PlanTaskFromReadyState() {
-    State ready = State::READY;
-    if (state.compare_exchange_strong(ready, State::PLAN)) {
+void IntrusiveStrand::PlanTask(State from) {
+    if (state.compare_exchange_strong(from, State::PLAN)) {
         SubmitInternal();
     }
 }
 
-void IntrusiveStrand::ChangeStateToRun() {
-    State plan = State::PLAN;
-    state.compare_exchange_strong(plan, State::RUNNING);
-    assert(State::PLAN == plan);
+bool IntrusiveStrand::ChangeState(State from, const State to) {
+    return state.compare_exchange_strong(from, to);
 }
 
-void IntrusiveStrand::ChangeStateToReady() {
-    State running = State::RUNNING;
-    state.compare_exchange_strong(running, State::READY);
-    assert(State::RUNNING == running);
-}
+void IntrusiveStrand::RunBatch() {
+    {
+        const bool result = ChangeState(State::PLAN, State::RUNNING);
+        assert(result);
+    }
 
-void IntrusiveStrand::ChangeStateToPlan() {
-    State running = State::RUNNING;
-    state.compare_exchange_strong(running, State::PLAN);
-    assert(State::RUNNING == running);
+    TaskList scheduled_tasks;
+    {
+        std::lock_guard lock(spinlock);
+        assert(!tasks.IsEmpty());
+        std::swap(scheduled_tasks, tasks);
+    }
+
+    while (!scheduled_tasks.IsEmpty()) {
+        auto task = scheduled_tasks.Pop();
+        task->Run();
+    }
+
+    if (IsTasksEmpty()) {
+        const bool result = ChangeState(State::RUNNING, State::READY);
+        assert(result);
+    } else {
+        PlanTask(State::RUNNING);
+    }
 }
 
 }  // namespace NExecutors

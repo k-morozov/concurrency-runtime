@@ -38,7 +38,7 @@ private:
 
     std::vector<std::unique_ptr<std::thread>> workers_;
     std::mutex mutex;
-    intrusive::List<TaskBase> tasks;
+    NComponents::IntrusiveList<TaskBase> tasks;
 
     std::atomic<bool> shutdown_{false};
 

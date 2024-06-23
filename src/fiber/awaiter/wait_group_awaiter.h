@@ -13,7 +13,7 @@ namespace fibers {
 
 template <class W>
 class WaitGroupWaiter : public IAwaiter,
-                        public intrusive::Node<WaitGroupWaiter<W>> {
+                        public NComponents::Node<WaitGroupWaiter<W>> {
 public:
     using Guard = std::unique_lock<typename W::Spinlock>;
 

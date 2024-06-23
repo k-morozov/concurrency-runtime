@@ -2,6 +2,7 @@ test_source_files = [
     'main.cpp',
     'test_unbounded_blocking_queue.cpp',
     'test_basic_function.cpp',
+    'test_intrusive_list.cpp',
 ]
 
 test_components = executable(

@@ -31,7 +31,7 @@ public:
 
 private:
     mutable NSync::SpinLock spinlock;
-    intrusive::List<TaskBase> tasks;
+    NComponents::IntrusiveList<TaskBase> tasks;
     size_t count_tasks{};
 };
 

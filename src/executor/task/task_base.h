@@ -13,7 +13,7 @@ struct ITask {
     virtual void Run() noexcept = 0;
 };
 
-class TaskBase : public ITask, public intrusive::Node<TaskBase> {
+class TaskBase : public ITask, public NComponents::Node<TaskBase> {
 public:
 private:
 };

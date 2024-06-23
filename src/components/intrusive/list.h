@@ -7,7 +7,7 @@
 #include <cassert>
 #include <cstdint>
 
-namespace intrusive {
+namespace NComponents {
 
 template <class T>
 class Node {
@@ -25,14 +25,15 @@ private:
 };
 
 template <class T>
-class List {
+class IntrusiveList {
 public:
     using Node = Node<T>;
 
-    List() = default;
-    ~List() noexcept { assert(IsEmpty()); }
+    IntrusiveList() = default;
+    ~IntrusiveList() noexcept { assert(IsEmpty()); }
 
-    List(const List<T>& o) : size_(o.size_), head_(o.head_), tail_(o.tail_) {}
+    IntrusiveList(const IntrusiveList<T>& o)
+        : size_(o.size_), head_(o.head_), tail_(o.tail_) {}
 
     bool IsEmpty() const { return 0 == size_; }
 
@@ -68,10 +69,12 @@ public:
         return p->Cast();
     }
 
+    std::size_t Size() const { return size_; }
+
 private:
     std::size_t size_{0};
     Node* head_{nullptr};
     Node* tail_{nullptr};
 };
 
-}  // namespace intrusive
+}  // namespace NComponents

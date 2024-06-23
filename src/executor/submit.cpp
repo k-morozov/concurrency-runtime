@@ -9,7 +9,7 @@
 namespace NExecutors {
 
 void Submit(IExecutor& executor, fibers::coro::Routine routine) {
-    executor.Submit(NExecutors::TaskFreeFunction::Make(std::move(routine)));
+    executor.Submit(TaskFreeFunction::Make(std::move(routine)));
 }
 
-}  // namespace executors
+}  // namespace NExecutors

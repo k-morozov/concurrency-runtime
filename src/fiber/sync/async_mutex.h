@@ -29,7 +29,7 @@ public:
 private:
     Spinlock spinlock_;
     bool locked_{false};
-    intrusive::List<Waiter> waiters_;
+    NComponents::IntrusiveList<Waiter> waiters_;
 
     void Park(Waiter* waiter);
 };

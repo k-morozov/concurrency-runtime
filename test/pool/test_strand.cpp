@@ -121,15 +121,15 @@ TEST(TestStrand, ConcurrentStrands) {
     NExecutors::IntrusiveThreadPool pool{16};
     pool.Start();
 
-    static const size_t kStrands = 50;
+    static const size_t kStrands = 128;
 
     std::deque<Robot> robots;
     for (size_t i = 0; i < kStrands; ++i) {
         robots.emplace_back(pool);
     }
 
-    static const size_t kPushes = 25;
-    static const size_t kIterations = 25;
+    static const size_t kPushes = 64;
+    static const size_t kIterations = 128;
 
     for (size_t iteration = 0; iteration < kIterations; ++iteration) {
         for (size_t strand = 0; strand < kStrands; ++strand) {
