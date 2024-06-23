@@ -12,7 +12,7 @@
 namespace fibers {
 
 template <class E>
-class EventWaiter : public IAwaiter, public intrusive::Node<EventWaiter<E>> {
+class EventWaiter : public IAwaiter, public NComponents::Node<EventWaiter<E>> {
 public:
     using Guard = std::unique_lock<typename E::Spinlock>;
 

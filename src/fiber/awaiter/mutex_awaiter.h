@@ -14,7 +14,7 @@ namespace fibers {
 
 template <class M>
 class AsyncMutexWaiter : public IAwaiter,
-                         public intrusive::Node<AsyncMutexWaiter<M>> {
+                         public NComponents::Node<AsyncMutexWaiter<M>> {
 public:
     using Guard = std::unique_lock<typename M::Spinlock>;
 

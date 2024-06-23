@@ -27,7 +27,7 @@ private:
     size_t counter_{0};
     Spinlock spinlock_;
 
-    intrusive::List<Waiter> wg_waiters_;
+    NComponents::IntrusiveList<Waiter> wg_waiters_;
 
     void Park(Waiter* waiter);
 };

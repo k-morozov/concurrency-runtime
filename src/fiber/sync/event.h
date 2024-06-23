@@ -24,7 +24,7 @@ public:
 
 private:
     Spinlock spinlock_;
-    intrusive::List<Waiter> event_waiters_;
+    NComponents::IntrusiveList<Waiter> event_waiters_;
 
     void Park(Waiter* waiter);
 };
