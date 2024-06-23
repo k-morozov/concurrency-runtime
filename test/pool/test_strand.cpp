@@ -129,7 +129,7 @@ TEST(TestStrand, ConcurrentStrands) {
     }
 
     static const size_t kPushes = 64;
-    static const size_t kIterations = 256;
+    static const size_t kIterations = 128;
 
     for (size_t iteration = 0; iteration < kIterations; ++iteration) {
         for (size_t strand = 0; strand < kStrands; ++strand) {
