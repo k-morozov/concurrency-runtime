@@ -10,7 +10,7 @@ thread_local IExecutor* CurrentPool;
 }
 
 IntrusiveThreadPool::IntrusiveThreadPool(size_t count)
-    : workers_count_(count){};
+    : IExecutor(), workers_count_(count){};
 
 IntrusiveThreadPool::~IntrusiveThreadPool() {
     StartShutdown();
