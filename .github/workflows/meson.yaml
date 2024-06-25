@@ -5,4 +5,4 @@ on:
 
 jobs:
   Executor:
-    uses: ./.github/workflows/pool.yaml
+    uses: ./.github/workflows/scheduler.yaml

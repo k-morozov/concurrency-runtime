@@ -11,6 +11,7 @@
 #include <go/go.h>
 
 #include "common/clock.h"
+#include "fiber/sync/async_mutex.h"
 
 using namespace std::chrono_literals;
 
@@ -182,5 +183,35 @@ TEST(TestDistributedPool, Racy) {
         std::cout << "Racy counter value: " << shared_counter << std::endl;
 
         ASSERT_LE(shared_counter.load(), kTasks);
+    });
+}
+
+TEST(TestDistributedPool, ForBench) {
+    NExecutors::DistributedPool pool{4};
+
+    static const size_t kTasks = 1'000;
+
+    pool.Start();
+
+    size_t counter{};
+
+    fibers::Go(pool, [&counter] {
+        fibers::AsyncMutex mutex;
+        fibers::WaitGroup wg;
+
+        wg.Add(kTasks);
+
+        for (size_t i{}; i < kTasks; i++) {
+            fibers::Go([&] {
+                {
+                    std::lock_guard lock(mutex);
+                    counter++;
+                }
+                wg.Done();
+            });
+        }
+
+        wg.Wait();
+        ASSERT_EQ(counter, kTasks);
     });
 }

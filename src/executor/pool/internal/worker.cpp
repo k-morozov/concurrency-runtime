@@ -33,7 +33,7 @@ void Worker::Start() {
                 task->Run();
                 std::lock_guard lock_task(mutex);
                 count_local_tasks.fetch_sub(1);
-                //                empty_tasks_.notify_one();
+                empty_tasks_.notify_one();
             } else {
                 if (shutdown_worker.load()) {
                     break;
@@ -45,6 +45,7 @@ void Worker::Start() {
 
 void Worker::Join() {
     shutdown_worker.store(true);
+    WaitIdle();
     if (thread && thread->joinable()) {
         thread->join();
     }
@@ -59,5 +60,12 @@ void Worker::Push(TaskBase* task) {
 }
 
 IExecutor* Worker::Current() { return CurrentPool; }
+
+void Worker::WaitIdle() {
+    std::unique_lock lock(mutex);
+    while (0 != count_local_tasks.load()) {
+        empty_tasks_.wait(lock);
+    }
+}
 
 }  // namespace NExecutors::internal
