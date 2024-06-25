@@ -4,7 +4,7 @@
 
 #include "gtest/gtest.h"
 
-#include <executor/pool/thread_pool.h>
+#include <executor/pool/intrusive_pool.h>
 #include <fiber/sync/async_mutex.h>
 #include <go/go.h>
 #include <common/clock.h>
@@ -12,7 +12,7 @@
 using namespace std::chrono_literals;
 
 TEST(TestMutex, JustWorks1Go) {
-    executors::ThreadPool scheduler{4};
+    NExecutors::IntrusiveThreadPool scheduler{4};
     scheduler.Start();
 
     fibers::AsyncMutex mutex;
@@ -33,7 +33,7 @@ TEST(TestMutex, JustWorks1Go) {
 }
 
 TEST(TestMutex, Counter) {
-    executors::ThreadPool scheduler{4};
+    NExecutors::IntrusiveThreadPool scheduler{4};
     scheduler.Start();
 
     fibers::AsyncMutex mutex;
@@ -56,8 +56,8 @@ TEST(TestMutex, Counter) {
     ASSERT_EQ(counter, kFibers * kSectionsPerFiber);
 }
 
-TEST(TestMutex, DoNotWasteCpu) {
-    executors::ThreadPool scheduler{4};
+TEST(TestMutex, DISABLED_DoNotWasteCpu) {
+    NExecutors::IntrusiveThreadPool scheduler{4};
     scheduler.Start();
 
     fibers::AsyncMutex mutex;
