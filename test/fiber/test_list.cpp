@@ -6,15 +6,15 @@
 
 #include <components/intrusive/list.h>
 
-struct TestIntrusiveNode : intrusive::Node<TestIntrusiveNode> {
+struct TestIntrusiveNode : NComponents::Node<TestIntrusiveNode> {
     explicit TestIntrusiveNode(size_t n)
-        : intrusive::Node<TestIntrusiveNode>(), number(n) {}
+        : NComponents::Node<TestIntrusiveNode>(), number(n) {}
 
     const size_t number;
 };
 
 TEST(TestList, PopEmpty) {
-    intrusive::List<TestIntrusiveNode> list;
+    NComponents::IntrusiveList<TestIntrusiveNode> list;
     ASSERT_EQ(list.IsEmpty(), true);
     auto* empty = list.Pop();
     ASSERT_EQ(list.IsEmpty(), true);
@@ -24,7 +24,7 @@ TEST(TestList, PopEmpty) {
 TEST(TestList, Push1Node) {
     TestIntrusiveNode node1(1);
 
-    intrusive::List<TestIntrusiveNode> list;
+    NComponents::IntrusiveList<TestIntrusiveNode> list;
 
     list.Push(&node1);
 
@@ -42,7 +42,7 @@ TEST(TestList, PushPopNode1) {
     TestIntrusiveNode node1(1);
     TestIntrusiveNode node2(2);
 
-    intrusive::List<TestIntrusiveNode> list;
+    NComponents::IntrusiveList<TestIntrusiveNode> list;
 
     list.Push(&node1);
     list.Push(&node2);
@@ -62,7 +62,7 @@ TEST(TestList, PushPopNode2) {
     TestIntrusiveNode node1(117);
     TestIntrusiveNode node2(3726);
 
-    intrusive::List<TestIntrusiveNode> list;
+    NComponents::IntrusiveList<TestIntrusiveNode> list;
 
     list.Push(&node1);
 
@@ -81,7 +81,7 @@ TEST(TestList, PushPopNode2) {
 
 TEST(TestList, PushPopNodeMany) {
     std::vector<TestIntrusiveNode> expected;
-    intrusive::List<TestIntrusiveNode> list;
+    NComponents::IntrusiveList<TestIntrusiveNode> list;
 
     constexpr size_t max_count = 3;
 

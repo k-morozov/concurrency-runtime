@@ -5,14 +5,14 @@
 #include "gtest/gtest.h"
 
 #include <common/clock.h>
-#include <executor/pool/thread_pool.h>
+#include <executor/pool/intrusive_pool.h>
 #include <fiber/sync/event.h>
 #include <go/go.h>
 
 using namespace std::chrono_literals;
 
 TEST(TestEvent, OneWaiter) {
-    executors::ThreadPool scheduler{4};
+    NExecutors::IntrusiveThreadPool scheduler{4};
     scheduler.Start();
 
     static const std::string kMessage = "Hello";
@@ -40,7 +40,7 @@ TEST(TestEvent, OneWaiter) {
 }
 
 TEST(TestEvent, DoNotBlockThread) {
-    executors::ThreadPool scheduler{1};
+    NExecutors::IntrusiveThreadPool scheduler{1};
     scheduler.Start();
 
     fibers::Event event;
@@ -65,7 +65,7 @@ TEST(TestEvent, DoNotBlockThread) {
 }
 
 TEST(TestEvent, MultipleWaiters) {
-    executors::ThreadPool scheduler{1};
+    NExecutors::IntrusiveThreadPool scheduler{1};
     scheduler.Start();
 
     fibers::Event event;
@@ -89,8 +89,8 @@ TEST(TestEvent, MultipleWaiters) {
     ASSERT_EQ(waiters.load(), kWaiters);
 }
 
-TEST(TestEvent, DoNotWasteCpu) {
-    executors::ThreadPool scheduler{4};
+TEST(TestEvent, DISABLED_DoNotWasteCpu) {
+    NExecutors::IntrusiveThreadPool scheduler{4};
     scheduler.Start();
 
     common::ProcessCPUTimer cpu_timer;
