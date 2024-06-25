@@ -3,12 +3,29 @@
 //
 #include "gtest/gtest.h"
 
+#include <common/clock.h>
 #include <executor/pool/intrusive_pool.h>
 #include <fiber/sync/wait_group.h>
 #include <go/go.h>
-#include <common/clock.h>
+#include <executor/submit.h>
 
 using namespace std::chrono_literals;
+
+TEST(TestWaitGroup, JustWorks) {
+    NExecutors::IntrusiveThreadPool pool{4};
+
+    pool.Start();
+
+    fibers::WaitGroup wg;
+    wg.Add(1);
+
+    fibers::Go(pool, [&wg] {
+        std::cout << "Hello from thread pool!" << std::endl;
+        wg.Done();
+    });
+
+    wg.Wait();
+}
 
 TEST(TestWaitGroup, OneWaiter) {
     NExecutors::IntrusiveThreadPool scheduler{5};

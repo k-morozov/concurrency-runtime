@@ -11,7 +11,7 @@ test_pool = executable(
     sources : test_source_files,
     dependencies : test_dependencies,
     include_directories : [test_inc, runtime_inc],
-    link_with : [executor, fiber]
+    link_with : [executor, fiber, go]
 )
 
 
