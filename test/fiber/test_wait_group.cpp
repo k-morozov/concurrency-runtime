@@ -5,9 +5,9 @@
 
 #include <common/clock.h>
 #include <executor/pool/intrusive_pool.h>
+#include <executor/submit.h>
 #include <fiber/sync/wait_group.h>
 #include <go/go.h>
-#include <executor/submit.h>
 
 using namespace std::chrono_literals;
 
@@ -16,15 +16,17 @@ TEST(TestWaitGroup, JustWorks) {
 
     pool.Start();
 
-    fibers::WaitGroup wg;
-    wg.Add(1);
+    fibers::Go(pool, [] {
+        fibers::WaitGroup wg;
+        wg.Add(1);
 
-    fibers::Go(pool, [&wg] {
-        std::cout << "Hello from thread pool!" << std::endl;
-        wg.Done();
+        fibers::Go([&wg] {
+            std::cout << "Hello from thread pool!" << std::endl;
+            wg.Done();
+        });
+
+        wg.Wait();
     });
-
-    wg.Wait();
 }
 
 TEST(TestWaitGroup, OneWaiter) {
