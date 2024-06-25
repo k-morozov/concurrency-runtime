@@ -12,14 +12,14 @@
 using namespace std::chrono_literals;
 
 TEST(TestWaitGroup, JustWorks) {
-    NExecutors::IntrusiveThreadPool pool{4};
+    NExecutors::IntrusiveThreadPool scheduler{4};
 
-    pool.Start();
+    scheduler.Start();
 
-    fibers::Go(pool, [] {
-        fibers::WaitGroup wg;
-        wg.Add(1);
+    fibers::WaitGroup wg;
+    wg.Add(1);
 
+    fibers::Go(scheduler, [&wg] {
         fibers::Go([&wg] {
             std::cout << "Hello from thread pool!" << std::endl;
             wg.Done();
@@ -27,6 +27,8 @@ TEST(TestWaitGroup, JustWorks) {
 
         wg.Wait();
     });
+
+    scheduler.WaitIdle();
 }
 
 TEST(TestWaitGroup, OneWaiter) {
