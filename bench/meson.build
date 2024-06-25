@@ -1,7 +1,5 @@
 bench_inc = include_directories('.')
 
-#gbenchmark_dep = benchmark.get_variable('google_benchmark_dep')
-
 bench_source_files = [
     'main.cpp',
     'bench_pool.cpp',
@@ -20,6 +18,3 @@ bench_pool = executable(
     include_directories : [bench_inc, runtime_inc],
     link_with : [executor, fiber, go]
 )
-
-
-test('bench_pool', bench_pool)
