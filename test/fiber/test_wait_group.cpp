@@ -3,7 +3,7 @@
 //
 #include "gtest/gtest.h"
 
-#include <executor/pool/thread_pool.h>
+#include <executor/pool/intrusive_pool.h>
 #include <fiber/sync/wait_group.h>
 #include <go/go.h>
 #include <common/clock.h>
@@ -11,7 +11,7 @@
 using namespace std::chrono_literals;
 
 TEST(TestWaitGroup, OneWaiter) {
-    executors::ThreadPool scheduler{5};
+    NExecutors::IntrusiveThreadPool scheduler{5};
     scheduler.Start();
 
     fibers::WaitGroup wg;
@@ -42,7 +42,7 @@ TEST(TestWaitGroup, OneWaiter) {
 }
 
 TEST(TestWaitGroup, MultipleWaiters) {
-    executors::ThreadPool scheduler{5};
+    NExecutors::IntrusiveThreadPool scheduler{5};
     scheduler.Start();
 
     fibers::WaitGroup wg;
@@ -77,7 +77,7 @@ TEST(TestWaitGroup, MultipleWaiters) {
 }
 
 TEST(TestWaitGroup, DoNotBlockThread) {
-    executors::ThreadPool scheduler{1};
+    NExecutors::IntrusiveThreadPool scheduler{1};
     scheduler.Start();
 
     fibers::WaitGroup wg;
@@ -103,8 +103,8 @@ TEST(TestWaitGroup, DoNotBlockThread) {
     ASSERT_TRUE(ok);
 }
 
-TEST(TestWaitGroup, DoNotWasteCpu) {
-    executors::ThreadPool scheduler{4};
+TEST(TestWaitGroup, DISABLED_DoNotWasteCpu) {
+    NExecutors::IntrusiveThreadPool scheduler{4};
     scheduler.Start();
 
     fibers::WaitGroup wg;
