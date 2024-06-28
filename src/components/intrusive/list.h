@@ -40,6 +40,7 @@ public:
     void Clear() {
         head_ = nullptr;
         tail_ = nullptr;
+        size_ = 0;
     }
 
     void Push(Node* node) {
