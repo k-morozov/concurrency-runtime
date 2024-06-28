@@ -19,6 +19,10 @@ class WaitGroup {
     friend Waiter;
 
 public:
+    ~WaitGroup() {
+        assert(wg_waiters_.IsEmpty());
+    }
+
     void Add(size_t);
     void Done();
     void Wait();

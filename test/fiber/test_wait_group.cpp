@@ -11,21 +11,23 @@
 
 using namespace std::chrono_literals;
 
-TEST(TestWaitGroup, JustWorks) {
+TEST(TestWaitGroup, WaitInThreadThatOwnWg) {
     NExecutors::IntrusiveThreadPool scheduler{4};
 
     scheduler.Start();
 
-    fibers::WaitGroup wg;
-    wg.Add(1);
+    fibers::Go(scheduler, [] {
+        fibers::WaitGroup wg;
+        wg.Add(1);
 
-    fibers::Go(scheduler, [&wg] {
         fibers::Go([&wg] {
-            std::cout << "Hello from thread pool!" << std::endl;
+            std::cout << "before done" << std::endl;
             wg.Done();
+            std::cout << "after done" << std::endl;
         });
 
         wg.Wait();
+        std::cout << "after wait" << std::endl;
     });
 
     scheduler.WaitIdle();
@@ -129,11 +131,8 @@ TEST(TestWaitGroup, DISABLED_DoNotWasteCpu) {
     scheduler.Start();
 
     fibers::WaitGroup wg;
-
     std::atomic<size_t> workers = 0;
-
     common::ProcessCPUTimer cpu_timer;
-
     static const size_t kWorkers = 3;
 
     wg.Add(kWorkers);

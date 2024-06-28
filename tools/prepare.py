@@ -15,7 +15,9 @@ import subprocess
 commands = [
     "sudo apt-get install python3 python3-pip python3-setuptools python3-wheel ninja-build",
     "python3 -m venv ./env/",
+    # "source env/bin/activate",
     "pip3 install --user meson",
+    # "pip3 install meson",
     "sudo bash -c \"$(wget -O - https://apt.llvm.org/llvm.sh)\"",
     "sudo rm /usr/bin/c++",
     "sudo ln -s /usr/bin/clang++-18 /usr/bin/c++",

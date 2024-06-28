@@ -18,10 +18,20 @@ void WaitGroup::Done() {
     Waiter::Guard guard(spinlock_);
     counter_ -= 1;
     if (0 == counter_) {
-        while (!wg_waiters_.IsEmpty()) {
+        bool no_task = wg_waiters_.IsEmpty();
+        guard.unlock();
+
+        if (no_task)
+            return;
+        do {
+            guard.lock();
+
             auto wg_waiter = wg_waiters_.Pop();
+            no_task = wg_waiters_.IsEmpty();
+            guard.unlock();
+
             wg_waiter->Schedule();
-        }
+        } while (!no_task);
     }
 }
 
