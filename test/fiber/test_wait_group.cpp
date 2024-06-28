@@ -17,17 +17,15 @@ TEST(TestWaitGroup, WaitInThreadThatOwnWg) {
     scheduler.Start();
 
     fibers::Go(scheduler, [] {
-        fibers::WaitGroup wg;
-        wg.Add(1);
+        auto* wg = new fibers::WaitGroup();
+        wg->Add(1);
 
-        fibers::Go([&wg] {
-            std::cout << "before done" << std::endl;
-            wg.Done();
-            std::cout << "after done" << std::endl;
+        fibers::Go([wg] {
+            wg->Done();
         });
 
-        wg.Wait();
-        std::cout << "after wait" << std::endl;
+        wg->Wait();
+        delete wg;
     });
 
     scheduler.WaitIdle();

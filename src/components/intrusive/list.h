@@ -37,6 +37,11 @@ public:
 
     bool IsEmpty() const { return 0 == size_; }
 
+    void Clear() {
+        head_ = nullptr;
+        tail_ = nullptr;
+    }
+
     void Push(Node* node) {
         assert(node);
 
