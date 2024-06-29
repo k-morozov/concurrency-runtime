@@ -26,7 +26,7 @@ public:
 
         stopped_handle = handle;
         mutex->Park(this);
-        guard.unlock();
+        guard.release()->unlock();
     }
 
     void Schedule() { stopped_handle.Schedule(); }
