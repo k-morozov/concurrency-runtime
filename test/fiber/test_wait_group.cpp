@@ -3,12 +3,33 @@
 //
 #include "gtest/gtest.h"
 
+#include <common/clock.h>
 #include <executor/pool/intrusive_pool.h>
+#include <executor/submit.h>
 #include <fiber/sync/wait_group.h>
 #include <go/go.h>
-#include <common/clock.h>
 
 using namespace std::chrono_literals;
+
+TEST(TestWaitGroup, WaitInThreadThatOwnWg) {
+    NExecutors::IntrusiveThreadPool scheduler{4};
+
+    scheduler.Start();
+
+    fibers::Go(scheduler, [] {
+        auto* wg = new fibers::WaitGroup();
+        wg->Add(1);
+
+        fibers::Go([wg] {
+            wg->Done();
+        });
+
+        wg->Wait();
+        delete wg;
+    });
+
+    scheduler.WaitIdle();
+}
 
 TEST(TestWaitGroup, OneWaiter) {
     NExecutors::IntrusiveThreadPool scheduler{5};
@@ -108,11 +129,8 @@ TEST(TestWaitGroup, DISABLED_DoNotWasteCpu) {
     scheduler.Start();
 
     fibers::WaitGroup wg;
-
     std::atomic<size_t> workers = 0;
-
     common::ProcessCPUTimer cpu_timer;
-
     static const size_t kWorkers = 3;
 
     wg.Add(kWorkers);

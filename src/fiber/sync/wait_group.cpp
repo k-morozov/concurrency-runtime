@@ -4,8 +4,8 @@
 
 #include "wait_group.h"
 
-#include <fiber/awaiter/wait_group_awaiter.h>
 #include <fiber/awaiter/suspend.h>
+#include <fiber/awaiter/wait_group_awaiter.h>
 
 namespace fibers {
 
@@ -15,13 +15,23 @@ void WaitGroup::Add(const size_t add) {
 }
 
 void WaitGroup::Done() {
-    Waiter::Guard guard(spinlock_);
-    counter_ -= 1;
-    if (0 == counter_) {
-        while (!wg_waiters_.IsEmpty()) {
-            auto wg_waiter = wg_waiters_.Pop();
-            wg_waiter->Schedule();
+    Waiter* wg_waiter{};
+    {
+        Waiter::Guard guard(spinlock_);
+        counter_ -= 1;
+        if (0 == counter_) {
+            wg_waiter = wg_waiters_.Pop();
+            wg_waiters_.Clear();
         }
+    }
+
+    while (wg_waiter) {
+        auto next = wg_waiter->Next();
+        wg_waiter->Schedule();
+        if (next == nullptr) {
+            return;
+        }
+        wg_waiter = next->Cast();
     }
 }
 
@@ -33,8 +43,6 @@ void WaitGroup::Wait() {
     }
 }
 
-void WaitGroup::Park(WaitGroup::Waiter *waiter) {
-    wg_waiters_.Push(waiter);
-}
+void WaitGroup::Park(WaitGroup::Waiter* waiter) { wg_waiters_.Push(waiter); }
 
 }  // namespace fibers

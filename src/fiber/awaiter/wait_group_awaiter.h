@@ -24,7 +24,7 @@ public:
 
         stopped_fiber = fiber;
         wg->Park(this);
-        guard.unlock();
+        guard.release()->unlock();
     }
 
     void Schedule() {
