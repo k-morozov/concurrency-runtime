@@ -5,8 +5,8 @@ on:
 
 env:
   BuidlDir: buildDir
-  CC: /usr/bin/clang-18
-  CXX: /usr/bin/clang++-18
+#  CC: /usr/bin/clang-18
+#  CXX: /usr/bin/clang++-18
 
 jobs:
   release:
@@ -22,9 +22,9 @@ jobs:
           path: ~/.conan2
           key: ${{ runner.os }}-conan-${{ hashFiles('conanfile.txt') }}-executor
       - run: |
-          python tools/prepare.py
+          python tools/configure.py
       - run: |
-          meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype release
+          CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype release
           meson compile -C ${{env.BuidlDir}}
           meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
   debug:
@@ -40,9 +40,9 @@ jobs:
           path: ~/.conan2
           key: ${{ runner.os }}-conan-${{ hashFiles('conanfile.txt') }}-executor
       - run: |
-          python tools/prepare.py
+          python tools/configure.py
       - run: |
-          meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug
+          CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug
           meson compile -C ${{env.BuidlDir}}
           meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
 
@@ -59,9 +59,9 @@ jobs:
           path: ~/.conan2
           key: ${{ runner.os }}-conan-${{ hashFiles('conanfile.txt') }}-executor
       - run: |
-          python tools/prepare.py
+          python tools/configure.py
       - run: |
-          meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug -Db_sanitize=address -Db_lundef=false
+          CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug -Db_sanitize=address -Db_lundef=false
           meson compile -C ${{env.BuidlDir}}
           meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
 
@@ -78,9 +78,9 @@ jobs:
           path: ~/.conan2
           key: ${{ runner.os }}-conan-${{ hashFiles('conanfile.txt') }}-executor
       - run: |
-          python tools/prepare.py
+          python tools/configure.py
       - run: |
-          meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug -Db_sanitize=leak -Db_lundef=false
+          CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug -Db_sanitize=leak -Db_lundef=false
           meson compile -C ${{env.BuidlDir}}
           meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
 
@@ -97,9 +97,9 @@ jobs:
           path: ~/.conan2
           key: ${{ runner.os }}-conan-${{ hashFiles('conanfile.txt') }}-executor
       - run: |
-          python tools/prepare.py
+          python tools/configure.py
       - run: |
-          meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug -Db_sanitize=thread -Db_lundef=false
+          CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug -Db_sanitize=thread -Db_lundef=false
           meson compile -C ${{env.BuidlDir}}
           meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
 
@@ -116,8 +116,8 @@ jobs:
           path: ~/.conan2
           key: ${{ runner.os }}-conan-${{ hashFiles('conanfile.txt') }}-executor
       - run: |
-          python tools/prepare.py
+          python tools/configure.py
       - run: |
-          meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug -Db_sanitize=undefined -Db_lundef=false
+          CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug -Db_sanitize=undefined -Db_lundef=false
           meson compile -C ${{env.BuidlDir}}
           meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
