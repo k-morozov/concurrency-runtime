@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <chrono>
 
 #include <executor/pool/distributed_pool.h>
 #include <executor/pool/intrusive_pool.h>
@@ -11,13 +12,19 @@
 #include <fiber/sync/wait_group.h>
 #include <go/go.h>
 
+using namespace std::chrono_literals;
+
 int main() {
-    NExecutors::IntrusiveThreadPool scheduler{4};
-    scheduler.Start();
+//    NExecutors::IntrusiveThreadPool pool{3};
+//    pool.Start();
 
-    NExecutors::DistributedPool pool{4};
+    NExecutors::DistributedPool pool{3};
 
-    static const size_t kTasks = 1'000'000;
+    static const size_t kTasks = 100'000;
+
+    std::cout << "Wait 20s..." << std::endl;
+    std::this_thread::sleep_for(20s);
+    std::cout << "Start" << std::endl;
 
     pool.Start();
 
