@@ -17,7 +17,7 @@ int main() {
 
     NExecutors::DistributedPool pool{4};
 
-    static const size_t kTasks = 1'000;
+    static const size_t kTasks = 1'000'000;
 
     pool.Start();
 

@@ -19,7 +19,7 @@ void AsyncMutex::Lock() {
 }
 
 void AsyncMutex::Unlock() {
-    Waiter* next_waiter = nullptr;
+    Waiter* next_waiter{};
     {
         Waiter::Guard guard(spinlock_);
         if (waiters_.IsEmpty()) {
