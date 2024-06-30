@@ -15,7 +15,7 @@ import subprocess
 commands = [
     "sudo apt-get install python3 python3-pip python3-setuptools python3-wheel ninja-build",
     "python3 -m venv env",
-    "sudo source env/bin/activate",
+    # "sudo source env/bin/activate",
     "pip install -r requirements.txt",
     # env/bin/conan install . -of=buildDir --build=missing -pr:a=./config/debug_profile
     # "pip3 install --user meson",
