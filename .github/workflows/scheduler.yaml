@@ -5,6 +5,8 @@ on:
 
 env:
   BuidlDir: buildDir
+  CC: /usr/bin/clang-18
+  CXX: /usr/bin/clang++-18
 
 jobs:
   release:
@@ -22,7 +24,7 @@ jobs:
       - run: |
           python tools/prepare.py
       - run: |
-          CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype release
+          meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype release
           meson compile -C ${{env.BuidlDir}}
           meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
   debug:
@@ -40,7 +42,7 @@ jobs:
       - run: |
           python tools/prepare.py
       - run: |
-          CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug
+          meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug
           meson compile -C ${{env.BuidlDir}}
           meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
 
@@ -59,7 +61,7 @@ jobs:
       - run: |
           python tools/prepare.py
       - run: |
-          CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug -Db_sanitize=address -Db_lundef=false
+          meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug -Db_sanitize=address -Db_lundef=false
           meson compile -C ${{env.BuidlDir}}
           meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
 
@@ -78,7 +80,7 @@ jobs:
       - run: |
           python tools/prepare.py
       - run: |
-          CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug -Db_sanitize=leak -Db_lundef=false
+          meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug -Db_sanitize=leak -Db_lundef=false
           meson compile -C ${{env.BuidlDir}}
           meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
 
@@ -97,7 +99,7 @@ jobs:
       - run: |
           python tools/prepare.py
       - run: |
-          CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug -Db_sanitize=thread -Db_lundef=false
+          meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug -Db_sanitize=thread -Db_lundef=false
           meson compile -C ${{env.BuidlDir}}
           meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
 
@@ -116,6 +118,6 @@ jobs:
       - run: |
           python tools/prepare.py
       - run: |
-          CC=clang-18 CXX=clang++-18 meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug -Db_sanitize=undefined -Db_lundef=false
+          meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype debug -Db_sanitize=undefined -Db_lundef=false
           meson compile -C ${{env.BuidlDir}}
           meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
