@@ -26,7 +26,8 @@ commands = [
     "sudo rm /usr/bin/clang++",
     "sudo ln -s /usr/bin/clang++-18 /usr/bin/clang++",
     # "pip install conan",
-    "env/bin/conan install . -of=buildDir --build=missing -pr:a=./config/debug_profile",
+    # "env/bin/conan install . -of=buildDir --build=missing -pr:a=./config/debug_profile",
+    "conan install . -of=buildDir --build=missing -pr:a=./config/debug_profile",
 ]
 
 for cmd in commands:
