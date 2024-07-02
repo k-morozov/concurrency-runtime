@@ -10,8 +10,7 @@
 namespace NComponents {
 
 /**
- * Simple, Fast, and Practical Non-Blocking and Blocking
- * Concurrent Queue Algorithms
+ * Michael-Scott Queue
  */
 template <class T>
 class LockFreeQueue final {
@@ -44,7 +43,8 @@ public:
         tail.store(p);
     }
     ~LockFreeQueue() {
-        while(auto n = TryPop()) {}
+        while (auto n = TryPop()) {
+        }
         auto p = head.load();
         delete p.ptr;
     }
@@ -55,21 +55,24 @@ public:
         NodePointer old_tail{};
         NodePointer old_next{};
 
-        while(true) {
+        while (true) {
             old_tail = tail.load();
             old_next = old_tail.ptr->next.load();
 
             if (old_tail == tail.load()) {
                 if (old_next.ptr == nullptr) {
-                    if (old_tail.ptr->next.compare_exchange_strong(old_next, {new_node, old_next.counter + 1})) {
+                    if (old_tail.ptr->next.compare_exchange_strong(
+                            old_next, {new_node, old_next.counter + 1})) {
                         break;
                     }
                 } else {
-                    tail.compare_exchange_strong(old_tail, {old_next.ptr, old_tail.counter + 1});
+                    tail.compare_exchange_strong(
+                        old_tail, {old_next.ptr, old_tail.counter + 1});
                 }
             }
         }
-        tail.compare_exchange_strong(old_tail, {new_node, old_tail.counter + 1});
+        tail.compare_exchange_strong(old_tail,
+                                     {new_node, old_tail.counter + 1});
     }
 
     std::optional<T> TryPop() {
@@ -88,10 +91,12 @@ public:
                     if (next.ptr == nullptr) {
                         return {};
                     }
-                    tail.compare_exchange_strong(old_tail, {next.ptr, old_tail.counter + 1});
+                    tail.compare_exchange_strong(
+                        old_tail, {next.ptr, old_tail.counter + 1});
                 } else {
                     result.emplace(next.ptr->value);
-                    if (head.compare_exchange_strong(old_head, {next.ptr, old_head.counter + 1})) {
+                    if (head.compare_exchange_strong(
+                            old_head, {next.ptr, old_head.counter + 1})) {
                         break;
                     }
                 }
