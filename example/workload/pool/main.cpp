@@ -22,9 +22,9 @@ int main() {
 
     static const size_t kTasks = 100'000;
 
-    std::cout << "Wait 20s..." << std::endl;
-    std::this_thread::sleep_for(20s);
-    std::cout << "Start" << std::endl;
+//    std::cout << "Wait 20s..." << std::endl;
+//    std::this_thread::sleep_for(20s);
+//    std::cout << "Start" << std::endl;
 
     pool.Start();
 

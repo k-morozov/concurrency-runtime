@@ -25,13 +25,15 @@ void Worker::Start() {
             CurrentPool = ex;
             TaskBase* task{};
             {
-                std::lock_guard lock(mutex);
-                task = local_tasks.Pop();
+                auto res = local_tasks.TryPop();
+                if (res) {
+                    task = res.value();
+                }
             }
 
             if (task) {
                 task->Run();
-                std::lock_guard lock_task(mutex);
+//                std::lock_guard lock_task(mutex);
                 count_local_tasks.fetch_sub(1);
                 empty_tasks_.notify_one();
             } else {
@@ -55,7 +57,6 @@ void Worker::Push(TaskBase* task) {
     if (shutdown_worker.load()) return;
 
     count_local_tasks.fetch_add(1);
-    std::lock_guard lock(mutex);
     local_tasks.Push(task);
 }
 
