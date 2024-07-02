@@ -27,6 +27,7 @@ class LockFreeQueue final {
     };
 
     struct Node {
+        explicit Node(T v) : value(std::move(v)), next{{nullptr, 0}} {}
         T value{};
         std::atomic<NodePointer> next;
     };
@@ -37,18 +38,19 @@ private:
 
 public:
     LockFreeQueue() {
-        Node* dummy = new Node();
+        Node* dummy = new Node(T{});
         NodePointer p{dummy, 0};
-        head = p;
-        tail = p;
+        head.store(p);
+        tail.store(p);
+        assert(head.load() == tail.load());
     }
     ~LockFreeQueue() {
-
+        while(auto n = TryPop()) {
+        }
     }
 
     void Push(T item) {
-        Node* new_node = new Node();
-        new_node->value = std::move(item);
+        Node* new_node = new Node(std::move(item));
 
         NodePointer old_tail{};
         NodePointer old_next{};
@@ -67,7 +69,7 @@ public:
                 }
             }
         }
-        tail.compare_exchange_strong(old_tail, {old_next.ptr, old_tail.counter + 1});
+        tail.compare_exchange_strong(old_tail, {new_node, old_tail.counter + 1});
     }
 
     std::optional<T> TryPop() {

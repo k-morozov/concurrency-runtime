@@ -14,7 +14,7 @@ TEST(TestLockFreeQueue, Empty) {
     ASSERT_FALSE(empty);
 }
 
-TEST(TestLockFreeQueue, DISABLED_JustWorks) {
+TEST(TestLockFreeQueue, JustWorks) {
     NComponents::LockFreeQueue<std::string> stack;
 
     stack.Push("Data");
@@ -24,4 +24,11 @@ TEST(TestLockFreeQueue, DISABLED_JustWorks) {
 
     auto empty = stack.TryPop();
     ASSERT_FALSE(empty);
+}
+
+TEST(TestLockFreeQueue, Dtor) {
+    NComponents::LockFreeQueue<std::string> stack;
+
+    stack.Push("One");
+    stack.Push("Two");
 }
