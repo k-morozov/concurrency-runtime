@@ -13,8 +13,8 @@
 #include <go/go.h>
 
 const size_t CountThreads = std::thread::hardware_concurrency();
-static constexpr size_t kTasks = 10000;
-static constexpr size_t CountIteration = 5;
+static constexpr size_t kTasks = 200'000;
+static constexpr size_t CountIteration = 10;
 
 void bench_logic(NExecutors::IExecutor& pool) {
     size_t counter{};
@@ -48,6 +48,7 @@ static void IntrusiveThreadPool(benchmark::State& state) {
     }
 }
 BENCHMARK(IntrusiveThreadPool)
+    ->Name("IntrusiveThreadPool")
     ->Unit(benchmark::kMillisecond)
     ->Iterations(CountIteration);
 
@@ -59,5 +60,6 @@ static void DistributedPool(benchmark::State& state) {
     }
 }
 BENCHMARK(DistributedPool)
+    ->Name("DistributedPool")
     ->Unit(benchmark::kMillisecond)
     ->Iterations(CountIteration);
