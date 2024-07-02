@@ -3,14 +3,19 @@ test_source_files = [
     'test_unbounded_blocking_queue.cpp',
     'test_basic_function.cpp',
     'test_intrusive_list.cpp',
+    'test_lk_queue.cpp',
 ]
+
+cpp = meson.get_compiler('cpp')
+threads_dep = dependency('threads')
+libatomic_dep = cpp.find_library('atomic', required : true)
 
 test_components = executable(
     'test_components',
     sources : test_source_files,
-    dependencies : test_dependencies,
+    dependencies : [threads_dep, libatomic_dep, test_dependencies],
     include_directories : [test_inc, runtime_inc],
-    link_with : executor,
+    link_with : [executor],
 )
 
 test('test_components', test_components)
