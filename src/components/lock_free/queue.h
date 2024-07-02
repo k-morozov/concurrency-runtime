@@ -42,11 +42,11 @@ public:
         NodePointer p{dummy, 0};
         head.store(p);
         tail.store(p);
-        assert(head.load() == tail.load());
     }
     ~LockFreeQueue() {
-        while(auto n = TryPop()) {
-        }
+        while(auto n = TryPop()) {}
+        auto p = head.load();
+        delete p.ptr;
     }
 
     void Push(T item) {
