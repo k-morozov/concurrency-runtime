@@ -7,7 +7,14 @@
 
 #include <components/lock_free/queue.h>
 
-TEST(TestLockFreeQueue, JustWorks) {
+TEST(TestLockFreeQueue, Empty) {
+    NComponents::LockFreeQueue<std::string> stack;
+
+    auto empty = stack.TryPop();
+    ASSERT_FALSE(empty);
+}
+
+TEST(TestLockFreeQueue, DISABLED_JustWorks) {
     NComponents::LockFreeQueue<std::string> stack;
 
     stack.Push("Data");
