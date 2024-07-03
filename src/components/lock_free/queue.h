@@ -11,6 +11,13 @@ namespace NComponents {
 
 /**
  * Michael-Scott Queue
+ * https://www.cs.rochester.edu/~scott/papers/1996_PODC_queues.pdf
+ * The algorithm implements the queue as a singly-linked list with
+ * Head and Tail pointers. As in Valois’s algorithm, Head
+ * always points to a dummy node, which is the first node in
+ * the list. Tail points to either the last or second to last node
+ * in the list. The algorithm uses compare and swap, with
+ * modification counters to avoid the ABA problem.
  */
 template <class T>
 class LockFreeQueue final {
@@ -66,11 +73,14 @@ public:
                         break;
                     }
                 } else {
+                    // Tail was not pointing to the last node
+                    // Try to swing Tail to the next node
                     tail.compare_exchange_strong(
                         old_tail, {old_next.ptr, old_tail.counter + 1});
                 }
             }
         }
+        // Try to swing Tail to the inserted node
         tail.compare_exchange_strong(old_tail,
                                      {new_node, old_tail.counter + 1});
     }
@@ -94,7 +104,10 @@ public:
                     tail.compare_exchange_strong(
                         old_tail, {next.ptr, old_tail.counter + 1});
                 } else {
+                    // Read value before CAS, otherwise another dequeue might
+                    // free the next node
                     result.emplace(next.ptr->value);
+                    // Try to swing Head to the next node
                     if (head.compare_exchange_strong(
                             old_head, {next.ptr, old_head.counter + 1})) {
                         break;
@@ -103,6 +116,7 @@ public:
             }
         }
 
+        // It is safe now to free the old dummy node
         delete old_head.ptr;
         return result;
     }
