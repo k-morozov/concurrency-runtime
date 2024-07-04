@@ -24,7 +24,7 @@ jobs:
     with:
       target: 'fiber'
 
-  pool:
+  executor:
     uses: ./.github/workflows/target_build_types.yaml
     with:
-      target: 'pool'
+      target: 'executor'
