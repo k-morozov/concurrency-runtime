@@ -1,7 +1,9 @@
 name: Components
 
-on:
-  workflow_call:
+#on:
+#  workflow_call:
+
+on: [push, pull_request]
 
 env:
   BuidlDir: buildDir
@@ -9,18 +11,31 @@ env:
   CXX: /usr/bin/clang++-18
 
 jobs:
-  jobs:
-    runs-on:
-      release:
-        uses: ./.github/workflows/template.yaml
-        with:
-          build_type: 'release'
-          extra_args: ''
-      debug:
-        uses: ./.github/workflows/template.yaml
-        with:
-          build_type: 'debug'
-          extra_args: ''
+  release:
+    uses: ./.github/workflows/template.yaml
+    with:
+      build_type: 'release'
+      extra_args: ''
+
+  debug:
+    uses: ./.github/workflows/template.yaml
+    with:
+      build_type: 'debug'
+      extra_args: ''
+
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#    release:
+#      uses: ./.github/workflows/template.yaml
+#      with:
+#        build_type: 'release'
+#        extra_args: ''
+#    debug:
+#      uses: ./.github/workflows/template.yaml
+#      with:
+#        build_type: 'debug'
+#        extra_args: ''
 
 #  release:
 #    timeout-minutes: 15
