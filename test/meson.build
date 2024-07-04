@@ -8,6 +8,6 @@ test_dependencies = dependency(
 
 subdir('components')
 subdir('pool')
-subdir('ctx')
+subdir('context')
 subdir('coro')
 subdir('fiber')

@@ -3,12 +3,12 @@ test_source_files = [
     'test_ctx.cpp'
 ]
 
-test_ctx = executable(
-    'test_ctx',
+test_context = executable(
+    'test_context',
     sources : test_source_files,
     dependencies : test_dependencies,
     include_directories : [test_inc, runtime_inc],
     link_with : context,
 )
 
-test('test_ctx', test_ctx)
+test('test_context', test_context)
