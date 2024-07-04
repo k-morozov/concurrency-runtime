@@ -1,7 +1,12 @@
-name: Components
+name: Target build types
 
 on:
   workflow_call:
+    inputs:
+      target:
+        description: 'Target for Meson'
+        required: true
+        type: string
 
 jobs:
   debug:
@@ -9,39 +14,39 @@ jobs:
     with:
       build_type: 'debug'
       extra_args: ''
-      target: 'components'
+      target: ${{ inputs.target }}
 
   debug-sanitize-address:
     uses: ./.github/workflows/template.yaml
     with:
       build_type: 'debug'
       extra_args: '-Db_sanitize=address -Db_lundef=false'
-      target: 'components'
+      target: ${{ inputs.target }}
 
   debug-sanitize-leak:
     uses: ./.github/workflows/template.yaml
     with:
       build_type: 'debug'
       extra_args: '-Db_sanitize=leak -Db_lundef=false'
-      target: 'components'
+      target: ${{ inputs.target }}
 
   debug-sanitize-thread:
     uses: ./.github/workflows/template.yaml
     with:
       build_type: 'debug'
       extra_args: '-Db_sanitize=thread -Db_lundef=false'
-      target: 'components'
+      target: ${{ inputs.target }}
 
   debug-sanitize-undefined:
     uses: ./.github/workflows/template.yaml
     with:
       build_type: 'debug'
       extra_args: '-Db_sanitize=undefined -Db_lundef=false'
-      target: 'components'
+      target: ${{ inputs.target }}
 
   release:
     uses: ./.github/workflows/template.yaml
     with:
       build_type: 'release'
       extra_args: ''
-      target: 'components'
+      target: ${{ inputs.target }}

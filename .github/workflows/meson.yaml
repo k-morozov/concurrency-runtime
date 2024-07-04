@@ -4,5 +4,13 @@ on:
   push:
 
 jobs:
-  Components:
-    uses: ./.github/workflows/components.yaml
+  components:
+    uses: ./.github/workflows/target_build_types.yaml
+    with:
+      description: 'Build components lib'
+      target: 'components'
+  context:
+    uses: ./.github/workflows/target_build_types.yaml
+    with:
+      description: 'Build context lib'
+      target: 'context'
