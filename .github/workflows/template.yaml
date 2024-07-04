@@ -1,7 +1,18 @@
-name: Scheduler
+name: Template
 
 on:
   workflow_call:
+    inputs:
+      build_type:
+        description: 'The build type to use with Meson'
+        required: true
+        type: string
+        default: 'release'
+      extra_args:
+        description: 'Extra arguments for Meson'
+        required: false
+        type: string
+        default: ''
 
 env:
   BuidlDir: buildDir
