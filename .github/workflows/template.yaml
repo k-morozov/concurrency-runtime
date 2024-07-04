@@ -40,5 +40,5 @@ jobs:
           python tools/configure.py
       - run: |
           meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype ${{ inputs.build_type }} ${{ inputs.extra_args }}
-          meson compile -C ${{env.BuidlDir}} ${{ inputs.target }}
-          meson test -C ${{env.BuidlDir}} --print-errorlogs --verbose
+          meson compile -C ${{env.BuidlDir}} ${{ inputs.target }} test_${{ inputs.target }}
+          ./${{env.BuidlDir}}/test/${{ inputs.target }}/test_${{ inputs.target }} -print-errorlogs --verbose

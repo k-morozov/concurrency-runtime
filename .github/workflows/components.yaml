@@ -1,14 +1,7 @@
 name: Components
 
-#on:
-#  workflow_call:
-
-on: [push, pull_request]
-
-env:
-  BuidlDir: buildDir
-  CC: /usr/bin/clang-18
-  CXX: /usr/bin/clang++-18
+on:
+  workflow_call:
 
 jobs:
   debug:
