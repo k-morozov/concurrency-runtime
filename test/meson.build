@@ -7,7 +7,7 @@ test_dependencies = dependency(
 )
 
 subdir('components')
-subdir('pool')
+subdir('executor')
 subdir('context')
 subdir('coro')
 subdir('fiber')
