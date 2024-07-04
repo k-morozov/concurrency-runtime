@@ -4,5 +4,5 @@ on:
   push:
 
 jobs:
-  Executor:
-    uses: ./.github/workflows/scheduler.yaml
+  Components:
+    uses: ./.github/workflows/components.yaml
