@@ -3,7 +3,7 @@ on:
 
 jobs:
   components:
-    uses: ./.github/workflows/target_build_types.yaml
+    uses: ./actions/build/action.yaml
     with:
       target: 'components'
 
