@@ -122,7 +122,7 @@ public:
                 } else {
                     // Read value before CAS, otherwise another dequeue might
                     // free the next node
-                    result.emplace(std::move(next_after_old_head.ptr->value));
+                    result.emplace(next_after_old_head.ptr->value);
 
                     // Try to swing Head to the next node
                     if (head.compare_exchange_strong(
