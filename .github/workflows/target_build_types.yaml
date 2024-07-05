@@ -9,45 +9,76 @@ on:
         type: string
 
 jobs:
-  debug:
-    uses: ./.github/workflows/template.yaml
-    with:
-      build_type: 'debug'
-      extra_args: ''
-      target: ${{ inputs.target }}
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config:
+          - build_type: 'debug'
+            extra_args: ''
+            target: value3a
+    name: Target ${{ matrix.config.target }} with ${{ matrix.config.build_type }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Install Dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.conan2
+          key: ${{ runner.os }}-conan-${{ hashFiles('conanfile.txt') }}-executor
+      - run: |
+          python tools/configure.py
+      - run: |
+          meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{env.BuidlDir}} . --buildtype ${{ matrix.config.build_type }} ${{ matrix.config.extra_args }}
+          meson compile -C ${{env.BuidlDir}} ${{ matrix.config.target }} test_${{ matrix.config.target }}
+          ./${{env.BuidlDir}}/test/${{ matrix.config.target }}/test_${{ matrix.config.target }} -print-errorlogs --verbose
 
-  debug-sanitize-address:
-    name: "debug-sanitize-address-name"
-    uses: ./.github/workflows/template.yaml
-    with:
-      build_type: 'debug'
-      extra_args: '-Db_sanitize=address -Db_lundef=false'
-      target: ${{ inputs.target }}
 
-  debug-sanitize-leak:
-    uses: ./.github/workflows/template.yaml
-    with:
-      build_type: 'debug'
-      extra_args: '-Db_sanitize=leak -Db_lundef=false'
-      target: ${{ inputs.target }}
-
-  debug-sanitize-thread:
-    uses: ./.github/workflows/template.yaml
-    with:
-      build_type: 'debug'
-      extra_args: '-Db_sanitize=thread -Db_lundef=false'
-      target: ${{ inputs.target }}
-
-  debug-sanitize-undefined:
-    uses: ./.github/workflows/template.yaml
-    with:
-      build_type: 'debug'
-      extra_args: '-Db_sanitize=undefined -Db_lundef=false'
-      target: ${{ inputs.target }}
-
-  release:
-    uses: ./.github/workflows/template.yaml
-    with:
-      build_type: 'release'
-      extra_args: ''
-      target: ${{ inputs.target }}
+#  debug:
+#    name: "debug"
+#    uses: ./actions/build/template.yaml
+#    with:
+#      build_type: 'debug'
+#      extra_args: ''
+#      target: ${{ inputs.target }}
+#
+#  debug-sanitize-address:
+#    name: "debug-sanitize-address"
+#    uses: ./actions/build/template.yaml
+#    with:
+#      build_type: 'debug'
+#      extra_args: '-Db_sanitize=address -Db_lundef=false'
+#      target: ${{ inputs.target }}
+#
+#  debug-sanitize-leak:
+#    name: "debug-sanitize-leak"
+#    uses: ./actions/build/template.yaml
+#    with:
+#      build_type: 'debug'
+#      extra_args: '-Db_sanitize=leak -Db_lundef=false'
+#      target: ${{ inputs.target }}
+#
+#  debug-sanitize-thread:
+#    name: "debug-sanitize-thread"
+#    uses: ./actions/build/template.yaml
+#    with:
+#      build_type: 'debug'
+#      extra_args: '-Db_sanitize=thread -Db_lundef=false'
+#      target: ${{ inputs.target }}
+#
+#  debug-sanitize-undefined:
+#    name: "debug-sanitize-undefined"
+#    uses: ./actions/build/template.yaml
+#    with:
+#      build_type: 'debug'
+#      extra_args: '-Db_sanitize=undefined -Db_lundef=false'
+#      target: ${{ inputs.target }}
+#
+#  release:
+#    name: "debug-sanitize-release"
+#    uses: ./actions/build/template.yaml
+#    with:
+#      build_type: 'release'
+#      extra_args: ''
+#      target: ${{ inputs.target }}
