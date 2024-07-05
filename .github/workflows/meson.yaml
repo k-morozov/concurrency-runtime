@@ -3,26 +3,26 @@ on:
 
 jobs:
   components:
-    uses: ./.github/workflows/action.yaml
+    uses: ./.github/workflows/build.yaml
     with:
       target: 'components'
 
   context:
-    uses: ./.github/workflows/action.yaml
+    uses: ./.github/workflows/build.yaml
     with:
       target: 'context'
 
   coro:
-    uses: ./.github/workflows/action.yaml
+    uses: ./.github/workflows/build.yaml
     with:
       target: 'coro'
 
   fiber:
-    uses: ./.github/workflows/action.yaml
+    uses: ./.github/workflows/build.yaml
     with:
       target: 'fiber'
 
   executor:
-    uses: ./.github/workflows/action.yaml
+    uses: ./.github/workflows/build.yaml
     with:
       target: 'executor'
