@@ -3,7 +3,8 @@ components_sources = files(
     'queue/blocking_queue.h',
     'intrusive/list.cpp',
     'function/basic_function.h',
-    'lock_free/queue.cpp',
+    'lock_free/classic_ms_queue.cpp',
+    'lock_free/simple_ms_queue.cpp',
 )
 
 cpp = meson.get_compiler('cpp')

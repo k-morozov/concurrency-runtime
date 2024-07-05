@@ -3,7 +3,7 @@ test_source_files = [
     'test_unbounded_blocking_queue.cpp',
     'test_basic_function.cpp',
     'test_intrusive_list.cpp',
-    'test_lk_queue.cpp',
+    'test_ms_queue.cpp',
 ]
 
 cpp = meson.get_compiler('cpp')
