@@ -8,16 +8,38 @@ on:
         required: true
         type: string
 
+env:
+  BuidlDir: buildDir
+  CC: /usr/bin/clang-18
+  CXX: /usr/bin/clang++-18
+
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         config:
-          - build_type: 'debug'
+          - name: 'Debug'
+            build_type: 'debug'
             extra_args: ''
             target: ${{ inputs.target }}
-    name: Target ${{ matrix.config.target }} with ${{ matrix.config.build_type }}
+          - name: 'Debug with address sanitize'
+            build_type: 'debug'
+            extra_args: '-Db_sanitize=address -Db_lundef=false'
+            target: ${{ inputs.target }}
+          - name: 'Debug with leak sanitize'
+            build_type: 'debug'
+            extra_args: '-Db_sanitize=leak -Db_lundef=false'
+            target: ${{ inputs.target }}
+          - name: 'Debug with thread sanitize'
+            build_type: 'debug'
+            extra_args: '-Db_sanitize=thread -Db_lundef=false'
+            target: ${{ inputs.target }}
+          - name: 'Debug with undefined sanitize'
+            build_type: 'debug'
+            extra_args: '-Db_sanitize=undefined -Db_lundef=false'
+            target: ${{ inputs.target }}
+    name: ${{ matrix.config.name }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -34,47 +56,6 @@ jobs:
           meson compile -C ${{env.BuidlDir}} ${{ matrix.config.target }} test_${{ matrix.config.target }}
           ./${{env.BuidlDir}}/test/${{ matrix.config.target }}/test_${{ matrix.config.target }} -print-errorlogs --verbose
 
-
-#  debug:
-#    name: "debug"
-#    uses: ./actions/build/template.yaml
-#    with:
-#      build_type: 'debug'
-#      extra_args: ''
-#      target: ${{ inputs.target }}
-#
-#  debug-sanitize-address:
-#    name: "debug-sanitize-address"
-#    uses: ./actions/build/template.yaml
-#    with:
-#      build_type: 'debug'
-#      extra_args: '-Db_sanitize=address -Db_lundef=false'
-#      target: ${{ inputs.target }}
-#
-#  debug-sanitize-leak:
-#    name: "debug-sanitize-leak"
-#    uses: ./actions/build/template.yaml
-#    with:
-#      build_type: 'debug'
-#      extra_args: '-Db_sanitize=leak -Db_lundef=false'
-#      target: ${{ inputs.target }}
-#
-#  debug-sanitize-thread:
-#    name: "debug-sanitize-thread"
-#    uses: ./actions/build/template.yaml
-#    with:
-#      build_type: 'debug'
-#      extra_args: '-Db_sanitize=thread -Db_lundef=false'
-#      target: ${{ inputs.target }}
-#
-#  debug-sanitize-undefined:
-#    name: "debug-sanitize-undefined"
-#    uses: ./actions/build/template.yaml
-#    with:
-#      build_type: 'debug'
-#      extra_args: '-Db_sanitize=undefined -Db_lundef=false'
-#      target: ${{ inputs.target }}
-#
 #  release:
 #    name: "debug-sanitize-release"
 #    uses: ./actions/build/template.yaml
