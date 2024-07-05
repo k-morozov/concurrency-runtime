@@ -23,40 +23,62 @@ jobs:
             extra_args: ''
             target: ${{ inputs.target }}
             buildDir: 'buildDirDebug'
+            always_run: true
           - name: 'Debug with address sanitize'
             build_type: 'debug'
             extra_args: '-Db_sanitize=address -Db_lundef=false'
             target: ${{ inputs.target }}
             buildDir: 'buildDirDebugAsan'
+            always_run: true
           - name: 'Debug with leak sanitize'
             build_type: 'debug'
             extra_args: '-Db_sanitize=leak -Db_lundef=false'
             target: ${{ inputs.target }}
             buildDir: 'buildDirDebugLsan'
+            always_run: false
           - name: 'Debug with thread sanitize'
             build_type: 'debug'
             extra_args: '-Db_sanitize=thread -Db_lundef=false'
             target: ${{ inputs.target }}
             buildDir: 'buildDirDebugTsan'
+            always_run: true
           - name: 'Debug with undefined sanitize'
             build_type: 'debug'
             extra_args: '-Db_sanitize=undefined -Db_lundef=false'
             target: ${{ inputs.target }}
             buildDir: 'buildDirDebugUsan'
+            always_run: false
 
     name: ${{ matrix.config.name }}
-    steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
         with:
           submodules: true
+
+      - name: Prepare matrix
+        id: prepare_matrix
+        run: echo '::set-output name=matrix::${{ toJson(strategy.matrix.include) }}'
+
+      - name: Filter matrix for event
+        id: filter_matrix
+        run: |
+          event_type=${{ github.event_name }}
+          target_branch=${{ github.ref }}
+          INCLUDE_MATRIX=$(jq '[.[] | select(.always_run or (env.event_type == "push" and env.target_branch == "refs/heads/master") or (env.event_type == "pull_request" and env.target_branch == "refs/heads/master"))]' <<< "${{ steps.prepare_matrix.outputs.matrix }}")
+          echo '::set-output name=matrix::'$INCLUDE_MATRIX
+
       - name: Install Dependencies
         uses: actions/cache@v2
         with:
           path: ~/.conan2
           key: ${{ runner.os }}-conan-${{ hashFiles('conanfile.txt') }}-${{ matrix.config.target }}-${{ matrix.config.buildDir }}
-      - run: |
+
+      - name: Configure Meson
+        run: |
           python tools/configure.py --build_dir ${{ matrix.config.buildDir }}
-      - run: |
+
+      - name: Build and test
+        run: |
           meson setup --native-file ${{ matrix.config.buildDir }}/conan_meson_native.ini ${{ matrix.config.buildDir }} . --buildtype ${{ matrix.config.build_type }} ${{ matrix.config.extra_args }}
           meson compile -C ${{ matrix.config.buildDir }} ${{ matrix.config.target }} test_${{ matrix.config.target }}
           ./${{ matrix.config.buildDir }}/test/${{ matrix.config.target }}/test_${{ matrix.config.target }} -print-errorlogs --verbose
