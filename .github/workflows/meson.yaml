@@ -1,28 +1,30 @@
+name: Build
+
 on:
   push:
 
 jobs:
   components:
-    uses: ./.github/workflows/build.yaml
+    uses: ./.github/workflows/target_build_types.yaml
     with:
       target: 'components'
 
   context:
-    uses: ./.github/workflows/build.yaml
+    uses: ./.github/workflows/target_build_types.yaml
     with:
       target: 'context'
 
   coro:
-    uses: ./.github/workflows/build.yaml
+    uses: ./.github/workflows/target_build_types.yaml
     with:
       target: 'coro'
 
   fiber:
-    uses: ./.github/workflows/build.yaml
+    uses: ./.github/workflows/target_build_types.yaml
     with:
       target: 'fiber'
 
   executor:
-    uses: ./.github/workflows/build.yaml
+    uses: ./.github/workflows/target_build_types.yaml
     with:
       target: 'executor'
