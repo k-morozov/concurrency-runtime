@@ -8,21 +8,21 @@ jobs:
       target: 'components'
 
   context:
-    uses: ./.github/workflows/target_build_types.yaml
+    uses: ./actions/build/action.yaml
     with:
       target: 'context'
 
   coro:
-    uses: ./.github/workflows/target_build_types.yaml
+    uses: ./actions/build/action.yaml
     with:
       target: 'coro'
 
   fiber:
-    uses: ./.github/workflows/target_build_types.yaml
+    uses: ./actions/build/action.yaml
     with:
       target: 'fiber'
 
   executor:
-    uses: ./.github/workflows/target_build_types.yaml
+    uses: ./actions/build/action.yaml
     with:
       target: 'executor'
