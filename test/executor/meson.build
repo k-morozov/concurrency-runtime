@@ -3,11 +3,11 @@ test_source_files = [
     'test_thread_pool.cpp',
     'test_manual_executor.cpp',
     'test_strand.cpp',
-#    'test_distributed_pool.cpp',
+    'test_distributed_pool.cpp',
 ]
 
-test_pool = executable(
-    'test_pool',
+test_executor = executable(
+    'test_executor',
     sources : test_source_files,
     dependencies : test_dependencies,
     include_directories : [test_inc, runtime_inc],
@@ -15,4 +15,4 @@ test_pool = executable(
 )
 
 
-test('test_pool', test_pool)
+test('test_executor', test_executor)

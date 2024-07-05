@@ -58,7 +58,7 @@ TEST(TestLockFreeQueue, TwoQueues) {
     ASSERT_EQ(*queue_2.TryPop(), 11);
 }
 
-TEST(TestLockFreeQueue, Threads) {
+TEST(TestLockFreeQueue, ManyPush) {
     NComponents::LockFreeQueue<size_t> queue;
 
     std::unordered_map<size_t, bool> table;
@@ -98,5 +98,43 @@ TEST(TestLockFreeQueue, Threads) {
     ASSERT_EQ(table.size(), kMaxNumber);
     for(auto [_, v] : table) {
         ASSERT_TRUE(v);
+    }
+}
+
+TEST(TestLockFreeQueue, ManyPop) {
+    NComponents::LockFreeQueue<size_t> queue;
+    constexpr size_t kMaxNumber = 10'000;
+
+    std::jthread th1([&]() {
+        for(size_t i=0; i<kMaxNumber; i++) {
+            queue.Push(i);
+        }
+    });
+
+    std::vector<bool> table(kMaxNumber, false);
+    std::atomic<size_t> counter{};
+
+    std::jthread th2([&]() {
+        while(counter < kMaxNumber) {
+            auto r = queue.TryPop();
+            if (r) {
+                ASSERT_FALSE(table[r.value()]);
+                table[r.value()] = true;
+                counter++;
+            }
+        }
+    });
+
+    while(counter < kMaxNumber) {
+        auto r = queue.TryPop();
+        if (r) {
+            ASSERT_FALSE(table[r.value()]);
+            table[r.value()] = true;
+            counter++;
+        }
+    }
+
+    for(auto status_field : table) {
+        ASSERT_TRUE(status_field);
     }
 }

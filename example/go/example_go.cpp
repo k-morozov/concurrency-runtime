@@ -4,36 +4,19 @@
 #include <go/go.h>
 
 int main() {
-    std::cout << "Hello, world!" << std::endl;
+    auto a1 = new int(1);
 
-    NExecutors::IntrusiveThreadPool pool(1);
-    pool.Start();
+    auto b1 = new int(2);
+    std::cout << "b1=" << b1 << std::endl;
 
-    fibers::Go(pool, [](){
-        std::cout << "1" << std::endl;
+    auto c1 = new int(4);
+    delete c1;
+    delete b1;
 
-        fibers::Go([] {
-            std::cout << "3" << std::endl;
-            fibers::Yield();
-            std::cout << "5" << std::endl;
+    auto b2 = new int(3);
+    std::cout << "b2=" << b2 << std::endl;
+    delete b2;
 
-            fibers::Go([] {
-                std::cout << "7" << std::endl;
-                fibers::Yield();
-                std::cout << "9" << std::endl;
-            });
-
-            fibers::Yield();
-            std::cout << "8" << std::endl;
-        });
-
-        std::cout << "2" << std::endl;
-        fibers::Yield();
-        std::cout << "4" << std::endl;
-        fibers::Yield();
-        std::cout << "6" << std::endl;
-    });
-
-    pool.WaitIdle();
+    delete a1;
     return 0;
 }

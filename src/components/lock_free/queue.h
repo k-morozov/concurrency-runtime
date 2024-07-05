@@ -57,26 +57,35 @@ public:
     }
 
     void Push(T item) {
+        // Allocate a new node from the free list
         Node* new_node = new Node(std::move(item));
 
         NodePointer old_tail{};
-        NodePointer old_next{};
+        NodePointer next_after_old_tail{};
 
         while (true) {
+            // Read Tail.ptr and Tail.count together
             old_tail = tail.load();
-            old_next = old_tail.ptr->next.load();
 
+            // Read next ptr and count fields together
+            next_after_old_tail = old_tail.ptr->next.load();
+
+            // Are tail and next consistent?
             if (old_tail == tail.load()) {
-                if (old_next.ptr == nullptr) {
+                // Was Tail pointing to the last node?
+                if (next_after_old_tail.ptr == nullptr) {
+                    // Try to link node at the end of the linked list
                     if (old_tail.ptr->next.compare_exchange_strong(
-                            old_next, {new_node, old_next.counter + 1})) {
+                            next_after_old_tail,
+                            {new_node, next_after_old_tail.counter + 1})) {
                         break;
                     }
                 } else {
                     // Tail was not pointing to the last node
                     // Try to swing Tail to the next node
                     tail.compare_exchange_strong(
-                        old_tail, {old_next.ptr, old_tail.counter + 1});
+                        old_tail,
+                        {next_after_old_tail.ptr, old_tail.counter + 1});
                 }
             }
         }
@@ -94,22 +103,31 @@ public:
         while (true) {
             old_head = head.load();
             old_tail = tail.load();
-            NodePointer next = old_head.ptr->next;
+            NodePointer next_after_old_head = old_head.ptr->next;
 
+            // Are head, tail, and next consistent?
             if (old_head == head.load()) {
+                //  Is queue empty or Tail falling behind?
                 if (old_head.ptr == old_tail.ptr) {
-                    if (next.ptr == nullptr) {
+                    // Is queue empty?
+                    if (next_after_old_head.ptr == nullptr) {
                         return {};
                     }
+
+                    // Tail is falling behind. Try to advance it
                     tail.compare_exchange_strong(
-                        old_tail, {next.ptr, old_tail.counter + 1});
+                        old_tail,
+                        {next_after_old_head.ptr, old_tail.counter + 1});
+
                 } else {
                     // Read value before CAS, otherwise another dequeue might
                     // free the next node
-                    result.emplace(next.ptr->value);
+                    result.emplace(next_after_old_head.ptr->value);
+
                     // Try to swing Head to the next node
                     if (head.compare_exchange_strong(
-                            old_head, {next.ptr, old_head.counter + 1})) {
+                            old_head,
+                            {next_after_old_head.ptr, old_head.counter + 1})) {
                         break;
                     }
                 }

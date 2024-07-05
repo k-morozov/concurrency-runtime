@@ -4,5 +4,27 @@ on:
   push:
 
 jobs:
-  Executor:
-    uses: ./.github/workflows/scheduler.yaml
+  components:
+    uses: ./.github/workflows/target_build_types.yaml
+    with:
+      target: 'components'
+
+  context:
+    uses: ./.github/workflows/target_build_types.yaml
+    with:
+      target: 'context'
+
+  coro:
+    uses: ./.github/workflows/target_build_types.yaml
+    with:
+      target: 'coro'
+
+  fiber:
+    uses: ./.github/workflows/target_build_types.yaml
+    with:
+      target: 'fiber'
+
+  executor:
+    uses: ./.github/workflows/target_build_types.yaml
+    with:
+      target: 'executor'
