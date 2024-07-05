@@ -57,7 +57,7 @@ jobs:
       - run: |
           python tools/configure.py --build_dir ${{ matrix.config.buildDir }}
       - run: |
-          meson setup --native-file ${{env.BuidlDir}}/conan_meson_native.ini ${{ matrix.config.buildDir }} . --buildtype ${{ matrix.config.build_type }} ${{ matrix.config.extra_args }}
+          meson setup --native-file ${{ matrix.config.buildDir }}/conan_meson_native.ini ${{ matrix.config.buildDir }} . --buildtype ${{ matrix.config.build_type }} ${{ matrix.config.extra_args }}
           meson compile -C ${{ matrix.config.buildDir }} ${{ matrix.config.target }} test_${{ matrix.config.target }}
           ./${{ matrix.config.buildDir }}/test/${{ matrix.config.target }}/test_${{ matrix.config.target }} -print-errorlogs --verbose
 
