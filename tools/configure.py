@@ -2,7 +2,7 @@ import argparse
 import subprocess
 
 parser = argparse.ArgumentParser(description='Run a series of commands for setting up the environment.')
-parser.add_argument('build_dir', type=str, help='Directory for build output')
+parser.add_argument('--build_dir', type=str, help='Directory for build output')
 
 args = parser.parse_args()
 build_dir = args.build_dir
