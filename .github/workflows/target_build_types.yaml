@@ -12,7 +12,6 @@ jobs:
   debug:
     uses: ./.github/workflows/template.yaml
     with:
-      name: "debug"
       build_type: 'debug'
       extra_args: ''
       target: ${{ inputs.target }}
@@ -21,7 +20,6 @@ jobs:
     name: "debug-sanitize-address-name"
     uses: ./.github/workflows/template.yaml
     with:
-      name: "debug-sanitize-address-name-with"
       build_type: 'debug'
       extra_args: '-Db_sanitize=address -Db_lundef=false'
       target: ${{ inputs.target }}
