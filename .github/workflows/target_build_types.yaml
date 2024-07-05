@@ -16,7 +16,7 @@ jobs:
         config:
           - build_type: 'debug'
             extra_args: ''
-            target: value3a
+            target: ${{ inputs.target }}
     name: Target ${{ matrix.config.target }} with ${{ matrix.config.build_type }}
     steps:
       - uses: actions/checkout@v2
