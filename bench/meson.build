@@ -15,6 +15,6 @@ bench_pool = executable(
     'bench_pool',
     sources : bench_source_files,
     dependencies : bench_dependencies,
-    include_directories : [bench_inc, runtime_inc],
+    include_directories : [bench_inc, root_src_dir],
     link_with : [executor, fiber, go]
 )

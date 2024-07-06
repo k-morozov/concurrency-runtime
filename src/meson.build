@@ -1,4 +1,4 @@
-runtime_inc = include_directories('.')
+root_src_dir = include_directories('.')
 
 subdir('components')
 subdir('context')

@@ -4,14 +4,14 @@
 
 #pragma once
 
-#include <optional>
 #include <mutex>
+#include <optional>
 #include <thread>
 
-#include <executor/task/task_base.h>
 #include <components/intrusive/list.h>
+#include <components/lock_free/simple_ms_queue.h>
 #include <executor/executor.h>
-#include <components/lock_free/queue.h>
+#include <executor/task/task_base.h>
 
 namespace NExecutors::internal {
 
@@ -19,7 +19,7 @@ class Worker final {
     IExecutor* ex;
     std::optional<std::thread> thread;
 
-    NComponents::LockFreeQueue<TaskBase*> local_tasks;
+    NComponents::SimpleMSQueue<TaskBase*> local_tasks;
     std::mutex mutex;
 
     std::atomic<bool> shutdown_worker{false};

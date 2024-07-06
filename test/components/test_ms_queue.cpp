@@ -6,17 +6,21 @@
 #include <thread>
 #include <unordered_map>
 
-#include <components/lock_free/queue.h>
+//#include <components/lock_free/classic_ms_queue.h>
+#include <components/lock_free/simple_ms_queue.h>
+
+template<class T>
+using Queue = NComponents::SimpleMSQueue<T>;
 
 TEST(TestLockFreeQueue, Empty) {
-    NComponents::LockFreeQueue<std::string> stack;
+    Queue<std::string> stack;
 
     auto empty = stack.TryPop();
     ASSERT_FALSE(empty);
 }
 
 TEST(TestLockFreeQueue, JustWorks) {
-    NComponents::LockFreeQueue<std::string> stack;
+    Queue<std::string> stack;
 
     stack.Push("Data");
     auto item = stack.TryPop();
@@ -28,14 +32,14 @@ TEST(TestLockFreeQueue, JustWorks) {
 }
 
 TEST(TestLockFreeQueue, Dtor) {
-    NComponents::LockFreeQueue<std::string> stack;
+    Queue<std::string> stack;
 
     stack.Push("One");
     stack.Push("Two");
 }
 
 TEST(TestLockFreeQueue, FIFO) {
-    NComponents::LockFreeQueue<int> stack;
+    Queue<int> stack;
 
     stack.Push(1);
     stack.Push(2);
@@ -49,8 +53,8 @@ TEST(TestLockFreeQueue, FIFO) {
 }
 
 TEST(TestLockFreeQueue, TwoQueues) {
-    NComponents::LockFreeQueue<int> queue_1;
-    NComponents::LockFreeQueue<int> queue_2;
+    Queue<int> queue_1;
+    Queue<int> queue_2;
 
     queue_1.Push(3);
     queue_2.Push(11);
@@ -59,7 +63,7 @@ TEST(TestLockFreeQueue, TwoQueues) {
 }
 
 TEST(TestLockFreeQueue, ManyPush) {
-    NComponents::LockFreeQueue<size_t> queue;
+    Queue<size_t> queue;
 
     std::unordered_map<size_t, bool> table;
     constexpr size_t kMaxNumber = 10'000;
@@ -102,37 +106,50 @@ TEST(TestLockFreeQueue, ManyPush) {
 }
 
 TEST(TestLockFreeQueue, ManyPop) {
-    NComponents::LockFreeQueue<size_t> queue;
+    Queue<size_t> queue;
     constexpr size_t kMaxNumber = 10'000;
 
     std::jthread th1([&]() {
+        NComponents::RegisterThread();
         for(size_t i=0; i<kMaxNumber; i++) {
             queue.Push(i);
         }
+        NComponents::UnregisterThread();
     });
 
     std::vector<bool> table(kMaxNumber, false);
     std::atomic<size_t> counter{};
+    std::mutex m;
 
     std::jthread th2([&]() {
+        NComponents::RegisterThread();
         while(counter < kMaxNumber) {
             auto r = queue.TryPop();
             if (r) {
-                ASSERT_FALSE(table[r.value()]);
-                table[r.value()] = true;
+                {
+                    std::lock_guard lock(m);
+                    ASSERT_FALSE(table[r.value()]);
+                    table[r.value()] = true;
+                }
                 counter++;
             }
         }
+        NComponents::UnregisterThread();
     });
 
+    NComponents::RegisterThread();
     while(counter < kMaxNumber) {
         auto r = queue.TryPop();
         if (r) {
-            ASSERT_FALSE(table[r.value()]);
-            table[r.value()] = true;
+            {
+                std::lock_guard lock(m);
+                ASSERT_FALSE(table[r.value()]);
+                table[r.value()] = true;
+            }
             counter++;
         }
     }
+    NComponents::UnregisterThread();
 
     for(auto status_field : table) {
         ASSERT_TRUE(status_field);

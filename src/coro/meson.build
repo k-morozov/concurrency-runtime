@@ -4,6 +4,6 @@ coro_sources = files(
 )
 coro = library('coro',
                coro_sources,
-               include_directories : [runtime_inc],
+               include_directories : [root_src_dir],
                link_with : [context, components],
 )

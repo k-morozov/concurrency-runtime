@@ -531,7 +531,7 @@
 <text  x="17.45" y="783.5" ></text>
 </g>
 <g >
-<title>NComponents::LockFreeQueue&lt;NExecutors::TaskBase*&gt;::TryPop (14,398,700 samples, 0.53%)</title><rect x="516.5" y="837" width="6.2" height="15.0" fill="rgb(231,123,29)" rx="2" ry="2" />
+<title>NComponents::ClassicMSQueue&lt;NExecutors::TaskBase*&gt;::TryPop (14,398,700 samples, 0.53%)</title><rect x="516.5" y="837" width="6.2" height="15.0" fill="rgb(231,123,29)" rx="2" ry="2" />
 <text  x="519.46" y="847.5" ></text>
 </g>
 <g >
@@ -1047,7 +1047,7 @@
 <text  x="1182.11" y="799.5" ></text>
 </g>
 <g >
-<title>std::atomic&lt;NComponents::LockFreeQueue&lt;NExecutors::TaskBase*&gt;::NodePointer&gt;::load (179,164,582 samples, 6.56%)</title><rect x="843.2" y="789" width="77.4" height="15.0" fill="rgb(242,171,41)" rx="2" ry="2" />
+<title>std::atomic&lt;NComponents::ClassicMSQueue&lt;NExecutors::TaskBase*&gt;::NodePointer&gt;::load (179,164,582 samples, 6.56%)</title><rect x="843.2" y="789" width="77.4" height="15.0" fill="rgb(242,171,41)" rx="2" ry="2" />
 <text  x="846.20" y="799.5" >std::ato..</text>
 </g>
 <g >
@@ -1439,7 +1439,7 @@
 <text  x="1188.79" y="879.5" ></text>
 </g>
 <g >
-<title>NComponents::LockFreeQueue&lt;NExecutors::TaskBase*&gt;::NodePointer::operator== (38,903,677 samples, 1.43%)</title><rect x="592.6" y="805" width="16.8" height="15.0" fill="rgb(223,84,20)" rx="2" ry="2" />
+<title>NComponents::ClassicMSQueue&lt;NExecutors::TaskBase*&gt;::NodePointer::operator== (38,903,677 samples, 1.43%)</title><rect x="592.6" y="805" width="16.8" height="15.0" fill="rgb(223,84,20)" rx="2" ry="2" />
 <text  x="595.60" y="815.5" ></text>
 </g>
 <g >
@@ -2043,8 +2043,8 @@
 <text  x="1181.57" y="879.5" ></text>
 </g>
 <g >
-<title>NComponents::LockFreeQueue&lt;NExecutors::TaskBase*&gt;::TryPop (1,045,467,243 samples, 38.30%)</title><rect x="547.5" y="821" width="452.0" height="15.0" fill="rgb(231,123,29)" rx="2" ry="2" />
-<text  x="550.54" y="831.5" >NComponents::LockFreeQueue&lt;NExecutors::TaskBase*&gt;::TryPop</text>
+<title>NComponents::ClassicMSQueue&lt;NExecutors::TaskBase*&gt;::TryPop (1,045,467,243 samples, 38.30%)</title><rect x="547.5" y="821" width="452.0" height="15.0" fill="rgb(231,123,29)" rx="2" ry="2" />
+<text  x="550.54" y="831.5" >NComponents::ClassicMSQueue&lt;NExecutors::TaskBase*&gt;::TryPop</text>
 </g>
 <g >
 <title>entry_SYSCALL_64_after_hwframe (1,352,058 samples, 0.05%)</title><rect x="515.7" y="869" width="0.6" height="15.0" fill="rgb(218,63,15)" rx="2" ry="2" />
@@ -2099,7 +2099,7 @@
 <text  x="210.19" y="735.5" ></text>
 </g>
 <g >
-<title>std::atomic&lt;NComponents::LockFreeQueue&lt;NExecutors::TaskBase*&gt;::NodePointer&gt;::load (387,239,925 samples, 14.19%)</title><rect x="659.4" y="805" width="167.4" height="15.0" fill="rgb(242,171,41)" rx="2" ry="2" />
+<title>std::atomic&lt;NComponents::ClassicMSQueue&lt;NExecutors::TaskBase*&gt;::NodePointer&gt;::load (387,239,925 samples, 14.19%)</title><rect x="659.4" y="805" width="167.4" height="15.0" fill="rgb(242,171,41)" rx="2" ry="2" />
 <text  x="662.41" y="815.5" >std::atomic&lt;NComponen..</text>
 </g>
 <g >
@@ -2291,7 +2291,7 @@
 <text  x="261.51" y="655.5" ></text>
 </g>
 <g >
-<title>std::atomic&lt;NComponents::LockFreeQueue&lt;NExecutors::TaskBase*&gt;::NodePointer&gt;::operator NComponents::LockFreeQueue&lt;NExecutors::TaskBase*&gt;::NodePointer (6,028,695 samples, 0.22%)</title><rect x="1032.1" y="821" width="2.6" height="15.0" fill="rgb(220,69,16)" rx="2" ry="2" />
+<title>std::atomic&lt;NComponents::ClassicMSQueue&lt;NExecutors::TaskBase*&gt;::NodePointer&gt;::operator NComponents::ClassicMSQueue&lt;NExecutors::TaskBase*&gt;::NodePointer (6,028,695 samples, 0.22%)</title><rect x="1032.1" y="821" width="2.6" height="15.0" fill="rgb(220,69,16)" rx="2" ry="2" />
 <text  x="1035.12" y="831.5" ></text>
 </g>
 <g >
@@ -2911,7 +2911,7 @@
 <text  x="1145.50" y="767.5" ></text>
 </g>
 <g >
-<title>std::atomic&lt;NComponents::LockFreeQueue&lt;NExecutors::TaskBase*&gt;::NodePointer&gt;::operator NComponents::LockFreeQueue&lt;NExecutors::TaskBase*&gt;::NodePointer (217,095,080 samples, 7.95%)</title><rect x="826.8" y="805" width="93.8" height="15.0" fill="rgb(220,69,16)" rx="2" ry="2" />
+<title>std::atomic&lt;NComponents::ClassicMSQueue&lt;NExecutors::TaskBase*&gt;::NodePointer&gt;::operator NComponents::ClassicMSQueue&lt;NExecutors::TaskBase*&gt;::NodePointer (217,095,080 samples, 7.95%)</title><rect x="826.8" y="805" width="93.8" height="15.0" fill="rgb(220,69,16)" rx="2" ry="2" />
 <text  x="829.80" y="815.5" >std::atomic..</text>
 </g>
 <g >
@@ -3419,7 +3419,7 @@
 <text  x="1175.73" y="895.5" ></text>
 </g>
 <g >
-<title>std::atomic&lt;NComponents::LockFreeQueue&lt;NExecutors::TaskBase*&gt;::NodePointer&gt;::load (66,666,324 samples, 2.44%)</title><rect x="1003.3" y="821" width="28.8" height="15.0" fill="rgb(242,171,41)" rx="2" ry="2" />
+<title>std::atomic&lt;NComponents::ClassicMSQueue&lt;NExecutors::TaskBase*&gt;::NodePointer&gt;::load (66,666,324 samples, 2.44%)</title><rect x="1003.3" y="821" width="28.8" height="15.0" fill="rgb(242,171,41)" rx="2" ry="2" />
 <text  x="1006.30" y="831.5" >st..</text>
 </g>
 <g >
@@ -3947,7 +3947,7 @@
 <text  x="1178.91" y="719.5" ></text>
 </g>
 <g >
-<title>NComponents::LockFreeQueue&lt;NExecutors::TaskBase*&gt;::NodePointer::operator== (13,940,144 samples, 0.51%)</title><rect x="541.5" y="821" width="6.0" height="15.0" fill="rgb(223,84,20)" rx="2" ry="2" />
+<title>NComponents::ClassicMSQueue&lt;NExecutors::TaskBase*&gt;::NodePointer::operator== (13,940,144 samples, 0.51%)</title><rect x="541.5" y="821" width="6.0" height="15.0" fill="rgb(223,84,20)" rx="2" ry="2" />
 <text  x="544.51" y="831.5" ></text>
 </g>
 <g >
