@@ -7,7 +7,9 @@
 #include <unordered_set>
 #include <set>
 
-namespace NComponents::detail {
+namespace NComponents {
+
+namespace {
 
 struct ThreadState {
     std::atomic<void*>* ptr{};
@@ -16,7 +18,7 @@ struct ThreadState {
 std::mutex thread_lock;
 std::unordered_set<ThreadState*> threads;
 
-namespace detail {
+}
 
 thread_local std::atomic<void*> hazard_ptr{};
 
@@ -62,11 +64,9 @@ void ScanFreeList() {
     }
 }
 
-}  // namespace detail
-
 void RegisterThread() {
     std::lock_guard g(thread_lock);
-    threads.insert(new ThreadState{.ptr = &detail::hazard_ptr});
+    threads.insert(new ThreadState{.ptr = &hazard_ptr});
 }
 
 void UnregisterThread() {
@@ -74,7 +74,7 @@ void UnregisterThread() {
 
     ThreadState* state_for_current_thread{nullptr};
     for (auto& state : threads) {
-        if (state->ptr == &detail::hazard_ptr) {
+        if (state->ptr == &hazard_ptr) {
             state_for_current_thread = state;
             threads.erase(state);
             break;
@@ -85,8 +85,8 @@ void UnregisterThread() {
 
     if (threads.empty()) {
         g.unlock();
-        detail::ScanFreeList();
+        ScanFreeList();
     }
 }
 
-}  // namespace NComponents::detail
+}  // namespace NComponents
