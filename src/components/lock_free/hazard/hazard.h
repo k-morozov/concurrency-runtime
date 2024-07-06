@@ -52,10 +52,10 @@ void Retire(T* value, Deleter deleter = {}) {
     if (!value) {
         return;
     }
-    auto* retire = new RetirePtr{
-        .value = value,
-        .deleter = [value, d = std::move(deleter)] { d(value); },
-        .next = free_list.load()};
+    auto* retire =
+        new RetirePtr{.value = value,
+                      .deleter = [value, d = std::move(deleter)] { d(value); },
+                      .next = free_list.load()};
     while (!free_list.compare_exchange_weak(retire->next, retire)) {
     }
 

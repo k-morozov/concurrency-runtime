@@ -72,7 +72,6 @@ public:
 
     std::optional<T> TryPop() {
         while (true) {
-//            Node* old_head = head.load();
             Node* old_head = Acquire(&head);
 
             if (old_head->next.load() == nullptr) {

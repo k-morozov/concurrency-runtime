@@ -4,8 +4,8 @@
 
 #include "hazard.h"
 
-#include <unordered_set>
 #include <set>
+#include <unordered_set>
 
 namespace NComponents {
 
@@ -18,7 +18,7 @@ struct ThreadState {
 std::mutex thread_lock;
 std::unordered_set<ThreadState*> threads;
 
-}
+}  // namespace
 
 thread_local std::atomic<void*> hazard_ptr{};
 
