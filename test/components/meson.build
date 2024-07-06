@@ -14,7 +14,7 @@ test_components = executable(
     'test_components',
     sources : test_source_files,
     dependencies : [threads_dep, libatomic_dep, test_dependencies],
-    include_directories : [test_inc, runtime_inc],
+    include_directories : [test_inc, root_src_dir],
     link_with : [executor],
 )
 

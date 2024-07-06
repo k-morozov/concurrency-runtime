@@ -8,6 +8,6 @@ fiber_sources = files(
 )
 fiber = library('fiber',
                 fiber_sources,
-                include_directories : [runtime_inc],
+                include_directories : [root_src_dir],
                 link_with : [coro, context, executor, components],
 )

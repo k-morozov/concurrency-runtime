@@ -4,7 +4,8 @@
 
 #include "worker.h"
 
-#include "executor.h"
+#include <executor/executor.h>
+#include <components/lock_free/hazard/hazard.h>
 
 namespace NExecutors::internal {
 
@@ -21,6 +22,8 @@ Worker::~Worker() {
 
 void Worker::Start() {
     thread.emplace(std::thread([this]() {
+        NComponents::RegisterThread();
+
         while (true) {
             CurrentPool = ex;
             TaskBase* task{};
@@ -42,6 +45,8 @@ void Worker::Start() {
                 }
             }
         }
+
+        NComponents::UnregisterThread();
     }));
 }
 

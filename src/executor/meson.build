@@ -17,7 +17,7 @@ libatomic_dep = cpp.find_library('atomic', required : true)
 executor = library('executor',
                    executor_sources,
                    install : true,
-                   include_directories : [runtime_inc],
+                   include_directories : [root_src_dir],
                    dependencies : [threads_dep, libatomic_dep],
                    link_with : [context, components],
 )

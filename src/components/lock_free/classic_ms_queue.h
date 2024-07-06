@@ -7,10 +7,15 @@
 #include <atomic>
 #include <optional>
 
+#include <components/lock_free/hazard/hazard.h>
+
 namespace NComponents {
 
 /**
  * Michael-Scott Queue
+ *
+ * Pseudocode from article:
+ * https://web.archive.org/web/20190904222628/http://www.cs.rochester.edu/research/synchronization/pseudocode/queues.html
  *
  * The algorithm implements the queue as a singly-linked list with
  * Head and Tail pointers. As in Valois’s algorithm, Head
@@ -18,6 +23,13 @@ namespace NComponents {
  * the list. Tail points to either the last or second to last node
  * in the list. The algorithm uses compare and swap, with
  * modification counters to avoid the ABA problem.
+ *
+ * Note: It depends for memory management on a type-preserving
+ * allocator that never reuses a queue node as a different type of object,
+ * and never returns memory to the operating system.
+ * If this is unacceptable in a given context, the code can be modified to
+ * incorporate hazard pointers, epoch-based reclamation, or interval-based
+ * reclamation.
  *
  * dummy -> node1 -> node2
  * head -> dummy
@@ -147,77 +159,6 @@ public:
         // It is safe now to free the old dummy node
         delete old_head.node_ptr;
         return result;
-    }
-};
-
-
-template <class T>
-class SimpleMSQueue final {
-    struct Node {
-        std::optional<T> value;
-        std::atomic<Node*> next{nullptr};
-    };
-private:
-    std::atomic<Node*> head;
-    std::atomic<Node*> tail;
-public:
-    SimpleMSQueue() {
-        Node* dummy = new Node{};
-        head.store(dummy);
-        tail.store(dummy);
-    }
-
-    ~SimpleMSQueue() {
-        while (head != nullptr) {
-            Node* to_delete = head.load();
-            head.store(to_delete->next);
-            delete to_delete;
-        }
-    }
-
-    void Push(T item) {
-        Node* new_node = new Node{std::move(item), nullptr};
-        Node* old_tail{};
-
-        while(true) {
-            old_tail = tail.load();
-
-            if (old_tail->next.load() != nullptr) {
-                // concurrent push
-                // helping
-                tail.compare_exchange_weak(old_tail, old_tail->next);
-                continue;
-            }
-
-            Node* null_ptr = nullptr;
-            if (old_tail->next.compare_exchange_weak(null_ptr, new_node)) {
-                break;
-            }
-        }
-        tail.compare_exchange_strong(old_tail, new_node);
-    }
-
-    std::optional<T> TryPop() {
-        while (true) {
-            Node* old_head = head.load();
-
-            if (old_head->next.load() == nullptr) {
-                return {};
-            }
-
-            Node* old_tail = tail.load();
-            if (old_head == old_tail) {
-                // helping
-                tail.compare_exchange_weak(old_tail, old_tail->next);
-                continue;
-            }
-
-            if (head.compare_exchange_weak(old_head, old_head->next)) {
-                Node* next = old_head->next;
-                T result = std::move(*next->value);
-                return result;
-            }
-        }
     }
 };
 
