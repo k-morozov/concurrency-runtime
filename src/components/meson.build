@@ -6,6 +6,8 @@ components_sources = files(
     'lock_free/classic_ms_queue.cpp',
     'lock_free/simple_ms_queue.cpp',
     'lock_free/hazard/hazard.cpp',
+    'lock_free/hazard/thread_state.cpp',
+    'lock_free/hazard/scan.cpp',
 )
 
 cpp = meson.get_compiler('cpp')

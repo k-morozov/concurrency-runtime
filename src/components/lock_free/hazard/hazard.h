@@ -10,24 +10,13 @@
 #include <mutex>
 #include <shared_mutex>
 
-namespace NComponents {
+#include <components/lock_free/hazard/retire.h>
+#include <components/lock_free/hazard/scan.h>
 
-inline constexpr size_t LimitFreeList = 32;
+namespace NComponents::NHazard {
+
+inline constexpr size_t LimitFreeList = 8;
 extern thread_local std::atomic<void*> hazard_ptr;
-
-struct RetirePtr {
-    void* value;
-    std::function<void()> deleter;
-    RetirePtr* next;
-};
-
-inline std::atomic<RetirePtr*> free_list = nullptr;
-inline std::atomic<size_t> approximate_free_list_size{0};
-
-void ScanFreeList();
-
-void RegisterThread();
-void UnregisterThread();
 
 template <class T>
 T* Acquire(std::atomic<T*>* ptr) {
@@ -66,4 +55,4 @@ void Retire(T* value, Deleter deleter = {}) {
     }
 }
 
-}  // namespace NComponents
+}  // namespace NComponents::NHazard
