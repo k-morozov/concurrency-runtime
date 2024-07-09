@@ -6,7 +6,6 @@
 #include <thread>
 #include <unordered_map>
 
-//#include <components/lock_free/classic_ms_queue.h>
 #include <components/lock_free/simple_ms_queue.h>
 
 template<class T>
@@ -110,11 +109,9 @@ TEST(TestLockFreeQueue, ManyPop) {
     constexpr size_t kMaxNumber = 10'000;
 
     std::jthread th1([&]() {
-        NComponents::RegisterThread();
         for(size_t i=0; i<kMaxNumber; i++) {
             queue.Push(i);
         }
-        NComponents::UnregisterThread();
     });
 
     std::vector<bool> table(kMaxNumber, false);
@@ -122,7 +119,6 @@ TEST(TestLockFreeQueue, ManyPop) {
     std::mutex m;
 
     std::jthread th2([&]() {
-        NComponents::RegisterThread();
         while(counter < kMaxNumber) {
             auto r = queue.TryPop();
             if (r) {
@@ -134,10 +130,8 @@ TEST(TestLockFreeQueue, ManyPop) {
                 counter++;
             }
         }
-        NComponents::UnregisterThread();
     });
 
-    NComponents::RegisterThread();
     while(counter < kMaxNumber) {
         auto r = queue.TryPop();
         if (r) {
@@ -149,8 +143,6 @@ TEST(TestLockFreeQueue, ManyPop) {
             counter++;
         }
     }
-    NComponents::UnregisterThread();
-
     for(auto status_field : table) {
         ASSERT_TRUE(status_field);
     }

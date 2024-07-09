@@ -7,7 +7,7 @@
 #include <atomic>
 #include <optional>
 
-#include <components/lock_free/hazard/hazard.h>
+#include "lock_free/hazard/mutator.h"
 
 namespace NComponents {
 

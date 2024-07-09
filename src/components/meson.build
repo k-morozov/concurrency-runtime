@@ -5,7 +5,10 @@ components_sources = files(
     'function/basic_function.h',
     'lock_free/classic_ms_queue.cpp',
     'lock_free/simple_ms_queue.cpp',
-    'lock_free/hazard/hazard.cpp',
+    'lock_free/hazard/mutator.cpp',
+    'lock_free/hazard/manager.cpp',
+    'lock_free/hazard/thread_state.cpp',
+    'lock_free/hazard/scan.cpp',
 )
 
 cpp = meson.get_compiler('cpp')
