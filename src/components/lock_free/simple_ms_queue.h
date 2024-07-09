@@ -7,8 +7,9 @@
 #include <atomic>
 #include <optional>
 
-#include <components/lock_free/hazard/hazard.h>
 #include <components/lock_free/hazard/thread_state.h>
+#include <components/lock_free/hazard/manager.h>
+#include <components/lock_free/hazard/mutator.h>
 
 namespace NComponents {
 
@@ -31,9 +32,11 @@ class SimpleMSQueue final {
         std::optional<T> value;
         std::atomic<Node*> next{nullptr};
     };
+
 private:
     std::atomic<Node*> head;
     std::atomic<Node*> tail;
+
 public:
     SimpleMSQueue() {
         Node* dummy = new Node{};
@@ -53,7 +56,7 @@ public:
         Node* new_node = new Node{std::move(item), nullptr};
         Node* old_tail{};
 
-        while(true) {
+        while (true) {
             old_tail = tail.load();
 
             if (old_tail->next.load() != nullptr) {
@@ -72,9 +75,10 @@ public:
     }
 
     std::optional<T> TryPop() {
-        NComponents::NHazard::RegisterThread();
+//        NComponents::NHazard::RegisterThread();
+        auto mutator = NHazard::Manager::Get()->MakeMutator();
         while (true) {
-            Node* old_head = NHazard::Acquire(&head);
+            Node* old_head = mutator.Acquire(&head);
 
             if (old_head->next.load() == nullptr) {
                 return {};
@@ -90,9 +94,9 @@ public:
             if (head.compare_exchange_weak(old_head, old_head->next)) {
                 Node* next = old_head->next;
                 T result = std::move(*next->value);
-                NHazard::Retire(old_head);
-                NHazard::Release();
-                NComponents::NHazard::UnregisterThread();
+                mutator.Retire(old_head);
+//                NHazard::Release();
+//                NComponents::NHazard::UnregisterThread();
                 return result;
             }
         }
