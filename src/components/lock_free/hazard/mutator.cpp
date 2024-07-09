@@ -18,7 +18,7 @@ Mutator::~Mutator() {
 
 void Mutator::RegisterThread() {
     std::lock_guard g(gc->thread_lock);
-    gc->threads.insert(new ThreadState{.ptr = &hazard_ptr});
+    gc->threads.insert(new ThreadState{.thread_hazard_ptr = &hazard_ptr});
 }
 
 void Mutator::UnregisterThread() {
@@ -26,7 +26,7 @@ void Mutator::UnregisterThread() {
 
     ThreadState* state_for_current_thread{nullptr};
     for (auto& state : gc->threads) {
-        if (state->ptr == &hazard_ptr) {
+        if (state->thread_hazard_ptr == &hazard_ptr) {
             state_for_current_thread = state;
             gc->threads.erase(state);
             break;

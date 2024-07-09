@@ -9,7 +9,7 @@
 namespace NComponents::NHazard {
 
 struct ThreadState {
-    std::atomic<void*>* ptr{};
+    std::atomic<void*>* thread_hazard_ptr{};
     // Protected pointers
     // Retired pointers
     // ???
