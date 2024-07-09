@@ -10,6 +10,9 @@ namespace NComponents::NHazard {
 
 struct ThreadState {
     std::atomic<void*>* ptr{};
+    // Protected pointers
+    // Retired pointers
+    // ???
 };
 
 }  // namespace NComponents::NHazard
