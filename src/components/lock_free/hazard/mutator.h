@@ -12,15 +12,20 @@
 
 #include <components/lock_free/hazard/retire.h>
 #include <components/lock_free/hazard/scan.h>
+#include <components/lock_free/hazard/thread_state.h>
+#include <components/lock_free/hazard/fwd.h>
 
 namespace NComponents::NHazard {
 
-inline constexpr size_t LimitFreeList = 8;
-extern thread_local std::atomic<void*> hazard_ptr;
-
 class Mutator final {
+    static constexpr size_t LimitFreeList = 8;
+
+    Manager* gc;
+protected:
+    std::atomic<void*> hazard_ptr;
+
 public:
-    Mutator();
+    explicit Mutator(Manager* gc);
     ~Mutator();
 
     template <class T>
@@ -44,10 +49,10 @@ public:
         if (!value) {
             return;
         }
-        auto* retire =
-            new RetirePtr{.value = value,
-                          .deleter = [value, d = std::move(deleter)] { d(value); },
-                          .next = free_list.load()};
+        auto* retire = new RetirePtr{
+            .value = value,
+            .deleter = [value, d = std::move(deleter)] { d(value); },
+            .next = free_list.load()};
         while (!free_list.compare_exchange_weak(retire->next, retire)) {
         }
 
@@ -60,7 +65,9 @@ public:
 
 private:
     inline void Release() { hazard_ptr.store(nullptr); }
-};
 
+    void RegisterThread();
+    void UnregisterThread();
+};
 
 }  // namespace NComponents::NHazard

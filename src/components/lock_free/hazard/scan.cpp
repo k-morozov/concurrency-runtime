@@ -4,29 +4,26 @@
 
 #include "scan.h"
 
-#include <mutex>
 #include <set>
 
 #include <components/lock_free/hazard/retire.h>
+#include <components/lock_free/hazard/manager.h>
 #include <components/lock_free/hazard/thread_state.h>
 
 namespace NComponents::NHazard {
 
-namespace {
-std::mutex scan_lock;
-}
-
 void ScanFreeList() {
     approximate_free_list_size.store(0);
 
-    std::lock_guard lock(scan_lock);
+    std::lock_guard lock(Manager::Get()->scan_lock);
 
-    auto* retired = free_list.exchange(nullptr);
+    RetirePtr* retired = free_list.exchange(nullptr);
 
+    // @todo manger logic
     std::set<void*> hazards;
     {
-        std::lock_guard g(thread_lock);
-        for (auto* state : threads) {
+        std::lock_guard g(Manager::Get()->thread_lock);
+        for (auto* state : Manager::Get()->threads) {
             if (void* hz = state->ptr->load(); hz) {
                 hazards.insert(hz);
             }

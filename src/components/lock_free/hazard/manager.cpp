@@ -14,7 +14,7 @@ Manager* Manager::Get() {
 }
 
 Mutator Manager::MakeMutator() {
-    return Mutator();
+    return Mutator(this);
 }
 
 }  // namespace NComponents::NHazard
