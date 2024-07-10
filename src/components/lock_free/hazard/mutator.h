@@ -22,7 +22,7 @@ class Mutator final {
     Manager* gc;
 
 protected:
-    ThreadState mutator_thread_state{};
+    ThreadState* mutator_thread_state{};
 
 public:
     explicit Mutator(Manager* gc);
@@ -32,7 +32,7 @@ public:
     T* Acquire(std::atomic<T*>* ptr) {
         auto* before_store_value = ptr->load();
         do {
-            mutator_thread_state.thread_hazard_ptr.store(before_store_value);
+            mutator_thread_state->protected_ptr.store(before_store_value);
             auto* after_store_value = ptr->load();
 
             if (after_store_value == before_store_value) {
@@ -51,23 +51,25 @@ public:
         auto* retire = new RetirePtr{
             .value = value,
             .deleter = [value, d = std::move(deleter)] { d(value); },
-            .next = mutator_thread_state.retired_ptrs.load()};
-        while (!mutator_thread_state.retired_ptrs.compare_exchange_weak(
+            .next = mutator_thread_state->retired_ptrs.load()};
+        while (!mutator_thread_state->retired_ptrs.compare_exchange_weak(
             retire->next, retire)) {
         }
 
-        Collect();
+        IncreaseRetired();
     }
 
     inline void Release() {
-        mutator_thread_state.thread_hazard_ptr.store(nullptr);
+        mutator_thread_state->protected_ptr.store(nullptr);
     }
 
-    void Collect();
+
 
 private:
     void RegisterThread();
     void UnregisterThread();
+
+    void IncreaseRetired();
 };
 
 }  // namespace NComponents::NHazard

@@ -11,10 +11,9 @@ namespace NComponents::NHazard {
 struct RetirePtr;
 
 struct ThreadState {
-    std::atomic<void*> thread_hazard_ptr{};
-    std::atomic<void*>* protected_ptr{&thread_hazard_ptr};
+    std::atomic<void*> protected_ptr{};
     std::atomic<RetirePtr*> retired_ptrs{};
-    // ???
+    std::atomic<bool> has_mutator{false};
 };
 
 }  // namespace NComponents::NHazard

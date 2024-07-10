@@ -4,7 +4,8 @@
 
 #include "manager.h"
 
-#include <set>
+#include <unordered_set>
+#include <thread>
 
 #include <components/lock_free/hazard/mutator.h>
 
@@ -16,35 +17,40 @@ Manager* Manager::Get() {
 }
 
 Mutator Manager::MakeMutator() {
+    {
+        std::lock_guard g(thread_lock);
+        threads.insert({std::this_thread::get_id(), new ThreadState{}});
+    }
     return Mutator(this);
 }
 
-void Manager::ScanFreeList() {
+void Manager::Collect() {
     approximate_free_list_size.store(0);
 
     std::scoped_lock lock(scan_lock, thread_lock);
 
     // @todo manger logic
-    std::set<void*> hazards;
+    std::unordered_set<void*> protected_ptrs;
     {
-        for (auto* thread_state : threads) {
-            if (void* hz = thread_state->thread_hazard_ptr.load(); hz) {
-                hazards.insert(hz);
+        for (auto& [id, thread_state] : threads) {
+            if (void* hz = thread_state->protected_ptr.load(); hz) {
+                protected_ptrs.insert(hz);
             }
         }
     }
 
-    for (auto* state : threads) {
-        RetirePtr* candidate_retired = state->retired_ptrs.exchange(nullptr);
+    for (auto& [id, thread_state] : threads) {
+        RetirePtr* candidate_retired = thread_state->retired_ptrs.exchange(nullptr);
+
         while (candidate_retired) {
             auto* next = candidate_retired->next;
             bool is_deleted = true;
 
-            if (hazards.contains(candidate_retired->value)) {
+            if (protected_ptrs.contains(candidate_retired->value)) {
                 is_deleted = false;
 
-                candidate_retired->next = state->retired_ptrs;
-                while (!state->retired_ptrs.compare_exchange_weak(
+                candidate_retired->next = thread_state->retired_ptrs;
+                while (!thread_state->retired_ptrs.compare_exchange_weak(
                     candidate_retired->next, candidate_retired)) {
                 }
 
@@ -58,6 +64,11 @@ void Manager::ScanFreeList() {
 
             candidate_retired = next;
         }
+    }
+}
+Manager::~Manager() {
+    for(auto& [k, state] : threads) {
+        delete state;
     }
 }
 
