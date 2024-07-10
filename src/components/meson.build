@@ -8,7 +8,6 @@ components_sources = files(
     'lock_free/hazard/mutator.cpp',
     'lock_free/hazard/manager.cpp',
     'lock_free/hazard/thread_state.cpp',
-    'lock_free/hazard/scan.cpp',
 )
 
 cpp = meson.get_compiler('cpp')

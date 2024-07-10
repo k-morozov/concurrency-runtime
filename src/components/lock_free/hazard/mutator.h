@@ -10,10 +10,9 @@
 #include <mutex>
 #include <shared_mutex>
 
-#include <components/lock_free/hazard/retire.h>
-#include <components/lock_free/hazard/scan.h>
-#include <components/lock_free/hazard/thread_state.h>
 #include <components/lock_free/hazard/fwd.h>
+#include <components/lock_free/hazard/retire.h>
+#include <components/lock_free/hazard/thread_state.h>
 
 namespace NComponents::NHazard {
 
@@ -21,8 +20,9 @@ class Mutator final {
     static constexpr size_t LimitFreeList = 8;
 
     Manager* gc;
+
 protected:
-    std::atomic<void*> hazard_ptr;
+    ThreadState* mutator_thread_state{};
 
 public:
     explicit Mutator(Manager* gc);
@@ -32,10 +32,9 @@ public:
     T* Acquire(std::atomic<T*>* ptr) {
         auto* before_store_value = ptr->load();
         do {
-            hazard_ptr.store(before_store_value);
+            mutator_thread_state->protected_ptr.store(before_store_value);
             auto* after_store_value = ptr->load();
 
-            // @TODO why ptr can changes?
             if (after_store_value == before_store_value) {
                 return after_store_value;
             }
@@ -52,22 +51,25 @@ public:
         auto* retire = new RetirePtr{
             .value = value,
             .deleter = [value, d = std::move(deleter)] { d(value); },
-            .next = free_list.load()};
-        while (!free_list.compare_exchange_weak(retire->next, retire)) {
+            .next = mutator_thread_state->retired_ptrs.load()};
+        while (!mutator_thread_state->retired_ptrs.compare_exchange_weak(
+            retire->next, retire)) {
         }
 
-        approximate_free_list_size.fetch_add(1);
-
-        if (approximate_free_list_size > LimitFreeList) {
-            ScanFreeList();
-        }
+        IncreaseRetired();
     }
 
-private:
-    inline void Release() { hazard_ptr.store(nullptr); }
+    inline void Release() {
+        mutator_thread_state->protected_ptr.store(nullptr);
+    }
 
+
+
+private:
     void RegisterThread();
     void UnregisterThread();
+
+    void IncreaseRetired();
 };
 
 }  // namespace NComponents::NHazard

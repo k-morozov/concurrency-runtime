@@ -4,40 +4,50 @@
 
 #include "mutator.h"
 
-#include <components/lock_free/hazard/thread_state.h>
+#include <cassert>
+#include <thread>
+
 #include <components/lock_free/hazard/manager.h>
+#include <components/lock_free/hazard/thread_state.h>
 
 namespace NComponents::NHazard {
 
-Mutator::Mutator(Manager* gc) : gc(gc) { RegisterThread(); }
+Mutator::Mutator(Manager* gc) : gc(gc) {
+    RegisterThread();
+}
 
 Mutator::~Mutator() {
     Release();
     UnregisterThread();
+//    assert(nullptr == mutator_thread_state.retired_ptrs.load());
 }
 
 void Mutator::RegisterThread() {
     std::lock_guard g(gc->thread_lock);
-    gc->threads.insert(new ThreadState{.thread_hazard_ptr = &hazard_ptr});
+    mutator_thread_state = gc->threads[std::this_thread::get_id()];
+//    gc->threads.insert(std::this_thread::get_id(), &mutator_thread_state);
 }
 
 void Mutator::UnregisterThread() {
     std::unique_lock g(gc->thread_lock);
 
-    ThreadState* state_for_current_thread{nullptr};
-    for (auto& state : gc->threads) {
-        if (state->thread_hazard_ptr == &hazard_ptr) {
-            state_for_current_thread = state;
-            gc->threads.erase(state);
-            break;
-        }
-    }
+    Release();
+//    if (mutator_thread_state->retired_ptrs == nullptr) {
+//        delete gc->threads[std::this_thread::get_id()];
+//        gc->threads.erase(std::this_thread::get_id());
+//    }
 
-    delete state_for_current_thread;
-
-    if (gc->threads.empty()) {
+    if (!gc->threads.empty()) {
         g.unlock();
-        ScanFreeList();
+        gc->Collect();
+    }
+}
+
+void Mutator::IncreaseRetired() {
+    gc->approximate_free_list_size.fetch_add(1);
+
+    if (gc->approximate_free_list_size > LimitFreeList) {
+        gc->Collect();
     }
 }
 
