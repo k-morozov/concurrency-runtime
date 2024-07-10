@@ -32,9 +32,10 @@ void Mutator::UnregisterThread() {
     std::unique_lock g(gc->thread_lock);
 
     Release();
-    if (mutator_thread_state->retired_ptrs == nullptr) {
-        gc->threads.erase(std::this_thread::get_id());
-    }
+//    if (mutator_thread_state->retired_ptrs == nullptr) {
+//        delete gc->threads[std::this_thread::get_id()];
+//        gc->threads.erase(std::this_thread::get_id());
+//    }
 
     if (!gc->threads.empty()) {
         g.unlock();

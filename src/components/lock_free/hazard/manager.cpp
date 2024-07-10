@@ -69,10 +69,13 @@ void Manager::Collect() {
     }
 }
 Manager::~Manager() {
+    Collect();
+
     std::lock_guard g(thread_lock);
     for (auto& [k, state] : threads) {
         delete state;
     }
+    threads.clear();
 }
 
 }  // namespace NComponents::NHazard
