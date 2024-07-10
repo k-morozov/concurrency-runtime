@@ -69,6 +69,7 @@ void Manager::Collect() {
     }
 }
 Manager::~Manager() {
+    std::lock_guard g(thread_lock);
     for (auto& [k, state] : threads) {
         delete state;
     }
