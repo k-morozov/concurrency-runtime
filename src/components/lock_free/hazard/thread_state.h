@@ -13,7 +13,6 @@ struct RetirePtr;
 struct ThreadState {
     std::atomic<void*> protected_ptr{};
     std::atomic<RetirePtr*> retired_ptrs{};
-    std::atomic<bool> has_mutator{false};
 };
 
 }  // namespace NComponents::NHazard

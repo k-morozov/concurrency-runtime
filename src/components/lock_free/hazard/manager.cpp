@@ -4,8 +4,8 @@
 
 #include "manager.h"
 
-#include <unordered_set>
 #include <thread>
+#include <unordered_set>
 
 #include <components/lock_free/hazard/mutator.h>
 
@@ -19,7 +19,8 @@ Manager* Manager::Get() {
 Mutator Manager::MakeMutator() {
     {
         std::lock_guard g(thread_lock);
-        threads.insert({std::this_thread::get_id(), new ThreadState{}});
+        if (!threads.contains(std::this_thread::get_id()))
+            threads.insert({std::this_thread::get_id(), new ThreadState{}});
     }
     return Mutator(this);
 }
@@ -40,7 +41,8 @@ void Manager::Collect() {
     }
 
     for (auto& [id, thread_state] : threads) {
-        RetirePtr* candidate_retired = thread_state->retired_ptrs.exchange(nullptr);
+        RetirePtr* candidate_retired =
+            thread_state->retired_ptrs.exchange(nullptr);
 
         while (candidate_retired) {
             auto* next = candidate_retired->next;
@@ -67,7 +69,7 @@ void Manager::Collect() {
     }
 }
 Manager::~Manager() {
-    for(auto& [k, state] : threads) {
+    for (auto& [k, state] : threads) {
         delete state;
     }
 }
