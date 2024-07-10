@@ -12,7 +12,6 @@
 
 #include <components/lock_free/hazard/fwd.h>
 #include <components/lock_free/hazard/retire.h>
-#include <components/lock_free/hazard/scan.h>
 #include <components/lock_free/hazard/thread_state.h>
 
 namespace NComponents::NHazard {
@@ -52,20 +51,19 @@ public:
         auto* retire = new RetirePtr{
             .value = value,
             .deleter = [value, d = std::move(deleter)] { d(value); },
-            .next = free_list.load()};
-        while (!free_list.compare_exchange_weak(retire->next, retire)) {
+            .next = mutator_thread_state.retired_ptrs.load()};
+        while (!mutator_thread_state.retired_ptrs.compare_exchange_weak(
+            retire->next, retire)) {
         }
 
-        approximate_free_list_size.fetch_add(1);
-
-        if (approximate_free_list_size > LimitFreeList) {
-            ScanFreeList();
-        }
+        Collect();
     }
 
     inline void Release() {
         mutator_thread_state.thread_hazard_ptr.store(nullptr);
     }
+
+    void Collect();
 
 private:
     void RegisterThread();

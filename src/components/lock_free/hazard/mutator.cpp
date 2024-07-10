@@ -38,7 +38,15 @@ void Mutator::UnregisterThread() {
 
     if (gc->threads.empty()) {
         g.unlock();
-        ScanFreeList();
+        gc->ScanFreeList();
+    }
+}
+
+void Mutator::Collect() {
+    gc->approximate_free_list_size.fetch_add(1);
+
+    if (gc->approximate_free_list_size > LimitFreeList) {
+        gc->ScanFreeList();
     }
 }
 

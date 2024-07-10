@@ -19,7 +19,6 @@ struct ThreadState;
 
 class Manager final {
     friend class Mutator;
-    friend void ScanFreeList();
 public:
     static Manager* Get();
     Mutator MakeMutator();
@@ -28,6 +27,10 @@ protected:
     std::mutex thread_lock;
     std::unordered_set<ThreadState*> threads;
     std::mutex scan_lock;
+
+    std::atomic<size_t> approximate_free_list_size{0};
+
+    void ScanFreeList();
 
 private:
     Manager() = default;
