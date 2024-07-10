@@ -75,12 +75,12 @@ public:
     }
 
     std::optional<T> TryPop() {
-//        NComponents::NHazard::RegisterThread();
         auto mutator = NHazard::Manager::Get()->MakeMutator();
         while (true) {
             Node* old_head = mutator.Acquire(&head);
 
             if (old_head->next.load() == nullptr) {
+                mutator.Release();
                 return {};
             }
 
@@ -95,8 +95,6 @@ public:
                 Node* next = old_head->next;
                 T result = std::move(*next->value);
                 mutator.Retire(old_head);
-//                NHazard::Release();
-//                NComponents::NHazard::UnregisterThread();
                 return result;
             }
         }

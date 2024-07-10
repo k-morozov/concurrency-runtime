@@ -24,7 +24,7 @@ void ScanFreeList() {
     {
         std::lock_guard g(Manager::Get()->thread_lock);
         for (auto* thread_state : Manager::Get()->threads) {
-            if (void* hz = thread_state->thread_hazard_ptr->load(); hz) {
+            if (void* hz = thread_state->thread_hazard_ptr.load(); hz) {
                 hazards.insert(hz);
             }
         }

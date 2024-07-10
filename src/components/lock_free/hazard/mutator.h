@@ -10,10 +10,10 @@
 #include <mutex>
 #include <shared_mutex>
 
+#include <components/lock_free/hazard/fwd.h>
 #include <components/lock_free/hazard/retire.h>
 #include <components/lock_free/hazard/scan.h>
 #include <components/lock_free/hazard/thread_state.h>
-#include <components/lock_free/hazard/fwd.h>
 
 namespace NComponents::NHazard {
 
@@ -21,8 +21,9 @@ class Mutator final {
     static constexpr size_t LimitFreeList = 8;
 
     Manager* gc;
+
 protected:
-    std::atomic<void*> hazard_ptr;
+    ThreadState mutator_thread_state{};
 
 public:
     explicit Mutator(Manager* gc);
@@ -32,10 +33,9 @@ public:
     T* Acquire(std::atomic<T*>* ptr) {
         auto* before_store_value = ptr->load();
         do {
-            hazard_ptr.store(before_store_value);
+            mutator_thread_state.thread_hazard_ptr.store(before_store_value);
             auto* after_store_value = ptr->load();
 
-            // @TODO why ptr can changes?
             if (after_store_value == before_store_value) {
                 return after_store_value;
             }
@@ -63,9 +63,11 @@ public:
         }
     }
 
-private:
-    inline void Release() { hazard_ptr.store(nullptr); }
+    inline void Release() {
+        mutator_thread_state.thread_hazard_ptr.store(nullptr);
+    }
 
+private:
     void RegisterThread();
     void UnregisterThread();
 };
