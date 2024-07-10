@@ -26,14 +26,7 @@ void Mutator::RegisterThread() {
 void Mutator::UnregisterThread() {
     std::unique_lock g(gc->thread_lock);
 
-    for (auto& state : gc->threads) {
-        if (state->protected_ptr ==
-            &mutator_thread_state.thread_hazard_ptr) {
-            gc->threads.erase(state);
-            break;
-        }
-    }
-
+    gc->threads.erase(&mutator_thread_state);
     mutator_thread_state.thread_hazard_ptr = nullptr;
 
     if (gc->threads.empty()) {
