@@ -6,7 +6,7 @@
 
 #include <context/buffer/buffer.h>
 
-namespace NFibers::ctx {
+namespace NFibers::NContext {
 
 class SanitizerContext {
 public:
@@ -23,4 +23,4 @@ public:
         SanitizerContext& /*target*/) {}
 };
 
-}  // namespace fibers::ctx
+}  // namespace NFibers::NContext

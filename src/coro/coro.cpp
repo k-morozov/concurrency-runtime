@@ -6,7 +6,7 @@
 
 #include <cassert>
 
-namespace NFibers::coro {
+namespace NFibers::NCoro {
 
 static const size_t kDefaultCoroBufferSize = 64 * 1024;
 
@@ -14,7 +14,7 @@ thread_local Coroutine* current_coro;
 
 Coroutine::Coroutine(Coroutine::Routine routine)
     : routine_(std::move(routine)),
-      coro_buffer_(ctx::Buffer::AllocBytes(kDefaultCoroBufferSize)) {
+      coro_buffer_(NContext::Buffer::AllocBytes(kDefaultCoroBufferSize)) {
     coro_ctx_.Setup(coro_buffer_.GetSpan(), this);
 }
 

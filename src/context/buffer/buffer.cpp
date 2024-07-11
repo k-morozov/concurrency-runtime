@@ -6,7 +6,7 @@
 
 #include <utility>
 
-namespace NFibers::ctx {
+namespace NFibers::NContext {
 
 Buffer::Buffer(Buffer::Alloc alloc) : alloc_(alloc) {}
 
@@ -15,4 +15,4 @@ Buffer::Buffer(Buffer&& buffer) noexcept
 
 Buffer::~Buffer() { delete[] alloc_.data; }
 
-}  // namespace fibers::ctx
+}  // namespace NFibers::NContext

@@ -7,7 +7,7 @@
 #include <cassert>
 #include <stdexcept>
 
-namespace NFibers::ctx {
+namespace NFibers::NContext {
 
 void Context::Setup(BufferView target_buffer, Runner* runner) {
     assert(runner);
@@ -34,4 +34,4 @@ void Context::Run() {
     runner_->Run();
 }
 
-}  // namespace fibers::ctx
+}  // namespace NFibers::NContext

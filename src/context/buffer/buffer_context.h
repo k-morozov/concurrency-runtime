@@ -7,7 +7,7 @@
 #include <context/buffer/buffer.h>
 #include <context/runner.h>
 
-namespace NFibers::ctx {
+namespace NFibers::NContext {
 
 class BufferContext final {
 public:
@@ -18,4 +18,4 @@ private:
     void* rsp_;
 };
 
-}  // namespace fibers::ctx
+}  // namespace NFibers::NContext

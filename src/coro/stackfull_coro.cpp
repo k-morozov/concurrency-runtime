@@ -5,9 +5,10 @@
 
 #include "stackfull_coro.h"
 
-namespace NFibers::coro {
+namespace NFibers::NCoro {
 
-StackfullCoroutine::StackfullCoroutine(Routine routine, ctx::Buffer&& buffer)
+StackfullCoroutine::StackfullCoroutine(Routine routine,
+                                       NContext::Buffer&& buffer)
     : routine_(std::move(routine)), coro_buffer_(std::move(buffer)) {
     coro_ctx_.Setup(coro_buffer_.GetSpan(), this);
 }

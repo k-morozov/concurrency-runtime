@@ -19,7 +19,7 @@ thread_local NFibers::AwaiterFiber* current_fiber;
 namespace NFibers {
 
 AwaiterFiber::AwaiterFiber(NExecutors::IExecutor* executor,
-                           coro::Routine routine, ctx::Buffer&& buffer)
+                           NCoro::Routine routine, NContext::Buffer&& buffer)
     : executor_(executor), fiber_coro_(std::move(routine), std::move(buffer)) {}
 
 void AwaiterFiber::Schedule() { executor_->Submit(this); }

@@ -687,8 +687,8 @@
 <text  x="1116.30" y="111.5" >free_pcp..</text>
 </g>
 <g >
-<title>NFibers::ctx::(anonymous namespace)::CallRunner (868,896,094 samples, 31.04%)</title><rect x="10.0" y="421" width="366.3" height="15.0" fill="rgb(224,87,20)" rx="2" ry="2" />
-<text  x="13.02" y="431.5" >NFibers::ctx::(anonymous namespace)::CallRunner</text>
+<title>NFibers::NContext::(anonymous namespace)::CallRunner (868,896,094 samples, 31.04%)</title><rect x="10.0" y="421" width="366.3" height="15.0" fill="rgb(224,87,20)" rx="2" ry="2" />
+<text  x="13.02" y="431.5" >NFibers::NContext::(anonymous namespace)::CallRunner</text>
 </g>
 <g >
 <title>vma_modify (254,976,499 samples, 9.11%)</title><rect x="113.0" y="149" width="107.5" height="15.0" fill="rgb(220,72,17)" rx="2" ry="2" />
@@ -1027,8 +1027,8 @@
 <text  x="1111.00" y="415.5" ></text>
 </g>
 <g >
-<title>NFibers::coro::StackfullCoroutine::Run (868,896,094 samples, 31.04%)</title><rect x="10.0" y="389" width="366.3" height="15.0" fill="rgb(254,228,54)" rx="2" ry="2" />
-<text  x="13.02" y="399.5" >NFibers::coro::StackfullCoroutine::Run</text>
+<title>NFibers::NCoro::StackfullCoroutine::Run (868,896,094 samples, 31.04%)</title><rect x="10.0" y="389" width="366.3" height="15.0" fill="rgb(254,228,54)" rx="2" ry="2" />
+<text  x="13.02" y="399.5" >NFibers::NCoro::StackfullCoroutine::Run</text>
 </g>
 <g >
 <title>exit_mmap (181,932,634 samples, 6.50%)</title><rect x="1113.3" y="293" width="76.7" height="15.0" fill="rgb(236,143,34)" rx="2" ry="2" />
@@ -1047,8 +1047,8 @@
 <text  x="30.38" y="287.5" ></text>
 </g>
 <g >
-<title>NFibers::ctx::Context::Run (868,896,094 samples, 31.04%)</title><rect x="10.0" y="405" width="366.3" height="15.0" fill="rgb(216,53,12)" rx="2" ry="2" />
-<text  x="13.02" y="415.5" >NFibers::ctx::Context::Run</text>
+<title>NFibers::NContext::Context::Run (868,896,094 samples, 31.04%)</title><rect x="10.0" y="405" width="366.3" height="15.0" fill="rgb(216,53,12)" rx="2" ry="2" />
+<text  x="13.02" y="415.5" >NFibers::NContext::Context::Run</text>
 </g>
 <g >
 <title>lru_gen_add_folio (41,055,803 samples, 1.47%)</title><rect x="341.6" y="69" width="17.3" height="15.0" fill="rgb(216,53,12)" rx="2" ry="2" />

@@ -15,8 +15,8 @@ class IAwaiter;
 
 class AwaiterFiber final : public NExecutors::TaskBase {
 public:
-    AwaiterFiber(NExecutors::IExecutor* executor, coro::Routine routine,
-                 ctx::Buffer&& buffer);
+    AwaiterFiber(NExecutors::IExecutor* executor, NCoro::Routine routine,
+                 NContext::Buffer&& buffer);
 
     AwaiterFiber(const AwaiterFiber&) = delete;
     AwaiterFiber(AwaiterFiber&&) noexcept = delete;
@@ -37,7 +37,7 @@ public:
 
 private:
     NExecutors::IExecutor* executor_;
-    coro::StackfullCoroutine fiber_coro_;
+    NCoro::StackfullCoroutine fiber_coro_;
     IAwaiter* awaiter_{nullptr};
 };
 

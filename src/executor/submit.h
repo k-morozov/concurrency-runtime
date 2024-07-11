@@ -9,6 +9,6 @@
 
 namespace NExecutors {
 
-void Submit(IExecutor& executor, NFibers::coro::Routine routine);
+void Submit(IExecutor& executor, NFibers::NCoro::Routine routine);
 
 }  // namespace NExecutors

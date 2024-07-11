@@ -471,7 +471,7 @@
 <text  x="360.53" y="623.5" ></text>
 </g>
 <g >
-<title>NFibers::ctx::Buffer::GetSpan (2,030,460 samples, 0.07%)</title><rect x="162.1" y="773" width="0.8" height="15.0" fill="rgb(253,221,53)" rx="2" ry="2" />
+<title>NFibers::NContext::Buffer::GetSpan (2,030,460 samples, 0.07%)</title><rect x="162.1" y="773" width="0.8" height="15.0" fill="rgb(253,221,53)" rx="2" ry="2" />
 <text  x="165.06" y="783.5" ></text>
 </g>
 <g >
@@ -479,7 +479,7 @@
 <text  x="1183.40" y="767.5" ></text>
 </g>
 <g >
-<title>NFibers::ctx::Context::Setup (1,013,304 samples, 0.04%)</title><rect x="174.6" y="789" width="0.4" height="15.0" fill="rgb(245,185,44)" rx="2" ry="2" />
+<title>NFibers::NContext::Context::Setup (1,013,304 samples, 0.04%)</title><rect x="174.6" y="789" width="0.4" height="15.0" fill="rgb(245,185,44)" rx="2" ry="2" />
 <text  x="177.55" y="799.5" ></text>
 </g>
 <g >
@@ -891,7 +891,7 @@
 <text  x="411.91" y="575.5" ></text>
 </g>
 <g >
-<title>NFibers::ctx::Context::Setup (16,936,200 samples, 0.62%)</title><rect x="164.2" y="773" width="7.3" height="15.0" fill="rgb(245,185,44)" rx="2" ry="2" />
+<title>NFibers::NContext::Context::Setup (16,936,200 samples, 0.62%)</title><rect x="164.2" y="773" width="7.3" height="15.0" fill="rgb(245,185,44)" rx="2" ry="2" />
 <text  x="167.19" y="783.5" ></text>
 </g>
 <g >
@@ -979,7 +979,7 @@
 <text  x="171.04" y="591.5" ></text>
 </g>
 <g >
-<title>NFibers::ctx::Buffer::AllocBytes (1,015,556 samples, 0.04%)</title><rect x="176.3" y="805" width="0.4" height="15.0" fill="rgb(236,142,34)" rx="2" ry="2" />
+<title>NFibers::NContext::Buffer::AllocBytes (1,015,556 samples, 0.04%)</title><rect x="176.3" y="805" width="0.4" height="15.0" fill="rgb(236,142,34)" rx="2" ry="2" />
 <text  x="179.27" y="815.5" ></text>
 </g>
 <g >
@@ -1055,7 +1055,7 @@
 <text  x="303.07" y="607.5" ></text>
 </g>
 <g >
-<title>NFibers::coro::StackfullCoroutine::StackfullCoroutine (35,891,081 samples, 1.31%)</title><rect x="158.6" y="789" width="15.5" height="15.0" fill="rgb(247,197,47)" rx="2" ry="2" />
+<title>NFibers::NCoro::StackfullCoroutine::StackfullCoroutine (35,891,081 samples, 1.31%)</title><rect x="158.6" y="789" width="15.5" height="15.0" fill="rgb(247,197,47)" rx="2" ry="2" />
 <text  x="161.60" y="799.5" ></text>
 </g>
 <g >
@@ -1799,7 +1799,7 @@
 <text  x="450.47" y="575.5" ></text>
 </g>
 <g >
-<title>NFibers::ctx::Buffer::Buffer (1,015,730 samples, 0.04%)</title><rect x="174.1" y="789" width="0.5" height="15.0" fill="rgb(221,76,18)" rx="2" ry="2" />
+<title>NFibers::NContext::Buffer::Buffer (1,015,730 samples, 0.04%)</title><rect x="174.1" y="789" width="0.5" height="15.0" fill="rgb(221,76,18)" rx="2" ry="2" />
 <text  x="177.12" y="799.5" ></text>
 </g>
 <g >
@@ -2183,7 +2183,7 @@
 <text  x="17.48" y="591.5" ></text>
 </g>
 <g >
-<title>NFibers::ctx::Buffer::~Buffer (988,649 samples, 0.04%)</title><rect x="489.9" y="821" width="0.4" height="15.0" fill="rgb(207,12,3)" rx="2" ry="2" />
+<title>NFibers::NContext::Buffer::~Buffer (988,649 samples, 0.04%)</title><rect x="489.9" y="821" width="0.4" height="15.0" fill="rgb(207,12,3)" rx="2" ry="2" />
 <text  x="492.86" y="831.5" ></text>
 </g>
 <g >
@@ -2411,7 +2411,7 @@
 <text  x="341.50" y="751.5" ></text>
 </g>
 <g >
-<title>NFibers::ctx::BufferContext::Setup (1,015,359 samples, 0.04%)</title><rect x="171.1" y="757" width="0.4" height="15.0" fill="rgb(206,6,1)" rx="2" ry="2" />
+<title>NFibers::NContext::BufferContext::Setup (1,015,359 samples, 0.04%)</title><rect x="171.1" y="757" width="0.4" height="15.0" fill="rgb(206,6,1)" rx="2" ry="2" />
 <text  x="174.07" y="767.5" ></text>
 </g>
 <g >
@@ -2567,8 +2567,8 @@
 <text  x="517.53" y="783.5" ></text>
 </g>
 <g >
-<title>NFibers::ctx::(anonymous namespace)::CallRunner (858,658,849 samples, 31.46%)</title><rect x="143.4" y="933" width="371.1" height="15.0" fill="rgb(224,87,20)" rx="2" ry="2" />
-<text  x="146.35" y="943.5" >NFibers::ctx::(anonymous namespace)::CallRunner</text>
+<title>NFibers::NContext::(anonymous namespace)::CallRunner (858,658,849 samples, 31.46%)</title><rect x="143.4" y="933" width="371.1" height="15.0" fill="rgb(224,87,20)" rx="2" ry="2" />
+<text  x="146.35" y="943.5" >NFibers::NContext::(anonymous namespace)::CallRunner</text>
 </g>
 <g >
 <title>discard_slab (1,019,768 samples, 0.04%)</title><rect x="1142.9" y="709" width="0.5" height="15.0" fill="rgb(233,132,31)" rx="2" ry="2" />
@@ -2715,7 +2715,7 @@
 <text  x="1177.45" y="831.5" ></text>
 </g>
 <g >
-<title>NFibers::ctx::Buffer::Alloc std::exchange&lt;NFibers::ctx::Buffer::Alloc, NFibers::ctx::Buffer::Alloc&gt; (2,030,505 samples, 0.07%)</title><rect x="161.2" y="757" width="0.9" height="15.0" fill="rgb(221,77,18)" rx="2" ry="2" />
+<title>NFibers::NContext::Buffer::Alloc std::exchange&lt;NFibers::NContext::Buffer::Alloc, NFibers::NContext::Buffer::Alloc&gt; (2,030,505 samples, 0.07%)</title><rect x="161.2" y="757" width="0.9" height="15.0" fill="rgb(221,77,18)" rx="2" ry="2" />
 <text  x="164.18" y="767.5" ></text>
 </g>
 <g >
@@ -2883,8 +2883,8 @@
 <text  x="1181.57" y="911.5" ></text>
 </g>
 <g >
-<title>NFibers::ctx::Context::Run (858,658,849 samples, 31.46%)</title><rect x="143.4" y="917" width="371.1" height="15.0" fill="rgb(216,53,12)" rx="2" ry="2" />
-<text  x="146.35" y="927.5" >NFibers::ctx::Context::Run</text>
+<title>NFibers::NContext::Context::Run (858,658,849 samples, 31.46%)</title><rect x="143.4" y="917" width="371.1" height="15.0" fill="rgb(216,53,12)" rx="2" ry="2" />
+<text  x="146.35" y="927.5" >NFibers::NContext::Context::Run</text>
 </g>
 <g >
 <title>folio_add_lru (2,030,953 samples, 0.07%)</title><rect x="169.3" y="613" width="0.9" height="15.0" fill="rgb(208,17,4)" rx="2" ry="2" />
@@ -3367,7 +3367,7 @@
 <text  x="514.08" y="671.5" ></text>
 </g>
 <g >
-<title>NFibers::ctx::Buffer::Buffer (1,015,556 samples, 0.04%)</title><rect x="176.3" y="789" width="0.4" height="15.0" fill="rgb(221,76,18)" rx="2" ry="2" />
+<title>NFibers::NContext::Buffer::Buffer (1,015,556 samples, 0.04%)</title><rect x="176.3" y="789" width="0.4" height="15.0" fill="rgb(221,76,18)" rx="2" ry="2" />
 <text  x="179.27" y="799.5" ></text>
 </g>
 <g >
@@ -3435,7 +3435,7 @@
 <text  x="519.46" y="879.5" >std::__invoke_result&lt;NExecutors::internal::Worker::Start</text>
 </g>
 <g >
-<title>NFibers::ctx::Runner::Runner (5,007,277 samples, 0.18%)</title><rect x="171.5" y="773" width="2.2" height="15.0" fill="rgb(208,15,3)" rx="2" ry="2" />
+<title>NFibers::NContext::Runner::Runner (5,007,277 samples, 0.18%)</title><rect x="171.5" y="773" width="2.2" height="15.0" fill="rgb(208,15,3)" rx="2" ry="2" />
 <text  x="174.51" y="783.5" ></text>
 </g>
 <g >
@@ -3859,7 +3859,7 @@
 <text  x="1181.57" y="783.5" ></text>
 </g>
 <g >
-<title>NFibers::ctx::BufferContext::Setup (964,933 samples, 0.04%)</title><rect x="162.9" y="773" width="0.5" height="15.0" fill="rgb(206,6,1)" rx="2" ry="2" />
+<title>NFibers::NContext::BufferContext::Setup (964,933 samples, 0.04%)</title><rect x="162.9" y="773" width="0.5" height="15.0" fill="rgb(206,6,1)" rx="2" ry="2" />
 <text  x="165.94" y="783.5" ></text>
 </g>
 <g >
@@ -4123,7 +4123,7 @@
 <text  x="341.93" y="751.5" ></text>
 </g>
 <g >
-<title>NFibers::ctx::Buffer::Buffer (3,045,045 samples, 0.11%)</title><rect x="160.7" y="773" width="1.4" height="15.0" fill="rgb(221,76,18)" rx="2" ry="2" />
+<title>NFibers::NContext::Buffer::Buffer (3,045,045 samples, 0.11%)</title><rect x="160.7" y="773" width="1.4" height="15.0" fill="rgb(221,76,18)" rx="2" ry="2" />
 <text  x="163.74" y="783.5" ></text>
 </g>
 <g >
@@ -4395,7 +4395,7 @@
 <text  x="515.36" y="671.5" ></text>
 </g>
 <g >
-<title>NFibers::ctx::Context::Context (1,931,470 samples, 0.07%)</title><rect x="163.4" y="773" width="0.8" height="15.0" fill="rgb(225,95,22)" rx="2" ry="2" />
+<title>NFibers::NContext::Context::Context (1,931,470 samples, 0.07%)</title><rect x="163.4" y="773" width="0.8" height="15.0" fill="rgb(225,95,22)" rx="2" ry="2" />
 <text  x="166.36" y="783.5" ></text>
 </g>
 <g >
@@ -4443,8 +4443,8 @@
 <text  x="1182.11" y="735.5" ></text>
 </g>
 <g >
-<title>NFibers::coro::StackfullCoroutine::Run (858,658,849 samples, 31.46%)</title><rect x="143.4" y="901" width="371.1" height="15.0" fill="rgb(254,228,54)" rx="2" ry="2" />
-<text  x="146.35" y="911.5" >NFibers::coro::StackfullCoroutine::Run</text>
+<title>NFibers::NCoro::StackfullCoroutine::Run (858,658,849 samples, 31.46%)</title><rect x="143.4" y="901" width="371.1" height="15.0" fill="rgb(254,228,54)" rx="2" ry="2" />
+<text  x="146.35" y="911.5" >NFibers::NCoro::StackfullCoroutine::Run</text>
 </g>
 <g >
 <title>_raw_spin_lock_irqsave (456,090 samples, 0.02%)</title><rect x="1178.1" y="869" width="0.2" height="15.0" fill="rgb(247,195,46)" rx="2" ry="2" />

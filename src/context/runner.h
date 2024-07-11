@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace NFibers::ctx {
+namespace NFibers::NContext {
 
 class Runner {
 public:
@@ -13,4 +13,4 @@ public:
     virtual void Run() = 0;
 };
 
-}  // namespace fibers::ctx
+}  // namespace NFibers::NContext

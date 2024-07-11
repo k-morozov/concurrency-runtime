@@ -11,15 +11,15 @@
 namespace NExecutors {
 
 class TaskFreeFunction : public TaskBase {
-    NFibers::coro::Routine routine;
+    NFibers::NCoro::Routine routine;
 
 public:
     void Run() noexcept override;
 
-    static TaskBase* Make(NFibers::coro::Routine routine_);
+    static TaskBase* Make(NFibers::NCoro::Routine routine_);
 
 private:
-    explicit TaskFreeFunction(NFibers::coro::Routine routine_);
+    explicit TaskFreeFunction(NFibers::NCoro::Routine routine_);
 };
 
 }  // namespace NExecutors
