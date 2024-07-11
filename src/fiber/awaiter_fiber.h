@@ -18,6 +18,12 @@ public:
     AwaiterFiber(NExecutors::IExecutor* executor, coro::Routine routine,
                  ctx::Buffer&& buffer);
 
+    AwaiterFiber(const AwaiterFiber&) = delete;
+    AwaiterFiber(AwaiterFiber&&) noexcept = delete;
+
+    AwaiterFiber& operator=(const AwaiterFiber&) = delete;
+    AwaiterFiber& operator=(AwaiterFiber&&) noexcept = delete;
+
     void Schedule();
 
     void Suspend(IAwaiter* waiter);
