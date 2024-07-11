@@ -12,35 +12,37 @@ template <class U>
 class BasicFunction;
 
 template <typename R, typename... Args>
-class BasicFunction <R(Args...)> {
+class BasicFunction<R(Args...)> {
+    class function_holder_base;
+    using function_holder_base_ptr = std::shared_ptr<function_holder_base>;
+
+    function_holder_base_ptr invoker;
+
 public:
-    BasicFunction() {}
+    BasicFunction() = default;
 
     template <typename F>
-    BasicFunction(F f) : invoker(new free_function_holder(f)) {}
+    BasicFunction(F f) : invoker(new free_function_holder(std::move(f))) {}
 
     R operator()(Args... args) {
         return invoker->invoke(std::forward<Args...>(args)...);
     }
 
-    explicit operator bool() const {
-        return invoker.operator bool();
-    }
+    explicit operator bool() const { return invoker.operator bool(); }
 
 private:
     class function_holder_base {
     public:
-        function_holder_base() {}
-        virtual ~function_holder_base() {};
+        function_holder_base() = default;
+        virtual ~function_holder_base() = default;
         virtual R invoke(Args...) = 0;
     };
-
-    using function_holder_base_ptr = std::shared_ptr<function_holder_base>;
 
     template <typename F>
     class free_function_holder : public function_holder_base {
     public:
-        free_function_holder(F f) : function_holder_base(), func(f) {}
+        explicit free_function_holder(F f)
+            : function_holder_base(), func(std::move(f)) {}
         ~free_function_holder() override = default;
 
         R invoke(Args... args) override {
@@ -50,7 +52,5 @@ private:
     private:
         F func;
     };
-
-    function_holder_base_ptr invoker;
 };
 }  // namespace NComponents
