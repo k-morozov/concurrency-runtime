@@ -4,6 +4,7 @@
 
 #include <thread>
 #include <vector>
+#include <chrono>
 
 #include <benchmark/benchmark.h>
 #include <executor/pool/distributed_pool.h>
@@ -11,6 +12,8 @@
 #include <fiber/sync/async_mutex.h>
 #include <fiber/sync/wait_group.h>
 #include <go/go.h>
+
+using namespace std::chrono_literals;
 
 const size_t CountThreads = std::thread::hardware_concurrency();
 static constexpr size_t kTasks = 200'000;
@@ -29,6 +32,7 @@ void bench_logic(NExecutors::IExecutor& pool) {
             fibers::Go([&] {
                 {
                     std::lock_guard lock(mutex);
+                    std::this_thread::sleep_for(25ms);
                     counter++;
                 }
                 wg.Done();
