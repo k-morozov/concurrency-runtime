@@ -1,9 +1,9 @@
 //
 // Created by konstantin on 30.05.24.
 //
-#include <cassert>
-
 #include "stackfull_coro.h"
+
+#include <cassert>
 
 namespace NFibers::NCoro {
 
@@ -21,7 +21,7 @@ void StackfullCoroutine::Run() {
     }
 
     is_completed_ = true;
-    coro_ctx_.SwitchTo(caller_ctx_);
+    coro_ctx_.ExitTo(caller_ctx_);
 }
 
 void StackfullCoroutine::Resume() {
@@ -31,4 +31,4 @@ void StackfullCoroutine::Resume() {
 
 void StackfullCoroutine::Suspend() { coro_ctx_.SwitchTo(caller_ctx_); }
 
-}  // namespace fibers::coro
+}  // namespace NFibers::NCoro

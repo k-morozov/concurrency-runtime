@@ -16,7 +16,7 @@ DistributedPool::DistributedPool(const size_t count_)
 }
 
 DistributedPool::~DistributedPool() {
-    shutdown_.store(true);
+    StartShutdown();
     WaitShutdown();
 }
 
@@ -32,8 +32,6 @@ void DistributedPool::Submit(NExecutors::TaskBase* task) {
     count_tasks_.fetch_add(1);
     const size_t worker_for_current_task = current_worker.fetch_add(1);
     workers[worker_for_current_task % count_workers].Push(task);
-//    std::lock_guard lock(mutex);
-//    global_tasks.Push(task);
 }
 
 IExecutor* DistributedPool::Current() { return internal::Worker::Current(); }

@@ -12,7 +12,7 @@
 
 namespace {
 
-thread_local NFibers::AwaiterFiber* current_fiber;
+thread_local NFibers::AwaiterFiber* current_fiber{};
 
 }
 

@@ -25,6 +25,7 @@ class Worker final {
     std::atomic<bool> shutdown_worker{false};
     std::atomic<size_t> count_local_tasks{0};
     std::condition_variable empty_tasks_;
+
 public:
     explicit Worker(IExecutor* ex);
     ~Worker();
@@ -32,7 +33,7 @@ public:
     void Start();
     void Join();
 
-    void Push(TaskBase*/*, SchedulerHint*/);
+    void Push(TaskBase* /*, SchedulerHint*/);
 
     static IExecutor* Current();
 

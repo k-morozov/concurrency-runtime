@@ -33,13 +33,12 @@ void Worker::Start() {
 
             if (task) {
                 task->Run();
-//                std::lock_guard lock_task(mutex);
                 count_local_tasks.fetch_sub(1);
                 empty_tasks_.notify_one();
-            } else {
-                if (shutdown_worker.load()) {
-                    break;
-                }
+            }
+
+            if (shutdown_worker.load() && count_local_tasks.load() == 0) {
+                break;
             }
         }
     }));

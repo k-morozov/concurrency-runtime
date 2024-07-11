@@ -30,7 +30,22 @@ TEST(TestDistributedPool, JustWorks) {
         });
         wg.Wait();
     });
+
 }
+
+//TEST(TestDistributedPool, JustWorks2) {
+//    NExecutors::DistributedPool pool{4};
+//
+//    NFibers::WaitGroup wg;
+//    wg.Add(1);
+//
+//    NFibers::Go(pool, [&wg] {
+//        std::cout << "Hello from thread pool! " << std::endl;
+//        wg.Done();
+//    });
+//
+//    wg.Wait();
+//}
 
 TEST(TestDistributedPool, Wait) {
     NExecutors::DistributedPool pool{4};
