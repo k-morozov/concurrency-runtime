@@ -33,9 +33,9 @@ void Mutator::UnregisterThread() {
 void Mutator::IncreaseRetired() {
     gc->approximate_free_list_size.fetch_add(1);
 
-    if (gc->approximate_free_list_size > LimitFreeList) {
-        gc->Collect();
-    }
+//    if (gc->approximate_free_list_size > LimitFreeList) {
+//        gc->Collect();
+//    }
 }
 
 }  // namespace NComponents::NHazard

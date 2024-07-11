@@ -17,8 +17,6 @@
 namespace NComponents::NHazard {
 
 class Mutator final {
-    static constexpr size_t LimitFreeList = 8;
-
     HazardManager* gc;
 
 protected:
