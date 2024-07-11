@@ -35,10 +35,16 @@ protected:
 
     std::atomic<size_t> approximate_free_list_size{0};
 
+    std::atomic<size_t> mutators_count{};
+
+    // std::thread is fastest impl. However, Strand is the best choose.
     std::optional<std::thread> collector_thread;
     std::atomic<bool> cancel_collect{};
 
     void Collect();
+
+    void CheckToDelete(ThreadState* thread_state,
+                       const std::unordered_set<void*>& protected_ptrs);
 
 private:
     HazardManager();

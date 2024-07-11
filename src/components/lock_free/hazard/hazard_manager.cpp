@@ -42,11 +42,12 @@ Mutator HazardManager::MakeMutator() {
         if (!threads.contains(std::this_thread::get_id()))
             threads.insert({std::this_thread::get_id(), new ThreadState{}});
     }
+    mutators_count.fetch_add(1);
     return Mutator(this);
 }
 
 void HazardManager::Collect() {
-    while (!cancel_collect.load()) {
+    while (!cancel_collect.load() && mutators_count.load() != 0) {
         approximate_free_list_size.store(0);
 
         {
@@ -62,32 +63,7 @@ void HazardManager::Collect() {
             }
 
             for (auto& [id, thread_state] : threads) {
-                RetirePtr* candidate_retired =
-                    thread_state->retired_ptrs.exchange(nullptr);
-
-                while (candidate_retired) {
-                    auto* next = candidate_retired->next;
-                    bool is_deleted = true;
-
-                    if (protected_ptrs.contains(candidate_retired->value)) {
-                        is_deleted = false;
-
-                        candidate_retired->next = thread_state->retired_ptrs;
-                        while (
-                            !thread_state->retired_ptrs.compare_exchange_weak(
-                                candidate_retired->next, candidate_retired)) {
-                        }
-
-                        approximate_free_list_size.fetch_add(1);
-                    }
-
-                    if (is_deleted) {
-                        candidate_retired->deleter();
-                        delete candidate_retired;
-                    }
-
-                    candidate_retired = next;
-                }
+                CheckToDelete(thread_state, protected_ptrs);
             }
         }
 
@@ -95,6 +71,35 @@ void HazardManager::Collect() {
                !cancel_collect.load()) {
             std::this_thread::sleep_for(500ms);
         }
+    }
+}
+void HazardManager::CheckToDelete(
+    ThreadState* thread_state,
+    const std::unordered_set<void*>& protected_ptrs) {
+
+    RetirePtr* candidate_retired = thread_state->retired_ptrs.exchange(nullptr);
+
+    while (candidate_retired) {
+        auto* next = candidate_retired->next;
+        bool is_deleted = true;
+
+        if (protected_ptrs.contains(candidate_retired->value)) {
+            is_deleted = false;
+
+            candidate_retired->next = thread_state->retired_ptrs;
+            while (!thread_state->retired_ptrs.compare_exchange_weak(
+                candidate_retired->next, candidate_retired)) {
+            }
+
+            approximate_free_list_size.fetch_add(1);
+        }
+
+        if (is_deleted) {
+            candidate_retired->deleter();
+            delete candidate_retired;
+        }
+
+        candidate_retired = next;
     }
 }
 

@@ -19,6 +19,7 @@ Mutator::Mutator(HazardManager* gc) : gc(gc) {
 Mutator::~Mutator() {
     Release();
     UnregisterThread();
+    gc->mutators_count.fetch_sub(1);
 }
 
 void Mutator::RegisterThread() {
@@ -32,10 +33,6 @@ void Mutator::UnregisterThread() {
 
 void Mutator::IncreaseRetired() {
     gc->approximate_free_list_size.fetch_add(1);
-
-//    if (gc->approximate_free_list_size > LimitFreeList) {
-//        gc->Collect();
-//    }
 }
 
 }  // namespace NComponents::NHazard
