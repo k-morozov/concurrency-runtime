@@ -6,7 +6,7 @@ components_sources = files(
     'lock_free/classic_ms_queue.cpp',
     'lock_free/simple_ms_queue.cpp',
     'lock_free/hazard/mutator.cpp',
-    'lock_free/hazard/manager.cpp',
+    'lock_free/hazard/hazard_manager.cpp',
     'lock_free/hazard/thread_state.cpp',
 )
 

@@ -2,21 +2,21 @@
 // Created by konstantin on 09.07.24.
 //
 
-#include "manager.h"
-
 #include <thread>
 #include <unordered_set>
 
 #include <components/lock_free/hazard/mutator.h>
 
+#include "hazard_manager.h"
+
 namespace NComponents::NHazard {
 
-Manager* Manager::Get() {
-    static Manager gc;
+HazardManager* HazardManager::Get() {
+    static HazardManager gc;
     return &gc;
 }
 
-Mutator Manager::MakeMutator() {
+Mutator HazardManager::MakeMutator() {
     {
         std::lock_guard g(thread_lock);
         if (!threads.contains(std::this_thread::get_id()))
@@ -25,7 +25,7 @@ Mutator Manager::MakeMutator() {
     return Mutator(this);
 }
 
-void Manager::Collect() {
+void HazardManager::Collect() {
     approximate_free_list_size.store(0);
 
     std::scoped_lock lock(scan_lock, thread_lock);
@@ -68,7 +68,7 @@ void Manager::Collect() {
         }
     }
 }
-Manager::~Manager() {
+HazardManager::~HazardManager() {
     Collect();
 
     std::lock_guard g(thread_lock);

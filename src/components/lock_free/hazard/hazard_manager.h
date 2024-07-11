@@ -18,12 +18,12 @@ namespace NComponents::NHazard {
 
 struct ThreadState;
 
-class Manager final {
+class HazardManager final {
     friend class Mutator;
 
 public:
-    ~Manager();
-    static Manager* Get();
+    ~HazardManager();
+    static HazardManager* Get();
     Mutator MakeMutator();
 
 protected:
@@ -36,7 +36,7 @@ protected:
     void Collect();
 
 private:
-    Manager() = default;
+    HazardManager() = default;
 };
 
 }  // namespace NComponents::NHazard

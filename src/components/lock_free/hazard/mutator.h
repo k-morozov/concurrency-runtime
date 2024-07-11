@@ -19,13 +19,13 @@ namespace NComponents::NHazard {
 class Mutator final {
     static constexpr size_t LimitFreeList = 8;
 
-    Manager* gc;
+    HazardManager* gc;
 
 protected:
     ThreadState* mutator_thread_state{};
 
 public:
-    explicit Mutator(Manager* gc);
+    explicit Mutator(HazardManager* gc);
     ~Mutator();
 
     template <class T>
