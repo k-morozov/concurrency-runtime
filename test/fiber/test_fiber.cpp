@@ -22,7 +22,7 @@ TEST(TestFiber, JustWorks1Go) {
 
     bool done = false;
 
-    fibers::Go(pool, [&]() {
+    NFibers::Go(pool, [&]() {
         ASSERT_EQ(NExecutors::IntrusiveThreadPool::Current(), &pool);
         done = true;
     });
@@ -41,7 +41,7 @@ TEST(TestFiber, Child) {
     auto init = [&]() {
         ASSERT_EQ(NExecutors::IntrusiveThreadPool::Current(), &pool);
 
-        fibers::Go([&]() {
+        NFibers::Go([&]() {
             ASSERT_EQ(NExecutors::IntrusiveThreadPool::Current(), &pool);
             ++done;
         });
@@ -49,7 +49,7 @@ TEST(TestFiber, Child) {
         ++done;
     };
 
-    fibers::Go(pool, init);
+    NFibers::Go(pool, init);
 
     pool.WaitIdle();
 
@@ -69,9 +69,9 @@ TEST(TestFiber, RunInParallel) {
 
     const auto start = Now();
 
-    fibers::Go(pool, sleeper);
-    fibers::Go(pool, sleeper);
-    fibers::Go(pool, sleeper);
+    NFibers::Go(pool, sleeper);
+    NFibers::Go(pool, sleeper);
+    NFibers::Go(pool, sleeper);
 
     pool.WaitIdle();
 
@@ -85,8 +85,8 @@ TEST(TestFiber, Yield1) {
 
     bool done = false;
 
-    fibers::Go(pool, [&] {
-        fibers::Yield();
+    NFibers::Go(pool, [&] {
+        NFibers::Yield();
 
         ASSERT_EQ(NExecutors::IntrusiveThreadPool::Current(), &pool);
         done = true;
@@ -103,21 +103,21 @@ TEST(TestFiber, Yield2) {
 
     int state = Ping;
 
-    fibers::Go(pool, [&] {
+    NFibers::Go(pool, [&] {
         for (size_t i = 0; i < 2; ++i) {
             ASSERT_EQ(state, Ping);
             state = Pong;
 
-            fibers::Yield();
+            NFibers::Yield();
         }
     });
 
-    fibers::Go(pool, [&] {
+    NFibers::Go(pool, [&] {
         for (size_t j = 0; j < 2; ++j) {
             ASSERT_EQ(state, Pong);
             state = Ping;
 
-            fibers::Yield();
+            NFibers::Yield();
         }
     });
 
@@ -133,12 +133,12 @@ TEST(TestFiber, Yield3) {
 
     auto runner = [] {
         for (size_t i = 0; i < kYields; ++i) {
-            fibers::Yield();
+            NFibers::Yield();
         }
     };
 
-    fibers::Go(pool, runner);
-    fibers::Go(pool, runner);
+    NFibers::Go(pool, runner);
+    NFibers::Go(pool, runner);
 
     pool.Start();
 
@@ -157,8 +157,8 @@ TEST(TestFiber, TwoPools1) {
             [&pool]() { ASSERT_EQ(NExecutors::IntrusiveThreadPool::Current(), &pool); };
     };
 
-    fibers::Go(pool_1, make_tester(pool_1));
-    fibers::Go(pool_2, make_tester(pool_2));
+    NFibers::Go(pool_1, make_tester(pool_1));
+    NFibers::Go(pool_2, make_tester(pool_2));
 
     pool_1.WaitIdle();
     pool_2.WaitIdle();
@@ -178,17 +178,17 @@ TEST(TestFiber, TwoPools2) {
             for (size_t i = 0; i < kIterations; ++i) {
                 ASSERT_EQ(NExecutors::IntrusiveThreadPool::Current(), &pool);
 
-                fibers::Yield();
+                NFibers::Yield();
 
-                fibers::Go(pool, [&pool]() {
+                NFibers::Go(pool, [&pool]() {
                     ASSERT_EQ(NExecutors::IntrusiveThreadPool::Current(), &pool);
                 });
             }
         };
     };
 
-    fibers::Go(pool_1, make_tester(pool_1));
-    fibers::Go(pool_2, make_tester(pool_2));
+    NFibers::Go(pool_1, make_tester(pool_1));
+    NFibers::Go(pool_2, make_tester(pool_2));
 
     pool_1.WaitIdle();
     pool_2.WaitIdle();

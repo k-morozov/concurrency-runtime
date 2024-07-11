@@ -5,9 +5,11 @@
 #pragma once
 
 #include <components/function/basic_function.h>
+#include <functional>
 
-namespace fibers::coro {
+namespace NFibers::coro {
 
-using Routine = NComponents::BasicFunction<void()>;
+//using Routine = NComponents::BasicFunction<void()>;
+using Routine = std::function<void()>;
 
 }

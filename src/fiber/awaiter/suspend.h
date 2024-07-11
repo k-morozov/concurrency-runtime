@@ -6,7 +6,7 @@
 
 #include <fiber/awaiter/awaiter.h>
 
-namespace fibers {
+namespace NFibers {
 
 void Suspend(IAwaiter* waiter);
 

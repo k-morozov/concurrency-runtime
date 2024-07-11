@@ -9,7 +9,7 @@
 #include <components/intrusive/list.h>
 #include <fiber/awaiter/awaiter.h>
 
-namespace fibers {
+namespace NFibers {
 
 template <class E>
 class EventWaiter : public IAwaiter, public NComponents::Node<EventWaiter<E>> {
@@ -35,4 +35,4 @@ private:
     StoppedFiber stopped_fiber;
 };
 
-}  // namespace fibers
+}  // namespace NFibers

@@ -30,14 +30,14 @@ int main() {
 
     size_t counter{};
 
-    fibers::Go(pool, [&counter] {
-        fibers::AsyncMutex mutex;
-        fibers::WaitGroup wg;
+    NFibers::Go(pool, [&counter] {
+        NFibers::AsyncMutex mutex;
+        NFibers::WaitGroup wg;
 
         wg.Add(kTasks);
 
         for (size_t i{}; i < kTasks; i++) {
-            fibers::Go([&] {
+            NFibers::Go([&] {
                 {
                     std::lock_guard lock(mutex);
                     counter++;

@@ -6,7 +6,7 @@
 
 #include <cassert>
 
-namespace fibers::coro {
+namespace NFibers::coro {
 
 static const size_t kDefaultCoroBufferSize = 64 * 1024;
 

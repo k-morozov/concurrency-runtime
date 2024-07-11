@@ -6,11 +6,11 @@
 
 #include <mutex>
 
-#include <fiber/awaiter/event_awaiter.h>
 #include <components/intrusive/list.h>
 #include <components/sync/spinLock.h>
+#include <fiber/awaiter/event_awaiter.h>
 
-namespace fibers {
+namespace NFibers {
 
 class Event {
     using Spinlock = NSync::SpinLock;
@@ -28,4 +28,4 @@ private:
 
     void Park(Waiter* waiter);
 };
-}  // namespace fibers
+}  // namespace NFibers

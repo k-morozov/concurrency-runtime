@@ -11,7 +11,7 @@
 
 static const size_t kDefaultCoroBufferSize = 64 * 1024;
 
-namespace fibers {
+namespace NFibers {
 
 void Go(NExecutors::IExecutor& scheduler, coro::Routine routine) {
     auto buffer = ctx::Buffer::AllocBytes(kDefaultCoroBufferSize);

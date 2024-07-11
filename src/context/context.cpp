@@ -7,7 +7,7 @@
 #include <cassert>
 #include <stdexcept>
 
-namespace fibers::ctx {
+namespace NFibers::ctx {
 
 void Context::Setup(BufferView target_buffer, Runner* runner) {
     assert(runner);

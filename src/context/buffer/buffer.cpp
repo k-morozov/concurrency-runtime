@@ -6,7 +6,7 @@
 
 #include <utility>
 
-namespace fibers::ctx {
+namespace NFibers::ctx {
 
 Buffer::Buffer(Buffer::Alloc alloc) : alloc_(alloc) {}
 

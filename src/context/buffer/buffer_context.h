@@ -7,7 +7,7 @@
 #include <context/buffer/buffer.h>
 #include <context/runner.h>
 
-namespace fibers::ctx {
+namespace NFibers::ctx {
 
 class BufferContext final {
 public:

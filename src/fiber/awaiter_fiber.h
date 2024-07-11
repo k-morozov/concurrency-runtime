@@ -9,7 +9,7 @@
 #include <executor/executor.h>
 #include <executor/task/task_base.h>
 
-namespace fibers {
+namespace NFibers {
 
 class IAwaiter;
 
@@ -41,4 +41,4 @@ private:
     IAwaiter* awaiter_{nullptr};
 };
 
-}  // namespace fibers
+}  // namespace NFibers

@@ -17,11 +17,11 @@ TEST(TestEvent, OneWaiter) {
 
     static const std::string kMessage = "Hello";
 
-    fibers::Event event;
+    NFibers::Event event;
     std::string data;
     bool ok = false;
 
-    fibers::Go(scheduler, [&] {
+    NFibers::Go(scheduler, [&] {
         event.Wait();
         ASSERT_EQ(data, kMessage);
         ok = true;
@@ -29,7 +29,7 @@ TEST(TestEvent, OneWaiter) {
 
     std::this_thread::sleep_for(1s);
 
-    fibers::Go(scheduler, [&] {
+    NFibers::Go(scheduler, [&] {
         data = kMessage;
         event.Fire();
     });
@@ -43,18 +43,18 @@ TEST(TestEvent, DoNotBlockThread) {
     NExecutors::IntrusiveThreadPool scheduler{1};
     scheduler.Start();
 
-    fibers::Event event;
+    NFibers::Event event;
     bool ok = false;
 
-    fibers::Go(scheduler, [&] {
+    NFibers::Go(scheduler, [&] {
         event.Wait();
         ok = true;
     });
 
-    fibers::Go(scheduler, [&] {
+    NFibers::Go(scheduler, [&] {
         for (size_t i = 0; i < 10; ++i) {
             std::this_thread::sleep_for(32ms);
-            fibers::Yield();
+            NFibers::Yield();
         }
         event.Fire();
     });
@@ -68,13 +68,13 @@ TEST(TestEvent, MultipleWaiters) {
     NExecutors::IntrusiveThreadPool scheduler{1};
     scheduler.Start();
 
-    fibers::Event event;
+    NFibers::Event event;
     std::atomic<size_t> waiters{0};
 
     static const size_t kWaiters = 7;
 
     for (size_t i = 0; i < kWaiters; ++i) {
-        fibers::Go(scheduler, [&] {
+        NFibers::Go(scheduler, [&] {
             event.Wait();
             ++waiters;
         });
@@ -82,7 +82,7 @@ TEST(TestEvent, MultipleWaiters) {
 
     std::this_thread::sleep_for(1s);
 
-    fibers::Go(scheduler, [&] { event.Fire(); });
+    NFibers::Go(scheduler, [&] { event.Fire(); });
 
     scheduler.WaitIdle();
 
@@ -95,13 +95,13 @@ TEST(TestEvent, DISABLED_DoNotWasteCpu) {
 
     common::ProcessCPUTimer cpu_timer;
 
-    fibers::Event event;
+    NFibers::Event event;
 
-    fibers::Go(scheduler, [&] { event.Wait(); });
+    NFibers::Go(scheduler, [&] { event.Wait(); });
 
     std::this_thread::sleep_for(1s);
 
-    fibers::Go(scheduler, [&] { event.Fire(); });
+    NFibers::Go(scheduler, [&] { event.Fire(); });
 
     scheduler.WaitIdle();
 

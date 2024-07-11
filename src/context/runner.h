@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace fibers::ctx {
+namespace NFibers::ctx {
 
 class Runner {
 public:

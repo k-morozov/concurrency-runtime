@@ -8,7 +8,7 @@
 
 #include "awaiter_fiber.h"
 
-namespace fibers {
+namespace NFibers {
 
 void Suspend(IAwaiter* waiter) {
     auto current_fiber = AwaiterFiber::Self();
@@ -16,4 +16,4 @@ void Suspend(IAwaiter* waiter) {
     current_fiber->Suspend(waiter);
 }
 
-}  // namespace fibers
+}  // namespace NFibers

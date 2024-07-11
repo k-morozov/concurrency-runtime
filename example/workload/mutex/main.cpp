@@ -16,16 +16,16 @@ int main() {
     constexpr size_t kFibers = 128;
     constexpr size_t kTasks = 1024;
 
-    fibers::Go(scheduler, [] {
-        fibers::WaitGroup wg;
+    NFibers::Go(scheduler, [] {
+        NFibers::WaitGroup wg;
 
-        fibers::AsyncMutex mutex;
+        NFibers::AsyncMutex mutex;
         size_t cs = 0;
 
         wg.Add(kFibers);
 
         for (size_t i = 0; i < kFibers; ++i) {
-            fibers::Go([&] {
+            NFibers::Go([&] {
                 for (size_t j = 0; j < kTasks; ++j) {
                     std::lock_guard guard(mutex);
                     ++cs;

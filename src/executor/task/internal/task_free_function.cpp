@@ -6,7 +6,7 @@
 
 namespace NExecutors {
 
-TaskFreeFunction::TaskFreeFunction(fibers::coro::Routine routine_)
+TaskFreeFunction::TaskFreeFunction(NFibers::coro::Routine routine_)
     : routine(std::move(routine_)) {}
 
 void TaskFreeFunction::Run() noexcept {
@@ -15,7 +15,7 @@ void TaskFreeFunction::Run() noexcept {
     delete this;
 }
 
-TaskBase* TaskFreeFunction::Make(fibers::coro::Routine routine_) {
+TaskBase* TaskFreeFunction::Make(NFibers::coro::Routine routine_) {
     return new TaskFreeFunction(std::move(routine_));
 }
 

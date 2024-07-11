@@ -13,7 +13,7 @@
 #include <context/runner.h>
 #include <coro/routine.h>
 
-namespace fibers::coro {
+namespace NFibers::coro {
 
 class StackfullCoroutine : private ctx::Runner {
 public:

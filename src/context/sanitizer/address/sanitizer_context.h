@@ -7,7 +7,7 @@
 #include <context/buffer/buffer.h>
 #include <sanitizer/asan_interface.h>
 
-namespace fibers::ctx {
+namespace NFibers::ctx {
 
 class SanitizerContext {
 public:

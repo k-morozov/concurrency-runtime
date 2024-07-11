@@ -22,14 +22,14 @@ static constexpr size_t CountIteration = 10;
 void bench_logic(NExecutors::IExecutor& pool) {
     size_t counter{};
 
-    fibers::Go(pool, [&counter] {
-        fibers::AsyncMutex mutex;
-        fibers::WaitGroup wg;
+    NFibers::Go(pool, [&counter] {
+        NFibers::AsyncMutex mutex;
+        NFibers::WaitGroup wg;
 
         wg.Add(kTasks);
 
         for (size_t i{}; i < kTasks; i++) {
-            fibers::Go([&] {
+            NFibers::Go([&] {
                 {
                     std::lock_guard lock(mutex);
                     std::this_thread::sleep_for(25ms);

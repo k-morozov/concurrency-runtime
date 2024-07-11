@@ -8,19 +8,15 @@
 #include <fiber/awaiter_fiber.h>
 #include <fiber/handle/stopped_fiber.h>
 
-namespace fibers {
+namespace NFibers {
 
 AwaiterFiber* StoppedFiber::Release() {
     assert(IsValid());
     return std::exchange(fiber_, nullptr);
 }
 
-void StoppedFiber::Schedule() {
-    Release()->Schedule();
-}
+void StoppedFiber::Schedule() { Release()->Schedule(); }
 
-void StoppedFiber::Switch() {
-    Release()->Switch();
-}
+void StoppedFiber::Switch() { Release()->Switch(); }
 
-}  // namespace fibers
+}  // namespace NFibers

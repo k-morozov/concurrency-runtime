@@ -9,7 +9,7 @@
 #include <components/intrusive/list.h>
 #include <fiber/awaiter/awaiter.h>
 
-namespace fibers {
+namespace NFibers {
 
 template <class W>
 class WaitGroupWaiter : public IAwaiter,
@@ -27,9 +27,7 @@ public:
         guard.release()->unlock();
     }
 
-    void Schedule() {
-        stopped_fiber.Schedule();
-    }
+    void Schedule() { stopped_fiber.Schedule(); }
 
 private:
     W* wg;
@@ -37,4 +35,4 @@ private:
     StoppedFiber stopped_fiber;
 };
 
-}  // namespace fibers
+}  // namespace NFibers

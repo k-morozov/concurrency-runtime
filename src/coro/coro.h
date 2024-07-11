@@ -11,7 +11,7 @@
 #include <context/runner.h>
 #include <coro/routine.h>
 
-namespace fibers::coro {
+namespace NFibers::coro {
 
 class Coroutine : private ctx::Runner {
 public:

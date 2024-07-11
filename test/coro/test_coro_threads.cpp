@@ -8,7 +8,7 @@
 
 #include <coro/coro.h>
 
-using namespace fibers::coro;
+using namespace NFibers::coro;
 
 struct Threads {
     template <typename F>

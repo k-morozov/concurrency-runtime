@@ -6,7 +6,7 @@
 
 #include <span>
 
-namespace fibers::ctx {
+namespace NFibers::ctx {
 
 using BufferView = std::span<std::byte>;
 

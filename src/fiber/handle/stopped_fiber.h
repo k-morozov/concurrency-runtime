@@ -6,7 +6,7 @@
 
 #include <cassert>
 
-namespace fibers {
+namespace NFibers {
 
 class AwaiterFiber;
 
@@ -28,10 +28,10 @@ private:
     AwaiterFiber* fiber_{nullptr};
 
     explicit StoppedFiber(AwaiterFiber* fiber) : fiber_(fiber) {
-//        assert(fiber_);
+        //        assert(fiber_);
     }
 
     AwaiterFiber* Release();
 };
 
-}  // namespace fibers
+}  // namespace NFibers

@@ -20,11 +20,11 @@ TEST(TestDistributedPool, JustWorks) {
 
     pool.Start();
 
-    fibers::Go(pool, [] {
-        fibers::WaitGroup wg;
+    NFibers::Go(pool, [] {
+        NFibers::WaitGroup wg;
         wg.Add(1);
 
-        fibers::Go([&wg] {
+        NFibers::Go([&wg] {
             std::cout << "Hello from thread pool!" << std::endl;
             wg.Done();
         });
@@ -37,11 +37,11 @@ TEST(TestDistributedPool, Wait) {
 
     pool.Start();
 
-    fibers::Go(pool, [] {
-        fibers::WaitGroup wg;
+    NFibers::Go(pool, [] {
+        NFibers::WaitGroup wg;
         wg.Add(1);
 
-        fibers::Go([&] {
+        NFibers::Go([&] {
             std::this_thread::sleep_for(1s);
             wg.Done();
         });
@@ -55,12 +55,12 @@ TEST(TestDistributedPool, MultiWait) {
 
     pool.Start();
 
-    fibers::Go(pool, [] {
+    NFibers::Go(pool, [] {
         for (size_t i = 0; i < 3; ++i) {
-            fibers::WaitGroup wg;
+            NFibers::WaitGroup wg;
             wg.Add(1);
 
-            fibers::Go([&] {
+            NFibers::Go([&] {
                 std::this_thread::sleep_for(1s);
                 wg.Done();
             });
@@ -75,14 +75,14 @@ TEST(TestDistributedPool, ManyTasks) {
 
     pool.Start();
 
-    fibers::Go(pool, [] {
+    NFibers::Go(pool, [] {
         static const size_t kTasks = 17;
 
-        fibers::WaitGroup wg;
+        NFibers::WaitGroup wg;
         wg.Add(kTasks);
 
         for (size_t i = 0; i < kTasks; ++i) {
-            fibers::Go([&] {
+            NFibers::Go([&] {
                 wg.Done();
             });
         }
@@ -95,16 +95,16 @@ TEST(TestDistributedPool, DoNotBurnCPU) {
     NExecutors::DistributedPool pool{4};
     
     pool.Start();
-    
-    fibers::Go(pool, [] {
-        fibers::WaitGroup wg;
+
+    NFibers::Go(pool, [] {
+        NFibers::WaitGroup wg;
         wg.Add(4);
         
         common::ProcessCPUTimer cpu_timer;
 
         // Warmup
         for (size_t i = 0; i < 4; ++i) {
-            fibers::Go([&] {
+            NFibers::Go([&] {
                 std::this_thread::sleep_for(100ms);
                 wg.Done();
             });
@@ -120,12 +120,12 @@ TEST(TestDistributedPool, Current) {
     NExecutors::DistributedPool pool{4};
     
     pool.Start();
-    
-    fibers::Go(pool, [&] {
-        fibers::WaitGroup wg;
+
+    NFibers::Go(pool, [&] {
+        NFibers::WaitGroup wg;
         wg.Add(1);
 
-        fibers::Go([&] {
+        NFibers::Go([&] {
             ASSERT_EQ(NExecutors::DistributedPool::Current(), &pool);
             wg.Done();
         });
@@ -138,15 +138,15 @@ TEST(TestDistributedPool, SubmitAfterWait) {
     NExecutors::DistributedPool pool{4};
     
     pool.Start();
-    
-    fibers::Go(pool, [] {
-        fibers::WaitGroup wg;
+
+    NFibers::Go(pool, [] {
+        NFibers::WaitGroup wg;
         wg.Add(1);
 
-        fibers::Go([&] {
+        NFibers::Go([&] {
             std::this_thread::sleep_for(500ms);
 
-            fibers::Go(*NExecutors::DistributedPool::Current(), [&] {
+            NFibers::Go(*NExecutors::DistributedPool::Current(), [&] {
                 std::this_thread::sleep_for(500ms);
                 wg.Done();
             });
@@ -161,16 +161,16 @@ TEST(TestDistributedPool, Racy) {
 
     pool.Start();
 
-    fibers::Go(pool, [] {
+    NFibers::Go(pool, [] {
         static const size_t kTasks = 100500;
 
         std::atomic<size_t> shared_counter{0};
 
-        fibers::WaitGroup wg;
+        NFibers::WaitGroup wg;
         wg.Add(kTasks);
 
         for (size_t i = 0; i < kTasks; ++i) {
-            fibers::Go([&] {
+            NFibers::Go([&] {
                 const size_t old = shared_counter.load();
                 shared_counter.store(old + 1);
 
@@ -195,14 +195,14 @@ TEST(TestDistributedPool, ForBench) {
 
     size_t counter{};
 
-    fibers::Go(pool, [&counter] {
-        fibers::AsyncMutex mutex;
-        fibers::WaitGroup wg;
+    NFibers::Go(pool, [&counter] {
+        NFibers::AsyncMutex mutex;
+        NFibers::WaitGroup wg;
 
         wg.Add(kTasks);
 
         for (size_t i{}; i < kTasks; i++) {
-            fibers::Go([&] {
+            NFibers::Go([&] {
                 {
                     std::lock_guard lock(mutex);
                     counter++;

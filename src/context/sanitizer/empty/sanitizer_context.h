@@ -6,7 +6,7 @@
 
 #include <context/buffer/buffer.h>
 
-namespace fibers::ctx {
+namespace NFibers::ctx {
 
 class SanitizerContext {
 public:

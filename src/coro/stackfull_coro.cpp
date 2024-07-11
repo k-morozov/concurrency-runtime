@@ -5,7 +5,7 @@
 
 #include "stackfull_coro.h"
 
-namespace fibers::coro {
+namespace NFibers::coro {
 
 StackfullCoroutine::StackfullCoroutine(Routine routine, ctx::Buffer&& buffer)
     : routine_(std::move(routine)), coro_buffer_(std::move(buffer)) {

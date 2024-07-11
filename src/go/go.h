@@ -7,7 +7,7 @@
 #include <coro/stackfull_coro.h>
 #include <executor/executor.h>
 
-namespace fibers {
+namespace NFibers {
 
 void Go(NExecutors::IExecutor& scheduler, coro::Routine routine);
 

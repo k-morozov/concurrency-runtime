@@ -8,11 +8,11 @@
 #include <context/context.h>
 #include <context/runner.h>
 
-using Buffer = fibers::ctx::Buffer;
-using Ctx = fibers::ctx::Context;
+using Buffer = NFibers::ctx::Buffer;
+using Ctx = NFibers::ctx::Context;
 
 template <class T>
-class TestCoro : private fibers::ctx::Runner {
+class TestCoro : private NFibers::ctx::Runner {
     struct SuspendCtx {
         TestCoro* coro;
         void Suspend() { coro->Suspend(); }

@@ -6,11 +6,11 @@
 
 #include <fiber/awaiter/awaiter.h>
 
-namespace fibers {
+namespace NFibers {
 
 class YieldAwaiter : public IAwaiter {
 public:
     void AwaitSuspend(StoppedFiber handle) override { handle.Schedule(); }
 };
 
-}  // namespace fibers
+}  // namespace NFibers

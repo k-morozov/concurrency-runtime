@@ -6,7 +6,7 @@
 
 #include <buffer/sys_context.h>
 
-namespace fibers::ctx {
+namespace NFibers::ctx {
 
 namespace {
 
