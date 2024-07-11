@@ -4,6 +4,7 @@
 
 #include "hazard_manager.h"
 
+#include <cassert>
 #include <chrono>
 #include <thread>
 #include <unordered_set>
@@ -20,12 +21,21 @@ HazardManager::HazardManager() {
 
 HazardManager::~HazardManager() {
     cancel_collect.store(true);
+
     if (collector_thread && collector_thread->joinable()) {
         collector_thread->join();
     }
 
+    assert(mutators_count.load() == 0);
+
     std::lock_guard g(thread_lock);
     for (auto& [k, state] : threads) {
+        assert(nullptr == state->protected_ptr.load());
+
+        CheckToDelete(state, {});
+
+        assert(nullptr == state->retired_ptrs.load());
+
         delete state;
     }
     threads.clear();
