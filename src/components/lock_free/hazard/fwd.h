@@ -6,6 +6,6 @@
 
 namespace NComponents::NHazard {
 
-class Manager;
+class HazardManager;
 
 }

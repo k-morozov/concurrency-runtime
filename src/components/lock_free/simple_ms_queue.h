@@ -7,9 +7,9 @@
 #include <atomic>
 #include <optional>
 
-#include <components/lock_free/hazard/thread_state.h>
-#include <components/lock_free/hazard/manager.h>
+#include <components/lock_free/hazard/hazard_manager.h>
 #include <components/lock_free/hazard/mutator.h>
+#include <components/lock_free/hazard/thread_state.h>
 
 namespace NComponents {
 
@@ -75,7 +75,7 @@ public:
     }
 
     std::optional<T> TryPop() {
-        auto mutator = NHazard::Manager::Get()->MakeMutator();
+        auto mutator = NHazard::HazardManager::Get()->MakeMutator();
         while (true) {
             Node* old_head = mutator.Acquire(&head);
 
@@ -94,6 +94,7 @@ public:
             if (head.compare_exchange_weak(old_head, old_head->next)) {
                 Node* next = old_head->next;
                 T result = std::move(*next->value);
+                mutator.Release();
                 mutator.Retire(old_head);
                 return result;
             }
