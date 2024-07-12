@@ -5,11 +5,10 @@
 #pragma once
 
 #include <components/function/basic_function.h>
-#include <functional>
 
 namespace NFibers::NCoro {
 
-//using Routine = NComponents::BasicFunction<void()>;
-using Routine = std::function<void()>;
+using Routine = NComponents::BasicFunction<void()>;
+//using Routine = std::function<void()>;
 
 }
