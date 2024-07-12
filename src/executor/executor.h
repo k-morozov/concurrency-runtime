@@ -27,6 +27,10 @@ public:
         shutdown_.store(true);
     }
 
+    size_t GetTasks() const {
+        return count_tasks.load();
+    }
+
     void AddTask() {
         count_tasks.fetch_add(1);
     }

@@ -17,7 +17,7 @@ Worker::Worker(IExecutor* ex) : ex(ex) {}
 
 Worker::~Worker() {
     Join();
-    assert(0 == ex->count_tasks.load());
+    assert(0 == ex->GetTasks());
 }
 
 void Worker::Start() {
