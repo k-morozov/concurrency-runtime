@@ -9,10 +9,12 @@ namespace NExecutors {
 TaskFreeFunction::TaskFreeFunction(NFibers::NCoro::Routine routine_)
     : routine(std::move(routine_)) {}
 
-void TaskFreeFunction::Run() noexcept {
+auto TaskFreeFunction::Run() noexcept -> TaskRunResult {
     routine();
 
     delete this;
+
+    return ITask::TaskRunResult::COMPLETE;
 }
 
 TaskBase* TaskFreeFunction::Make(NFibers::NCoro::Routine routine_) {

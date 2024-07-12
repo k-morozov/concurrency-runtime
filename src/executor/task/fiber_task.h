@@ -19,4 +19,4 @@ private:
     std::function<void()> f_;
 };
 
-}  // namespace executors
+}  // namespace NExecutors

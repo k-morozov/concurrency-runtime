@@ -24,12 +24,12 @@ public:
     AwaiterFiber& operator=(const AwaiterFiber&) = delete;
     AwaiterFiber& operator=(AwaiterFiber&&) noexcept = delete;
 
-    void Schedule();
+    void Schedule(bool is_internal = false);
 
     void Suspend(IAwaiter* waiter);
     void Switch();
 
-    void Run() noexcept override;
+    TaskRunResult Run() noexcept override;
 
     static AwaiterFiber* Self();
 

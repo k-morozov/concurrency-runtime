@@ -15,7 +15,7 @@ class IntrusiveManualExecutor final : public IExecutor {
 public:
     IntrusiveManualExecutor() = default;
 
-    void Submit(TaskBase* /*task*/) override;
+    void Submit(TaskBase* /*task*/, bool is_internal) override;
 
     size_t RunAtMost(size_t limit);
 

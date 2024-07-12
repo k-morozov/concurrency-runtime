@@ -61,7 +61,7 @@ void IntrusiveThreadPool::Start() {
     }
 }
 
-void IntrusiveThreadPool::Submit(TaskBase* task) {
+void IntrusiveThreadPool::Submit(TaskBase* task, const bool /*is_internal*/) {
     if (shutdown_.load()) {
         return;
     }

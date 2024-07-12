@@ -13,7 +13,7 @@ namespace NExecutors {
 IntrusiveStrand::IntrusiveStrand(IExecutor& underlying_)
     : underlying(underlying_) {}
 
-void IntrusiveStrand::Submit(TaskBase* task) {
+void IntrusiveStrand::Submit(TaskBase* task, const bool /*is_internal*/) {
     std::lock_guard lock(spinlock);
     tasks.Push(task);
 

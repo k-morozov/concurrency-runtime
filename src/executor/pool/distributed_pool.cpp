@@ -16,7 +16,7 @@ DistributedPool::DistributedPool(const size_t count_)
 }
 
 DistributedPool::~DistributedPool() {
-    StartShutdown();
+//    StartShutdown();
     WaitShutdown();
 }
 
@@ -26,12 +26,18 @@ void DistributedPool::Start() {
     }
 }
 
-void DistributedPool::Submit(NExecutors::TaskBase* task) {
-    if (shutdown_.load()) return;
+void DistributedPool::Submit(NExecutors::TaskBase* task, const bool is_internal) {
+    if (!is_internal) {
+        if (shutdown_.load()) return;
+    }
 
-    count_tasks_.fetch_add(1);
+    if (task->GetState() == StateTask::PLANNED) {
+        count_tasks.fetch_add(1);
+        task->ProgressState();
+    }
+
     const size_t worker_for_current_task = current_worker.fetch_add(1);
-    workers[worker_for_current_task % count_workers].Push(task);
+    workers[worker_for_current_task % count_workers].Push(task, is_internal);
 }
 
 IExecutor* DistributedPool::Current() { return internal::Worker::Current(); }
@@ -41,11 +47,17 @@ void DistributedPool::StartShutdown() {
 }
 
 void DistributedPool::WaitShutdown() {
+    StartShutdown();
     for (auto& w : workers) {
         w.Join();
     }
 }
 
-void DistributedPool::WaitIdle() {}
+void DistributedPool::WaitIdle() {
+    std::unique_lock lock(mutex);
+    while (0 != count_tasks.load()) {
+        empty_tasks_.wait(lock);
+    }
+}
 
 }  // namespace NExecutors

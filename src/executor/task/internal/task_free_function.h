@@ -14,7 +14,7 @@ class TaskFreeFunction : public TaskBase {
     NFibers::NCoro::Routine routine;
 
 public:
-    void Run() noexcept override;
+    TaskRunResult Run() noexcept override;
 
     static TaskBase* Make(NFibers::NCoro::Routine routine_);
 
