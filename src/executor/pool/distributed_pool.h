@@ -28,11 +28,7 @@ public:
 
     static IExecutor* Current();
 
-    void StartShutdown();
-
     void WaitShutdown();
-
-    void WaitIdle();
 };
 
 }  // namespace NExecutors

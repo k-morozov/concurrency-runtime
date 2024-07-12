@@ -1,5 +1,4 @@
 executor_sources = files(
-    'pool/thread_pool.cpp',
     'pool/intrusive_pool.cpp',
     'pool/distributed_pool.cpp',
     'pool/internal/worker.cpp',

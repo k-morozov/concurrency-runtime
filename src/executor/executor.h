@@ -23,7 +23,7 @@ public:
         return shutdown_.load();
     }
 
-    void Shutdown() {
+    void StartShutdown() {
         shutdown_.store(true);
     }
 
@@ -39,7 +39,7 @@ public:
         count_tasks.fetch_sub(1);
     }
 
-    void WaitNoTask() {
+    void WaitIdle() {
         std::unique_lock lock(mutex);
         while (0 != count_tasks.load()) {
             empty_tasks_.wait(lock);

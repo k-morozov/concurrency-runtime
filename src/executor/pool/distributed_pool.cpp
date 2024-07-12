@@ -15,9 +15,7 @@ DistributedPool::DistributedPool(const size_t count_)
     }
 }
 
-DistributedPool::~DistributedPool() {
-    WaitShutdown();
-}
+DistributedPool::~DistributedPool() { WaitShutdown(); }
 
 void DistributedPool::Start() {
     for (auto& w : workers) {
@@ -39,19 +37,11 @@ void DistributedPool::Submit(NExecutors::TaskBase* task) {
 
 IExecutor* DistributedPool::Current() { return NInternal::Worker::Current(); }
 
-void DistributedPool::StartShutdown() {
-    Shutdown();
-}
-
 void DistributedPool::WaitShutdown() {
     StartShutdown();
     for (auto& w : workers) {
         w.Join();
     }
-}
-
-void DistributedPool::WaitIdle() {
-    WaitNoTask();
 }
 
 }  // namespace NExecutors

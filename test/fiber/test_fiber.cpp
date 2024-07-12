@@ -6,7 +6,6 @@
 
 #include <chrono>
 
-#include <executor/pool/thread_pool.h>
 #include <executor/pool/intrusive_pool.h>
 #include <go/go.h>
 
