@@ -13,12 +13,11 @@
 namespace NExecutors {
 
 class DistributedPool final : public IExecutor {
-    friend class internal::Worker;
+    friend class NInternal::Worker;
 
     const size_t count_workers;
     std::atomic<size_t> current_worker{};
-    std::deque<internal::Worker> workers;
-    std::mutex mutex;
+    std::deque<NInternal::Worker> workers;
 
 public:
     explicit DistributedPool(size_t count);
