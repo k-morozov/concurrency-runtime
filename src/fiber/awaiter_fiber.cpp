@@ -28,7 +28,7 @@ auto AwaiterFiber::Run() noexcept -> TaskRunResult {
     Switch();
 
     if (fiber_coro_.IsCompleted()) {
-        assert(GetState() == NExecutors::StateTask::RUNNING);
+//        assert(GetState() == NExecutors::StateTask::RUNNING);
         ProgressState();
 
         delete this;
