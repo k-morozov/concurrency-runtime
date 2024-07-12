@@ -9,7 +9,7 @@
 
 #include <common/clock.h>
 #include <executor/manual/intrusive_manual_executor.h>
-#include <executor/pool/intrusive_pool.h>
+#include <executor/pool/distributed_pool.h>
 #include <executor/strand/intrusive_strand.h>
 #include <executor/submit.h>
 
@@ -17,8 +17,8 @@ using namespace std::chrono_literals;
 
 namespace {
 
-void AssertRunningOn(NExecutors::IntrusiveThreadPool& pool) {
-    ASSERT_TRUE(NExecutors::IntrusiveThreadPool::Current() == &pool);
+void AssertRunningOn(NExecutors::DistributedPool& pool) {
+    ASSERT_TRUE(NExecutors::DistributedPool::Current() == &pool);
 }
 
 class Robot {
@@ -39,7 +39,7 @@ private:
 }  // namespace
 
 TEST(TestStrand, JustWorks) {
-    NExecutors::IntrusiveThreadPool pool{4};
+    NExecutors::DistributedPool pool{4};
     pool.Start();
 
     NExecutors::IntrusiveStrand strand{pool};
@@ -54,7 +54,7 @@ TEST(TestStrand, JustWorks) {
 }
 
 TEST(TestStrand, Decorator) {
-    NExecutors::IntrusiveThreadPool pool{4};
+    NExecutors::DistributedPool pool{4};
     pool.Start();
 
     NExecutors::IntrusiveStrand strand{pool};
@@ -74,7 +74,7 @@ TEST(TestStrand, Decorator) {
 }
 
 TEST(TestStrand, Counter) {
-    NExecutors::IntrusiveThreadPool pool{13};
+    NExecutors::DistributedPool pool{13};
     pool.Start();
 
     size_t counter = 0;
@@ -96,7 +96,7 @@ TEST(TestStrand, Counter) {
 }
 
 TEST(TestStrand, Fifo) {
-    NExecutors::IntrusiveThreadPool pool{13};
+    NExecutors::DistributedPool pool{13};
     pool.Start();
 
     NExecutors::IntrusiveStrand strand{pool};
@@ -118,7 +118,7 @@ TEST(TestStrand, Fifo) {
 }
 
 TEST(TestStrand, ConcurrentStrands) {
-    NExecutors::IntrusiveThreadPool pool{16};
+    NExecutors::DistributedPool pool{16};
     pool.Start();
 
     static const size_t kStrands = 128;
@@ -147,10 +147,10 @@ TEST(TestStrand, ConcurrentStrands) {
 }
 
 TEST(TestStrand, ConcurrentSubmits) {
-    NExecutors::IntrusiveThreadPool workers{2};
+    NExecutors::DistributedPool workers{2};
     NExecutors::IntrusiveStrand strand{workers};
 
-    NExecutors::IntrusiveThreadPool clients{4};
+    NExecutors::DistributedPool clients{4};
 
     workers.Start();
     clients.Start();
@@ -207,7 +207,7 @@ TEST(TestStrand, Batching) {
 }
 
 TEST(TestStrand, StrandOverStrand) {
-    NExecutors::IntrusiveThreadPool pool{4};
+    NExecutors::DistributedPool pool{4};
     pool.Start();
 
     NExecutors::IntrusiveStrand strand_1{pool};
@@ -227,7 +227,7 @@ TEST(TestStrand, StrandOverStrand) {
 }
 
 TEST(TestStrand, DoNotOccupyThread) {
-    NExecutors::IntrusiveThreadPool pool{1};
+    NExecutors::DistributedPool pool{1};
     pool.Start();
 
     NExecutors::IntrusiveStrand strand{pool};
@@ -253,7 +253,7 @@ TEST(TestStrand, DoNotOccupyThread) {
 }
 
 TEST(TestStrand, NonBlockingSubmit) {
-    NExecutors::IntrusiveThreadPool pool{1};
+    NExecutors::DistributedPool pool{1};
     NExecutors::IntrusiveStrand strand{pool};
 
     pool.Start();
