@@ -9,7 +9,13 @@
 
 namespace NExecutors {
 
+namespace NInternal {
+class Worker;
+}
+
 class Shutdowner {
+    friend class NInternal::Worker;
+
     std::atomic<size_t> count_tasks{0};
     std::atomic<bool> shutdown_{false};
 
@@ -19,26 +25,6 @@ class Shutdowner {
 public:
     virtual ~Shutdowner() noexcept = default;
 
-    bool IsShutdown() const {
-        return shutdown_.load();
-    }
-
-    void StartShutdown() {
-        shutdown_.store(true);
-    }
-
-    size_t GetTasks() const {
-        return count_tasks.load();
-    }
-
-    void AddTask() {
-        count_tasks.fetch_add(1);
-    }
-
-    void RemoveTask() {
-        count_tasks.fetch_sub(1);
-    }
-
     void WaitIdle() {
         std::unique_lock lock(mutex);
         while (0 != count_tasks.load()) {
@@ -46,13 +32,22 @@ public:
         }
     }
 
+protected:
+    bool IsShutdown() const { return shutdown_.load(); }
+
+    void StartShutdown() { shutdown_.store(true); }
+
+    size_t GetTasks() const { return count_tasks.load(); }
+
+    void AddTask() { count_tasks.fetch_add(1); }
+
+    void RemoveTask() { count_tasks.fetch_sub(1); }
+
     bool CanCloseWorker() const {
         return shutdown_.load() && 0 == count_tasks.load();
     }
 
-    void NotifyAll() {
-        empty_tasks_.notify_all();
-    }
+    void NotifyAll() { empty_tasks_.notify_all(); }
 };
 
 struct IExecutor : public Shutdowner {
@@ -60,4 +55,4 @@ struct IExecutor : public Shutdowner {
     virtual void Submit(NExecutors::TaskBase* /*task*/) = 0;
 };
 
-}  // namespace executors
+}  // namespace NExecutors
