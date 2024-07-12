@@ -9,21 +9,27 @@
 #include <executor/executor.h>
 #include <executor/task/task_base.h>
 
-namespace fibers {
+namespace NFibers {
 
 class IAwaiter;
 
 class AwaiterFiber final : public NExecutors::TaskBase {
 public:
-    AwaiterFiber(NExecutors::IExecutor* executor, coro::Routine routine,
-                 ctx::Buffer&& buffer);
+    AwaiterFiber(NExecutors::IExecutor* executor, NCoro::Routine routine,
+                 NContext::Buffer&& buffer);
 
-    void Schedule();
+    AwaiterFiber(const AwaiterFiber&) = delete;
+    AwaiterFiber(AwaiterFiber&&) noexcept = delete;
+
+    AwaiterFiber& operator=(const AwaiterFiber&) = delete;
+    AwaiterFiber& operator=(AwaiterFiber&&) noexcept = delete;
+
+    void Schedule(bool is_internal = false);
 
     void Suspend(IAwaiter* waiter);
     void Switch();
 
-    void Run() noexcept override;
+    TaskRunResult Run() noexcept override;
 
     static AwaiterFiber* Self();
 
@@ -31,8 +37,8 @@ public:
 
 private:
     NExecutors::IExecutor* executor_;
-    coro::StackfullCoroutine fiber_coro_;
+    NCoro::StackfullCoroutine fiber_coro_;
     IAwaiter* awaiter_{nullptr};
 };
 
-}  // namespace fibers
+}  // namespace NFibers

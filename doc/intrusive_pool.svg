@@ -587,7 +587,7 @@
 <text  x="308.02" y="239.5" >futex_wait_setup</text>
 </g>
 <g >
-<title>fibers::coro::StackfullCoroutine::Run (813,106,721 samples, 0.73%)</title><rect x="10.0" y="485" width="8.6" height="15.0" fill="rgb(254,228,54)" rx="2" ry="2" />
+<title>NFibers::NCoro::StackfullCoroutine::Run (813,106,721 samples, 0.73%)</title><rect x="10.0" y="485" width="8.6" height="15.0" fill="rgb(254,228,54)" rx="2" ry="2" />
 <text  x="13.00" y="495.5" ></text>
 </g>
 <g >
@@ -671,7 +671,7 @@
 <text  x="1190.68" y="399.5" ></text>
 </g>
 <g >
-<title>fibers::ctx::Buffer::AllocBytes (41,420,175 samples, 0.04%)</title><rect x="10.4" y="389" width="0.5" height="15.0" fill="rgb(236,142,34)" rx="2" ry="2" />
+<title>NFibers::NContext::Buffer::AllocBytes (41,420,175 samples, 0.04%)</title><rect x="10.4" y="389" width="0.5" height="15.0" fill="rgb(236,142,34)" rx="2" ry="2" />
 <text  x="13.43" y="399.5" ></text>
 </g>
 <g >
@@ -739,7 +739,7 @@
 <text  x="817.38" y="271.5" >futex_wake</text>
 </g>
 <g >
-<title>fibers::Go (813,106,721 samples, 0.73%)</title><rect x="10.0" y="405" width="8.6" height="15.0" fill="rgb(236,144,34)" rx="2" ry="2" />
+<title>NFibers::Go (813,106,721 samples, 0.73%)</title><rect x="10.0" y="405" width="8.6" height="15.0" fill="rgb(236,144,34)" rx="2" ry="2" />
 <text  x="13.00" y="415.5" ></text>
 </g>
 <g >
@@ -803,7 +803,7 @@
 <text  x="270.86" y="143.5" ></text>
 </g>
 <g >
-<title>fibers::ctx::(anonymous namespace)::CallRunner (813,106,721 samples, 0.73%)</title><rect x="10.0" y="517" width="8.6" height="15.0" fill="rgb(224,87,20)" rx="2" ry="2" />
+<title>NFibers::NContext::(anonymous namespace)::CallRunner (813,106,721 samples, 0.73%)</title><rect x="10.0" y="517" width="8.6" height="15.0" fill="rgb(224,87,20)" rx="2" ry="2" />
 <text  x="13.00" y="527.5" ></text>
 </g>
 <g >
@@ -887,7 +887,7 @@
 <text  x="1051.74" y="367.5" ></text>
 </g>
 <g >
-<title>fibers::AwaiterFiber::Run (63,208,064 samples, 0.06%)</title><rect x="64.8" y="405" width="0.7" height="15.0" fill="rgb(232,126,30)" rx="2" ry="2" />
+<title>NFibers::AwaiterFiber::Run (63,208,064 samples, 0.06%)</title><rect x="64.8" y="405" width="0.7" height="15.0" fill="rgb(232,126,30)" rx="2" ry="2" />
 <text  x="67.84" y="415.5" ></text>
 </g>
 <g >
@@ -1139,7 +1139,7 @@
 <text  x="363.58" y="207.5" ></text>
 </g>
 <g >
-<title>fibers::Go (813,106,721 samples, 0.73%)</title><rect x="10.0" y="421" width="8.6" height="15.0" fill="rgb(236,144,34)" rx="2" ry="2" />
+<title>NFibers::Go (813,106,721 samples, 0.73%)</title><rect x="10.0" y="421" width="8.6" height="15.0" fill="rgb(236,144,34)" rx="2" ry="2" />
 <text  x="13.00" y="431.5" ></text>
 </g>
 <g >
@@ -1195,7 +1195,7 @@
 <text  x="16.47" y="223.5" ></text>
 </g>
 <g >
-<title>fibers::ctx::Context::Run (813,106,721 samples, 0.73%)</title><rect x="10.0" y="501" width="8.6" height="15.0" fill="rgb(216,53,12)" rx="2" ry="2" />
+<title>NFibers::NContext::Context::Run (813,106,721 samples, 0.73%)</title><rect x="10.0" y="501" width="8.6" height="15.0" fill="rgb(216,53,12)" rx="2" ry="2" />
 <text  x="13.00" y="511.5" ></text>
 </g>
 <g >
@@ -1627,7 +1627,7 @@
 <text  x="816.98" y="127.5" ></text>
 </g>
 <g >
-<title>fibers::ctx::Buffer::Buffer (41,420,175 samples, 0.04%)</title><rect x="10.4" y="373" width="0.5" height="15.0" fill="rgb(221,76,18)" rx="2" ry="2" />
+<title>NFibers::NContext::Buffer::Buffer (41,420,175 samples, 0.04%)</title><rect x="10.4" y="373" width="0.5" height="15.0" fill="rgb(221,76,18)" rx="2" ry="2" />
 <text  x="13.43" y="383.5" ></text>
 </g>
 <g >

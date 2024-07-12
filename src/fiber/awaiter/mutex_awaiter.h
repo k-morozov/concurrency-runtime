@@ -6,11 +6,11 @@
 
 #include <mutex>
 
-#include <components/sync/spinLock.h>
 #include <components/intrusive/list.h>
+#include <components/sync/spinLock.h>
 #include <fiber/awaiter/awaiter.h>
 
-namespace fibers {
+namespace NFibers {
 
 template <class M>
 class AsyncMutexWaiter : public IAwaiter,
@@ -37,4 +37,4 @@ private:
     Guard guard;
 };
 
-}  // namespace fibers
+}  // namespace NFibers

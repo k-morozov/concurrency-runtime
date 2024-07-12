@@ -61,11 +61,16 @@ void IntrusiveThreadPool::Start() {
     }
 }
 
-void IntrusiveThreadPool::Submit(TaskBase* task) {
+void IntrusiveThreadPool::Submit(TaskBase* task, const bool /*is_internal*/) {
     if (shutdown_.load()) {
         return;
     }
     count_tasks_.fetch_add(1);
+
+//    if (task->GetState() == StateTask::PLANNED) {
+//        count_tasks.fetch_add(1);
+//        task->ProgressState();
+//    }
 
     std::lock_guard lock(mutex);
     tasks.Push(task);

@@ -7,6 +7,7 @@
 #include <thread>
 
 #include <executor/pool/distributed_pool.h>
+#include <executor/pool/intrusive_pool.h>
 #include <fiber/sync/wait_group.h>
 #include <go/go.h>
 #include <fiber/sync/async_mutex.h>
@@ -16,202 +17,295 @@
 using namespace std::chrono_literals;
 
 TEST(TestDistributedPool, JustWorks) {
+    int a = 1;
+
+    {
+        NExecutors::DistributedPool pool{4};
+        pool.Start();
+
+        NFibers::Go(pool, [&a] {
+            NFibers::WaitGroup wg;
+            wg.Add(1);
+
+            ASSERT_EQ(a, 1);
+            a++;
+
+            NFibers::Go([&wg, &a] {
+                ASSERT_EQ(a, 2);
+                a++;
+                wg.Done();
+            });
+            wg.Wait();
+        });
+
+        pool.WaitIdle();
+    }
+
+    ASSERT_EQ(a, 3);
+}
+
+TEST(TestDistributedPool, DISABLED_JustWorks2) {
     NExecutors::DistributedPool pool{4};
 
-    pool.Start();
+    NFibers::WaitGroup wg;
+    wg.Add(1);
 
-    fibers::Go(pool, [] {
-        fibers::WaitGroup wg;
-        wg.Add(1);
-
-        fibers::Go([&wg] {
-            std::cout << "Hello from thread pool!" << std::endl;
-            wg.Done();
-        });
-        wg.Wait();
+    NFibers::Go(pool, [&wg] {
+        std::cout << "Hello from thread pool! " << std::endl;
+        wg.Done();
     });
+
+    wg.Wait();
 }
 
 TEST(TestDistributedPool, Wait) {
-    NExecutors::DistributedPool pool{4};
+    int a = 100;
+    {
+        NExecutors::DistributedPool pool{4};
 
-    pool.Start();
+        pool.Start();
 
-    fibers::Go(pool, [] {
-        fibers::WaitGroup wg;
-        wg.Add(1);
-
-        fibers::Go([&] {
-            std::this_thread::sleep_for(1s);
-            wg.Done();
-        });
-
-        wg.Wait();
-    });
-}
-
-TEST(TestDistributedPool, MultiWait) {
-    NExecutors::DistributedPool pool{4};
-
-    pool.Start();
-
-    fibers::Go(pool, [] {
-        for (size_t i = 0; i < 3; ++i) {
-            fibers::WaitGroup wg;
+        NFibers::Go(pool, [&a] {
+            NFibers::WaitGroup wg;
             wg.Add(1);
 
-            fibers::Go([&] {
+            ASSERT_EQ(a, 100);
+            a = 50;
+
+            NFibers::Go([&] {
                 std::this_thread::sleep_for(1s);
+                a = 10;
                 wg.Done();
             });
 
             wg.Wait();
-        }
-    });
+            ASSERT_EQ(a, 10);
+            a = 12;
+        });
+
+        pool.WaitIdle();
+    }
+
+    ASSERT_EQ(a, 12);
+}
+
+TEST(TestDistributedPool, MultiWait) {
+    int a = 13;
+    {
+        NExecutors::DistributedPool pool{4};
+
+        pool.Start();
+
+        NFibers::Go(pool, [&] {
+            for (size_t i = 0; i < 3; ++i) {
+                NFibers::WaitGroup wg;
+                wg.Add(1);
+
+                NFibers::Go([&] {
+                    std::this_thread::sleep_for(1s);
+                    a = 113;
+                    wg.Done();
+                });
+
+                wg.Wait();
+            }
+        });
+
+        pool.WaitIdle();
+    }
+    ASSERT_EQ(a, 113);
 }
 
 TEST(TestDistributedPool, ManyTasks) {
-    NExecutors::DistributedPool pool{4};
+    bool fully_completed = false;
+    {
+        NExecutors::DistributedPool pool{4};
 
-    pool.Start();
+        pool.Start();
 
-    fibers::Go(pool, [] {
-        static const size_t kTasks = 17;
+        NFibers::Go(pool, [&] {
+            static const size_t kTasks = 17;
 
-        fibers::WaitGroup wg;
-        wg.Add(kTasks);
+            NFibers::WaitGroup wg;
+            wg.Add(kTasks);
 
-        for (size_t i = 0; i < kTasks; ++i) {
-            fibers::Go([&] {
-                wg.Done();
-            });
-        }
+            std::atomic<size_t> go_completed{};
+            for (size_t i = 0; i < kTasks; ++i) {
+                NFibers::Go([&] {
+                    go_completed++;
+                    wg.Done();
+                });
+            }
 
-        wg.Wait();
-    });
+            wg.Wait();
+            std::cout << "go_completed=" << go_completed.load() << std::endl;
+            ASSERT_EQ(go_completed.load(), kTasks);
+
+            fully_completed = true;
+        });
+        pool.WaitIdle();
+    }
+    std::cout << "fully_completed=" << fully_completed << std::endl;
+    ASSERT_TRUE(fully_completed);
 }
 
 TEST(TestDistributedPool, DoNotBurnCPU) {
-    NExecutors::DistributedPool pool{4};
-    
-    pool.Start();
-    
-    fibers::Go(pool, [] {
-        fibers::WaitGroup wg;
-        wg.Add(4);
-        
-        common::ProcessCPUTimer cpu_timer;
+    bool fully_completed = false;
+    {
+        NExecutors::DistributedPool pool{4};
 
-        // Warmup
-        for (size_t i = 0; i < 4; ++i) {
-            fibers::Go([&] {
-                std::this_thread::sleep_for(100ms);
-                wg.Done();
-            });
-        }
+        pool.Start();
 
-        wg.Wait();
-        
-        ASSERT_TRUE(cpu_timer.Spent() < 100ms);
-    });
+        NFibers::Go(pool, [&] {
+            NFibers::WaitGroup wg;
+            wg.Add(4);
+
+            common::ProcessCPUTimer cpu_timer;
+
+            // Warmup
+            for (size_t i = 0; i < 4; ++i) {
+                NFibers::Go([&] {
+                    std::this_thread::sleep_for(100ms);
+                    wg.Done();
+                });
+            }
+
+            wg.Wait();
+
+            ASSERT_TRUE(cpu_timer.Spent() < 100ms);
+
+            fully_completed = true;
+        });
+
+        pool.WaitIdle();
+    }
+    ASSERT_TRUE(fully_completed);
 }
 
 TEST(TestDistributedPool, Current) {
-    NExecutors::DistributedPool pool{4};
-    
-    pool.Start();
-    
-    fibers::Go(pool, [&] {
-        fibers::WaitGroup wg;
-        wg.Add(1);
+    bool fully_completed = false;
+    {
+        NExecutors::DistributedPool pool{4};
 
-        fibers::Go([&] {
-            ASSERT_EQ(NExecutors::DistributedPool::Current(), &pool);
-            wg.Done();
+        pool.Start();
+
+        NFibers::Go(pool, [&] {
+            NFibers::WaitGroup wg;
+            wg.Add(1);
+
+            NFibers::Go([&] {
+                ASSERT_EQ(NExecutors::DistributedPool::Current(), &pool);
+                wg.Done();
+            });
+
+            wg.Wait();
+            fully_completed = true;
         });
 
-        wg.Wait();
-    });
+        pool.WaitIdle();
+    }
+    ASSERT_TRUE(fully_completed);
 }
 
 TEST(TestDistributedPool, SubmitAfterWait) {
-    NExecutors::DistributedPool pool{4};
-    
-    pool.Start();
-    
-    fibers::Go(pool, [] {
-        fibers::WaitGroup wg;
-        wg.Add(1);
+    bool fully_completed = false;
+    {
+        NExecutors::DistributedPool pool{4};
 
-        fibers::Go([&] {
-            std::this_thread::sleep_for(500ms);
+        pool.Start();
 
-            fibers::Go(*NExecutors::DistributedPool::Current(), [&] {
+        NFibers::Go(pool, [&] {
+            NFibers::WaitGroup wg;
+            wg.Add(1);
+
+            NFibers::Go([&] {
                 std::this_thread::sleep_for(500ms);
-                wg.Done();
+
+                NFibers::Go(*NExecutors::DistributedPool::Current(), [&] {
+                    std::this_thread::sleep_for(500ms);
+                    wg.Done();
+                });
             });
+
+            wg.Wait();
+            fully_completed = true;
         });
 
-        wg.Wait();
-    });
+        pool.WaitIdle();
+    }
+    ASSERT_TRUE(fully_completed);
 }
 
 TEST(TestDistributedPool, Racy) {
-    NExecutors::DistributedPool pool{4};
+    bool fully_completed = false;
+    {
+        NExecutors::DistributedPool pool{4};
 
-    pool.Start();
+        pool.Start();
 
-    fibers::Go(pool, [] {
-        static const size_t kTasks = 100500;
+        NFibers::Go(pool, [&] {
+            static const size_t kTasks = 100500;
 
-        std::atomic<size_t> shared_counter{0};
+            std::atomic<size_t> shared_counter{0};
 
-        fibers::WaitGroup wg;
-        wg.Add(kTasks);
+            NFibers::WaitGroup wg;
+            wg.Add(kTasks);
 
-        for (size_t i = 0; i < kTasks; ++i) {
-            fibers::Go([&] {
-                const size_t old = shared_counter.load();
-                shared_counter.store(old + 1);
+            for (size_t i = 0; i < kTasks; ++i) {
+                NFibers::Go([&] {
+                    const size_t old = shared_counter.load();
+                    shared_counter.store(old + 1);
 
-                wg.Done();
-            });
-        }
+                    wg.Done();
+                });
+            }
 
-        wg.Wait();
+            wg.Wait();
 
-        std::cout << "Racy counter value: " << shared_counter << std::endl;
+            std::cout << "Racy counter value: " << shared_counter << std::endl;
 
-        ASSERT_LE(shared_counter.load(), kTasks);
-    });
+            ASSERT_LE(shared_counter.load(), kTasks);
+            fully_completed = true;
+        });
+
+        pool.WaitIdle();
+    }
+    ASSERT_TRUE(fully_completed);
 }
 
 TEST(TestDistributedPool, ForBench) {
-    NExecutors::DistributedPool pool{4};
+    bool fully_completed = false;
+    {
+        NExecutors::DistributedPool pool{4};
 
-    static const size_t kTasks = 1'000;
+        static const size_t kTasks = 1'000;
 
-    pool.Start();
+        pool.Start();
 
-    size_t counter{};
+        size_t counter{};
 
-    fibers::Go(pool, [&counter] {
-        fibers::AsyncMutex mutex;
-        fibers::WaitGroup wg;
+        NFibers::Go(pool, [&] {
+            NFibers::AsyncMutex mutex;
+            NFibers::WaitGroup wg;
 
-        wg.Add(kTasks);
+            wg.Add(kTasks);
 
-        for (size_t i{}; i < kTasks; i++) {
-            fibers::Go([&] {
-                {
-                    std::lock_guard lock(mutex);
-                    counter++;
-                }
-                wg.Done();
-            });
-        }
+            for (size_t i{}; i < kTasks; i++) {
+                NFibers::Go([&] {
+                    {
+                        std::lock_guard lock(mutex);
+                        counter++;
+                    }
+                    wg.Done();
+                });
+            }
 
-        wg.Wait();
-        ASSERT_EQ(counter, kTasks);
-    });
+            wg.Wait();
+            ASSERT_EQ(counter, kTasks);
+            fully_completed = true;
+        });
+
+        pool.WaitIdle();
+    }
+    ASSERT_TRUE(fully_completed);
 }

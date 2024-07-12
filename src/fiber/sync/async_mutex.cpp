@@ -6,7 +6,7 @@
 
 #include <fiber/awaiter/suspend.h>
 
-namespace fibers {
+namespace NFibers {
 
 void AsyncMutex::Lock() {
     Waiter::Guard guard(spinlock_);
@@ -34,8 +34,6 @@ void AsyncMutex::Unlock() {
     }
 }
 
-void AsyncMutex::Park(Waiter* waiter) {
-    waiters_.Push(waiter);
-}
+void AsyncMutex::Park(Waiter* waiter) { waiters_.Push(waiter); }
 
-}  // namespace fibers
+}  // namespace NFibers

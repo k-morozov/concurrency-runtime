@@ -5,6 +5,7 @@
 #include "worker.h"
 
 #include <executor/executor.h>
+#include <executor/task/task_base.h>
 
 namespace NExecutors::internal {
 
@@ -16,7 +17,7 @@ Worker::Worker(IExecutor* ex) : ex(ex) {}
 
 Worker::~Worker() {
     Join();
-    assert(0 == count_local_tasks.load());
+    assert(0 == ex->count_tasks.load());
 }
 
 void Worker::Start() {
@@ -32,41 +33,35 @@ void Worker::Start() {
             }
 
             if (task) {
-                task->Run();
-//                std::lock_guard lock_task(mutex);
-                count_local_tasks.fetch_sub(1);
-                empty_tasks_.notify_one();
+                const auto status = task->Run();
+                if (status == ITask::TaskRunResult::COMPLETE) {
+                    ex->count_tasks.fetch_sub(1);
+                }
+
             } else {
-                if (shutdown_worker.load()) {
+                if (ex->shutdown_.load() && 0 == ex->count_tasks.load()) {
                     break;
                 }
             }
+            ex->empty_tasks_.notify_all();
         }
     }));
 }
 
 void Worker::Join() {
-    shutdown_worker.store(true);
-    WaitIdle();
     if (thread && thread->joinable()) {
         thread->join();
     }
 }
 
-void Worker::Push(TaskBase* task) {
-    if (shutdown_worker.load()) return;
+void Worker::Push(TaskBase* task, const bool is_internal) {
+    if (!is_internal) {
+        if (ex->shutdown_.load()) return;
+    }
 
-    count_local_tasks.fetch_add(1);
     local_tasks.Push(task);
 }
 
 IExecutor* Worker::Current() { return CurrentPool; }
-
-void Worker::WaitIdle() {
-    std::unique_lock lock(mutex);
-    while (0 != count_local_tasks.load()) {
-        empty_tasks_.wait(lock);
-    }
-}
 
 }  // namespace NExecutors::internal

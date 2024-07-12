@@ -9,7 +9,7 @@
 #include <context/runner.h>
 #include <context/sanitizer/sanitizer_context.h>
 
-namespace fibers::ctx {
+namespace NFibers::NContext {
 
 class Context final : private Runner {
 public:
@@ -34,4 +34,4 @@ private:
     Runner* runner_{nullptr};
 };
 
-}  // namespace fibers::ctx
+}  // namespace NFibers::NContext

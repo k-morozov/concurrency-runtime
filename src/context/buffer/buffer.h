@@ -6,7 +6,7 @@
 
 #include <span>
 
-namespace fibers::ctx {
+namespace NFibers::NContext {
 
 using BufferView = std::span<std::byte>;
 
@@ -37,4 +37,4 @@ private:
     explicit Buffer(Alloc alloc);
 };
 
-}  // namespace fibers::ctx
+}  // namespace NFibers::NContext

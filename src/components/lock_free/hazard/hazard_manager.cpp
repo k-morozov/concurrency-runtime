@@ -77,7 +77,7 @@ void HazardManager::Collect() {
             }
         }
 
-        while (approximate_free_list_size < LimitFreeList ||
+        while (approximate_free_list_size < LimitFreeList &&
                !cancel_collect.load()) {
             std::this_thread::sleep_for(500ms);
         }

@@ -6,11 +6,11 @@
 
 #include <mutex>
 
-#include <fiber/awaiter/wait_group_awaiter.h>
 #include <components/intrusive/list.h>
 #include <components/sync/spinLock.h>
+#include <fiber/awaiter/wait_group_awaiter.h>
 
-namespace fibers {
+namespace NFibers {
 
 class WaitGroup {
     using Spinlock = NSync::SpinLock;
@@ -19,9 +19,7 @@ class WaitGroup {
     friend Waiter;
 
 public:
-    ~WaitGroup() {
-        assert(wg_waiters_.IsEmpty());
-    }
+    ~WaitGroup() { assert(wg_waiters_.IsEmpty()); }
 
     void Add(size_t);
     void Done();
@@ -36,4 +34,4 @@ private:
     void Park(Waiter* waiter);
 };
 
-}  // namespace fibers
+}  // namespace NFibers

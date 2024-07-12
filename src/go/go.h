@@ -7,11 +7,11 @@
 #include <coro/stackfull_coro.h>
 #include <executor/executor.h>
 
-namespace fibers {
+namespace NFibers {
 
-void Go(NExecutors::IExecutor& scheduler, coro::Routine routine);
+void Go(NExecutors::IExecutor& scheduler, NCoro::Routine routine);
 
-void Go(coro::Routine routine);
+void Go(NCoro::Routine routine);
 
 void Yield();
 

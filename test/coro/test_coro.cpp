@@ -8,7 +8,7 @@
 
 #include <coro/coro.h>
 
-using namespace fibers::coro;
+using namespace NFibers::NCoro;
 
 TEST(TestCoro, JustWorks1Coro) {
     Coroutine co([] { Coroutine::Suspend(); });

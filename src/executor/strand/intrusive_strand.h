@@ -36,7 +36,7 @@ public:
     IntrusiveStrand(IntrusiveStrand&&) = delete;
     IntrusiveStrand& operator=(IntrusiveStrand&&) = delete;
 
-    void Submit(TaskBase* task) override;
+    void Submit(TaskBase* task, bool is_internal) override;
 
 private:
     void SubmitInternal();

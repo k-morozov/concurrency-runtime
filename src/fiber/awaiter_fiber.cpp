@@ -12,31 +12,33 @@
 
 namespace {
 
-thread_local fibers::AwaiterFiber* current_fiber;
+thread_local NFibers::AwaiterFiber* current_fiber{};
 
 }
 
-namespace fibers {
+namespace NFibers {
 
 AwaiterFiber::AwaiterFiber(NExecutors::IExecutor* executor,
-                           coro::Routine routine, ctx::Buffer&& buffer)
+                           NCoro::Routine routine, NContext::Buffer&& buffer)
     : executor_(executor), fiber_coro_(std::move(routine), std::move(buffer)) {}
 
-void AwaiterFiber::Schedule() {
-    executor_->Submit(this);
-}
+void AwaiterFiber::Schedule(const bool is_internal) { executor_->Submit(this, is_internal); }
 
-void AwaiterFiber::Run() noexcept {
+auto AwaiterFiber::Run() noexcept -> TaskRunResult {
     Switch();
 
     if (fiber_coro_.IsCompleted()) {
+//        assert(GetState() == NExecutors::StateTask::RUNNING);
+        ProgressState();
+
         delete this;
-        return;
+        return TaskRunResult::COMPLETE;
     }
 
     if (awaiter_) {
         awaiter_->AwaitSuspend(StoppedFiber{this});
     }
+    return TaskRunResult::UNCOMPLETED;
 }
 
 AwaiterFiber* AwaiterFiber::Self() { return current_fiber; }
@@ -55,4 +57,4 @@ void AwaiterFiber::Switch() {
     current_fiber = nullptr;
 }
 
-}  // namespace fibers
+}  // namespace NFibers

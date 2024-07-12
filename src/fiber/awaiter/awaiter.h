@@ -6,7 +6,7 @@
 
 #include <fiber/handle/stopped_fiber.h>
 
-namespace fibers {
+namespace NFibers {
 
 class IAwaiter {
 public:
@@ -14,4 +14,4 @@ public:
     virtual void AwaitSuspend(StoppedFiber handle) = 0;
 };
 
-}  // namespace fibers
+}  // namespace NFibers

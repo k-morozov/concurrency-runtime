@@ -6,7 +6,7 @@
 
 namespace NExecutors {
 
-void IntrusiveManualExecutor::Submit(TaskBase* task_) {
+void IntrusiveManualExecutor::Submit(TaskBase* task_, const bool /*is_internal*/) {
     std::lock_guard lock(spinlock);
     tasks.Push(task_);
     count_tasks++;

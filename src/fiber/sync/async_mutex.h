@@ -6,12 +6,11 @@
 
 #include <mutex>
 
-#include <fiber/awaiter/mutex_awaiter.h>
 #include <components/intrusive/list.h>
-
 #include <components/sync/spinLock.h>
+#include <fiber/awaiter/mutex_awaiter.h>
 
-namespace fibers {
+namespace NFibers {
 
 class AsyncMutex {
     using Spinlock = NSync::SpinLock;
@@ -34,4 +33,4 @@ private:
     void Park(Waiter* waiter);
 };
 
-}  // namespace fibers
+}  // namespace NFibers

@@ -6,7 +6,7 @@
 
 #include <buffer/sys_context.h>
 
-namespace fibers::ctx {
+namespace NFibers::NContext {
 
 namespace {
 
@@ -29,4 +29,4 @@ void BufferContext::SwitchTo(BufferContext& target) {
     SwitchBufferContext(&rsp_, &target.rsp_);
 }
 
-}  // namespace fibers::ctx
+}  // namespace NFibers::NContext

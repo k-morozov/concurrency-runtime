@@ -7,7 +7,7 @@
 #include <fiber/awaiter/suspend.h>
 #include <fiber/awaiter/wait_group_awaiter.h>
 
-namespace fibers {
+namespace NFibers {
 
 void WaitGroup::Add(const size_t add) {
     Waiter::Guard guard(spinlock_);
@@ -45,4 +45,4 @@ void WaitGroup::Wait() {
 
 void WaitGroup::Park(WaitGroup::Waiter* waiter) { wg_waiters_.Push(waiter); }
 
-}  // namespace fibers
+}  // namespace NFibers

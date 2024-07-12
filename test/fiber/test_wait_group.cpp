@@ -16,11 +16,11 @@ TEST(TestWaitGroup, WaitInThreadThatOwnWg) {
 
     scheduler.Start();
 
-    fibers::Go(scheduler, [] {
-        auto* wg = new fibers::WaitGroup();
+    NFibers::Go(scheduler, [] {
+        auto* wg = new NFibers::WaitGroup();
         wg->Add(1);
 
-        fibers::Go([wg] {
+        NFibers::Go([wg] {
             wg->Done();
         });
 
@@ -35,7 +35,7 @@ TEST(TestWaitGroup, OneWaiter) {
     NExecutors::IntrusiveThreadPool scheduler{5};
     scheduler.Start();
 
-    fibers::WaitGroup wg;
+    NFibers::WaitGroup wg;
     std::atomic<size_t> work{0};
     bool ok = false;
 
@@ -43,14 +43,14 @@ TEST(TestWaitGroup, OneWaiter) {
 
     wg.Add(kWorkers);
 
-    fibers::Go(scheduler, [&] {
+    NFibers::Go(scheduler, [&] {
         wg.Wait();
         ASSERT_EQ(work.load(), kWorkers);
         ok = true;
     });
 
     for (size_t i = 0; i < kWorkers; ++i) {
-        fibers::Go(scheduler, [&] {
+        NFibers::Go(scheduler, [&] {
             std::this_thread::sleep_for(1s);
             ++work;
             wg.Done();
@@ -66,7 +66,7 @@ TEST(TestWaitGroup, MultipleWaiters) {
     NExecutors::IntrusiveThreadPool scheduler{5};
     scheduler.Start();
 
-    fibers::WaitGroup wg;
+    NFibers::WaitGroup wg;
 
     std::atomic<size_t> work{0};
     std::atomic<size_t> acks{0};
@@ -77,7 +77,7 @@ TEST(TestWaitGroup, MultipleWaiters) {
     wg.Add(kWorkers);
 
     for (size_t i = 0; i < kWaiters; ++i) {
-        fibers::Go(scheduler, [&] {
+        NFibers::Go(scheduler, [&] {
             wg.Wait();
             ASSERT_EQ(work.load(), kWorkers);
             ++acks;
@@ -85,7 +85,7 @@ TEST(TestWaitGroup, MultipleWaiters) {
     }
 
     for (size_t i = 0; i < kWorkers; ++i) {
-        fibers::Go(scheduler, [&] {
+        NFibers::Go(scheduler, [&] {
             std::this_thread::sleep_for(1s);
             ++work;
             wg.Done();
@@ -101,20 +101,20 @@ TEST(TestWaitGroup, DoNotBlockThread) {
     NExecutors::IntrusiveThreadPool scheduler{1};
     scheduler.Start();
 
-    fibers::WaitGroup wg;
+    NFibers::WaitGroup wg;
     bool ok = false;
 
-    fibers::Go(scheduler, [&] {
+    NFibers::Go(scheduler, [&] {
         wg.Wait();
         ok = true;
     });
 
     wg.Add(1);
 
-    fibers::Go(scheduler, [&] {
+    NFibers::Go(scheduler, [&] {
         for (size_t i = 0; i < 10; ++i) {
             std::this_thread::sleep_for(32ms);
-            fibers::Yield();
+            NFibers::Yield();
         }
         wg.Done();
     });
@@ -128,14 +128,14 @@ TEST(TestWaitGroup, DISABLED_DoNotWasteCpu) {
     NExecutors::IntrusiveThreadPool scheduler{4};
     scheduler.Start();
 
-    fibers::WaitGroup wg;
+    NFibers::WaitGroup wg;
     std::atomic<size_t> workers = 0;
     common::ProcessCPUTimer cpu_timer;
     static const size_t kWorkers = 3;
 
     wg.Add(kWorkers);
 
-    fibers::Go(scheduler, [&] {
+    NFibers::Go(scheduler, [&] {
         wg.Wait();
         ASSERT_EQ(workers.load(), kWorkers);
     });
@@ -143,7 +143,7 @@ TEST(TestWaitGroup, DISABLED_DoNotWasteCpu) {
     std::this_thread::sleep_for(1s);
 
     for (size_t i = 0; i < kWorkers; ++i) {
-        fibers::Go(scheduler, [&] {
+        NFibers::Go(scheduler, [&] {
             ++workers;
             wg.Done();
         });

@@ -23,7 +23,7 @@ public:
 
     void Start();
 
-    void Submit(TaskBase* task) override;
+    void Submit(TaskBase* task, bool is_internal) override;
 
     static IExecutor* Current();
 

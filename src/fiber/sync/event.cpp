@@ -6,7 +6,7 @@
 
 #include <fiber/awaiter/suspend.h>
 
-namespace fibers {
+namespace NFibers {
 
 void Event::Wait() {
     Waiter::Guard guard(spinlock_);
@@ -25,4 +25,4 @@ void Event::Fire() {
 
 void Event::Park(Waiter* waiter) { event_waiters_.Push(waiter); }
 
-}  // namespace fibers
+}  // namespace NFibers

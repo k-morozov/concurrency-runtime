@@ -7,9 +7,9 @@
 #include <context/buffer/buffer.h>
 #include <sanitizer/tsan_interface.h>
 
-namespace fibers::ctx {
+namespace NFibers::NContext {
 
-class SanitizerContext {
+class SanitizerContext final {
 public:
     void Setup(BufferView /*buffer*/) { fiber_ = __tsan_create_fiber(0); }
 
@@ -30,7 +30,7 @@ public:
     }
 
 private:
-    void* fiber_;
+    void* fiber_{};
     SanitizerContext* exit_from_{nullptr};
 
     void After() {
@@ -41,4 +41,4 @@ private:
     }
 };
 
-}  // namespace fibers::ctx
+}  // namespace NFibers::NContext

@@ -11,9 +11,9 @@
 #include <context/runner.h>
 #include <coro/routine.h>
 
-namespace fibers::coro {
+namespace NFibers::NCoro {
 
-class Coroutine : private ctx::Runner {
+class Coroutine : private NContext::Runner {
 public:
     using Routine = std::function<void()>;
 
@@ -26,13 +26,13 @@ public:
 
 private:
     Routine routine_;
-    ctx::Buffer coro_buffer_;
-    ctx::Context coro_ctx_;
-    ctx::Context caller_ctx_;
+    NContext::Buffer coro_buffer_;
+    NContext::Context coro_ctx_;
+    NContext::Context caller_ctx_;
 
     bool is_completed_{false};
 
     void Run() override;
 };
 
-}  // namespace fibers::coro
+}  // namespace NFibers::NCoro
