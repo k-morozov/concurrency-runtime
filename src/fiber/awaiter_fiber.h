@@ -24,7 +24,7 @@ public:
     AwaiterFiber& operator=(const AwaiterFiber&) = delete;
     AwaiterFiber& operator=(AwaiterFiber&&) noexcept = delete;
 
-    void Schedule(bool is_internal = false);
+    void Schedule();
 
     void Suspend(IAwaiter* waiter);
     void Switch();

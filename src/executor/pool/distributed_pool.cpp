@@ -26,10 +26,8 @@ void DistributedPool::Start() {
     }
 }
 
-void DistributedPool::Submit(NExecutors::TaskBase* task, const bool is_internal) {
-    if (!is_internal) {
-        if (shutdown_.load()) return;
-    }
+void DistributedPool::Submit(NExecutors::TaskBase* task) {
+    if (shutdown_.load()) return;
 
     if (task->GetState() == StateTask::PLANNED) {
         count_tasks.fetch_add(1);
@@ -37,7 +35,7 @@ void DistributedPool::Submit(NExecutors::TaskBase* task, const bool is_internal)
     }
 
     const size_t worker_for_current_task = current_worker.fetch_add(1);
-    workers[worker_for_current_task % count_workers].Push(task, is_internal);
+    workers[worker_for_current_task % count_workers].Push(task);
 }
 
 IExecutor* DistributedPool::Current() { return internal::Worker::Current(); }

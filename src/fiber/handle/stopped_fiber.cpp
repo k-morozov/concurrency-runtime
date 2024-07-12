@@ -15,7 +15,7 @@ AwaiterFiber* StoppedFiber::Release() {
     return std::exchange(fiber_, nullptr);
 }
 
-void StoppedFiber::Schedule() { Release()->Schedule(true); }
+void StoppedFiber::Schedule() { Release()->Schedule(); }
 
 void StoppedFiber::Switch() { Release()->Switch(); }
 

@@ -11,7 +11,7 @@ namespace NExecutors {
 
 struct IExecutor {
     virtual ~IExecutor() noexcept = default;
-    virtual void Submit(NExecutors::TaskBase* /*task*/, bool is_internal = false) = 0;
+    virtual void Submit(NExecutors::TaskBase* /*task*/) = 0;
 
     std::atomic<size_t> count_tasks{0};
     std::atomic<bool> shutdown_{false};

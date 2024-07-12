@@ -27,7 +27,7 @@ public:
     void Start();
     void Join();
 
-    void Push(TaskBase* /*, SchedulerHint*/, bool is_internal);
+    void Push(TaskBase* /*, SchedulerHint*/);
 
     static IExecutor* Current();
 };

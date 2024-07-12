@@ -54,10 +54,10 @@ void Worker::Join() {
     }
 }
 
-void Worker::Push(TaskBase* task, const bool is_internal) {
-    if (!is_internal) {
+void Worker::Push(TaskBase* task) {
+//    if (!is_internal) {
         if (ex->shutdown_.load()) return;
-    }
+//    }
 
     local_tasks.Push(task);
 }
