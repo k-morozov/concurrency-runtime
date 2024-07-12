@@ -22,11 +22,14 @@ Worker::~Worker() {
 
 void Worker::Start() {
     thread.emplace(std::thread([this]() {
+        auto worker_mutator =
+            NComponents::NHazard::HazardManager::Get()->MakeMutator();
+
         while (true) {
             CurrentPool = ex;
             TaskBase* task{};
             {
-                auto res = local_tasks.TryPop();
+                auto res = local_tasks.TryPop(worker_mutator);
                 if (res) {
                     task = res.value();
                 }
@@ -55,7 +58,7 @@ void Worker::Join() {
 }
 
 void Worker::Push(TaskBase* task) {
-//    if (ex->IsShutdown()) return;
+    //    if (ex->IsShutdown()) return;
 
     local_tasks.Push(task);
 }

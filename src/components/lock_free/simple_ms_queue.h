@@ -74,8 +74,8 @@ public:
         tail.compare_exchange_strong(old_tail, new_node);
     }
 
-    std::optional<T> TryPop() {
-        auto mutator = NHazard::HazardManager::Get()->MakeMutator();
+    std::optional<T> TryPop(NHazard::Mutator& mutator) {
+//        auto mutator = NHazard::HazardManager::Get()->MakeMutator();
         while (true) {
             Node* old_head = mutator.Acquire(&head);
 
@@ -99,6 +99,11 @@ public:
                 return result;
             }
         }
+    }
+
+    std::optional<T> TryPop() {
+        auto mutator = NHazard::HazardManager::Get()->MakeMutator();
+        return TryPop(mutator);
     }
 };
 
