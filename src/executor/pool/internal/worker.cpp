@@ -55,7 +55,7 @@ void Worker::Join() {
 }
 
 void Worker::Push(TaskBase* task) {
-    if (ex->IsShutdown()) return;
+//    if (ex->IsShutdown()) return;
 
     local_tasks.Push(task);
 }

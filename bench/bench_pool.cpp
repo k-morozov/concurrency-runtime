@@ -16,7 +16,7 @@
 using namespace std::chrono_literals;
 
 const size_t CountThreads = std::thread::hardware_concurrency();
-static constexpr size_t kTasks = 200'000;
+static constexpr size_t kTasks = 10'000;
 static constexpr size_t CountIteration = 10;
 
 void bench_logic(NExecutors::IExecutor& pool) {
@@ -32,7 +32,7 @@ void bench_logic(NExecutors::IExecutor& pool) {
             NFibers::Go([&] {
                 {
                     std::lock_guard lock(mutex);
-                    std::this_thread::sleep_for(25ms);
+//                    std::this_thread::sleep_for(2ms);
                     counter++;
                 }
                 wg.Done();
@@ -49,6 +49,7 @@ static void IntrusiveThreadPool(benchmark::State& state) {
         NExecutors::IntrusiveThreadPool pool{CountThreads};
         pool.Start();
         bench_logic(pool);
+        pool.WaitIdle();
     }
 }
 BENCHMARK(IntrusiveThreadPool)
@@ -61,6 +62,7 @@ static void DistributedPool(benchmark::State& state) {
         NExecutors::DistributedPool pool{CountThreads};
         pool.Start();
         bench_logic(pool);
+        pool.WaitIdle();
     }
 }
 BENCHMARK(DistributedPool)

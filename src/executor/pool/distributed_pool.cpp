@@ -24,7 +24,7 @@ void DistributedPool::Start() {
 }
 
 void DistributedPool::Submit(NExecutors::TaskBase* task) {
-    if (IsShutdown()) return;
+//    if (IsShutdown()) return;
 
     if (task->GetState() == StateTask::PLANNED) {
         AddTask();
