@@ -13,27 +13,22 @@
 namespace NExecutors {
 
 class DistributedPool final : public IExecutor {
-    friend class internal::Worker;
+    friend class NInternal::Worker;
 
     const size_t count_workers;
     std::atomic<size_t> current_worker{};
-    std::deque<internal::Worker> workers;
-    std::mutex mutex;
+    std::deque<NInternal::Worker> workers;
 
 public:
     explicit DistributedPool(size_t count);
     ~DistributedPool() override;
 
     void Start();
-    void Submit(NExecutors::TaskBase* /*task*/, bool is_internal) override;
+    void Submit(NExecutors::TaskBase* /*task*/) override;
 
     static IExecutor* Current();
 
-    void StartShutdown();
-
     void WaitShutdown();
-
-    void WaitIdle();
 };
 
 }  // namespace NExecutors

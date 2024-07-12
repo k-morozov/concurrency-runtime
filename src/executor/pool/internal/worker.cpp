@@ -7,7 +7,7 @@
 #include <executor/executor.h>
 #include <executor/task/task_base.h>
 
-namespace NExecutors::internal {
+namespace NExecutors::NInternal {
 
 namespace {
 thread_local IExecutor* CurrentPool;
@@ -17,16 +17,19 @@ Worker::Worker(IExecutor* ex) : ex(ex) {}
 
 Worker::~Worker() {
     Join();
-    assert(0 == ex->count_tasks.load());
+    assert(0 == ex->GetTasks());
 }
 
 void Worker::Start() {
     thread.emplace(std::thread([this]() {
+        auto worker_mutator =
+            NComponents::NHazard::HazardManager::Get()->MakeMutator();
+
         while (true) {
             CurrentPool = ex;
             TaskBase* task{};
             {
-                auto res = local_tasks.TryPop();
+                auto res = local_tasks.TryPop(worker_mutator);
                 if (res) {
                     task = res.value();
                 }
@@ -35,15 +38,15 @@ void Worker::Start() {
             if (task) {
                 const auto status = task->Run();
                 if (status == ITask::TaskRunResult::COMPLETE) {
-                    ex->count_tasks.fetch_sub(1);
+                    ex->RemoveTask();
                 }
 
             } else {
-                if (ex->shutdown_.load() && 0 == ex->count_tasks.load()) {
+                if (ex->CanCloseWorker()) {
                     break;
                 }
             }
-            ex->empty_tasks_.notify_all();
+            ex->NotifyAll();
         }
     }));
 }
@@ -54,14 +57,12 @@ void Worker::Join() {
     }
 }
 
-void Worker::Push(TaskBase* task, const bool is_internal) {
-    if (!is_internal) {
-        if (ex->shutdown_.load()) return;
-    }
+void Worker::Push(TaskBase* task) {
+    //    if (ex->IsShutdown()) return;
 
     local_tasks.Push(task);
 }
 
 IExecutor* Worker::Current() { return CurrentPool; }
 
-}  // namespace NExecutors::internal
+}  // namespace NExecutors::NInternal

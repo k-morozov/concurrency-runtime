@@ -2,11 +2,9 @@
 
 Benchmark                                  Time             CPU   Iterations
 ----------------------------------------------------------------------------
-IntrusiveThreadPool/iterations:10        358 ms        0.228 ms           10
-DistributedPool/iterations:10            769 ms        0.290 ms           10
+IntrusiveThreadPool/iterations:10       43.2 ms         9.44 ms           10
+DistributedPool/iterations:10            123 ms         57.1 ms           10
 
-after use simple_ms_queue:
-DistributedPool/iterations:10            543 ms        0.244 ms           10
-
-after update hazard-pointers:
-DistributedPool/iterations:10            559 ms        0.230 ms           10
+change logic creation mutator:
+IntrusiveThreadPool/iterations:10       31.6 ms         9.43 ms           10
+DistributedPool/iterations:10           64.9 ms         29.8 ms           10

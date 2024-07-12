@@ -22,7 +22,7 @@ AwaiterFiber::AwaiterFiber(NExecutors::IExecutor* executor,
                            NCoro::Routine routine, NContext::Buffer&& buffer)
     : executor_(executor), fiber_coro_(std::move(routine), std::move(buffer)) {}
 
-void AwaiterFiber::Schedule(const bool is_internal) { executor_->Submit(this, is_internal); }
+void AwaiterFiber::Schedule() { executor_->Submit(this); }
 
 auto AwaiterFiber::Run() noexcept -> TaskRunResult {
     Switch();

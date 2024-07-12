@@ -14,18 +14,17 @@
 
 using namespace std::chrono_literals;
 
+const size_t CountThreads = std::thread::hardware_concurrency();
+
 int main() {
 //    NExecutors::IntrusiveThreadPool pool{3};
 //    pool.Start();
 
-    NExecutors::DistributedPool pool{3};
+    NExecutors::DistributedPool pool{CountThreads};
 
     static const size_t kTasks = 100'000;
 
-//    std::cout << "Wait 20s..." << std::endl;
-//    std::this_thread::sleep_for(20s);
-//    std::cout << "Start" << std::endl;
-
+    std::cout << "Start" << std::endl;
     pool.Start();
 
     size_t counter{};
@@ -49,5 +48,7 @@ int main() {
         wg.Wait();
         assert(counter == kTasks);
     });
+
+    pool.WaitShutdown();
     return 0;
 }

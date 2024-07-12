@@ -13,7 +13,7 @@
 #include <executor/executor.h>
 #include <executor/task/task_base.h>
 
-namespace NExecutors::internal {
+namespace NExecutors::NInternal {
 
 class Worker final {
     IExecutor* ex;
@@ -27,9 +27,9 @@ public:
     void Start();
     void Join();
 
-    void Push(TaskBase* /*, SchedulerHint*/, bool is_internal);
+    void Push(TaskBase* /*, SchedulerHint*/);
 
     static IExecutor* Current();
 };
 
-}  // namespace NExecutors::internal
+}  // namespace NExecutors::NInternal

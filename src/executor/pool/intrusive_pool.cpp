@@ -21,7 +21,7 @@ IntrusiveThreadPool::~IntrusiveThreadPool() {
             p->join();
         }
     }
-    assert(0 == count_tasks_.load());
+    assert(0 == GetTasks());
 }
 
 void IntrusiveThreadPool::Start() {
@@ -34,7 +34,7 @@ void IntrusiveThreadPool::Start() {
         workers_.push_back(std::make_unique<std::thread>([this] {
             CurrentPool = this;
             while (true) {
-                TaskBase* task{nullptr};
+                TaskBase* task{};
                 {
                     std::lock_guard lock(mutex);
                     task = tasks.Pop();
@@ -42,11 +42,10 @@ void IntrusiveThreadPool::Start() {
 
                 if (task) {
                     task->Run();
-                    std::lock_guard lock_task(mutex_tasks_);
-                    count_tasks_.fetch_sub(1);
-                    empty_tasks_.notify_one();
+                    RemoveTask();
+                    NotifyAll();
                 } else {
-                    if (shutdown_.load()) {
+                    if (IsShutdown()) {
                         break;
                     }
                 }
@@ -61,16 +60,11 @@ void IntrusiveThreadPool::Start() {
     }
 }
 
-void IntrusiveThreadPool::Submit(TaskBase* task, const bool /*is_internal*/) {
-    if (shutdown_.load()) {
+void IntrusiveThreadPool::Submit(TaskBase* task) {
+    if (IsShutdown()) {
         return;
     }
-    count_tasks_.fetch_add(1);
-
-//    if (task->GetState() == StateTask::PLANNED) {
-//        count_tasks.fetch_add(1);
-//        task->ProgressState();
-//    }
+    AddTask();
 
     std::lock_guard lock(mutex);
     tasks.Push(task);
@@ -78,19 +72,10 @@ void IntrusiveThreadPool::Submit(TaskBase* task, const bool /*is_internal*/) {
 
 IExecutor* IntrusiveThreadPool::Current() { return CurrentPool; }
 
-void IntrusiveThreadPool::StartShutdown() { shutdown_.store(true); }
-
 void IntrusiveThreadPool::WaitShutdown() {
     std::unique_lock lock(mutex_workers_);
     while (0 != count_workers_) {
         empty_workers_.wait(lock);
-    }
-}
-
-void IntrusiveThreadPool::WaitIdle() {
-    std::unique_lock lock(mutex_tasks_);
-    while (0 != count_tasks_.load()) {
-        empty_tasks_.wait(lock);
     }
 }
 

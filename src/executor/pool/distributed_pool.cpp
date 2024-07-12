@@ -15,10 +15,7 @@ DistributedPool::DistributedPool(const size_t count_)
     }
 }
 
-DistributedPool::~DistributedPool() {
-//    StartShutdown();
-    WaitShutdown();
-}
+DistributedPool::~DistributedPool() { WaitShutdown(); }
 
 void DistributedPool::Start() {
     for (auto& w : workers) {
@@ -26,37 +23,24 @@ void DistributedPool::Start() {
     }
 }
 
-void DistributedPool::Submit(NExecutors::TaskBase* task, const bool is_internal) {
-    if (!is_internal) {
-        if (shutdown_.load()) return;
-    }
+void DistributedPool::Submit(NExecutors::TaskBase* task) {
+//    if (IsShutdown()) return;
 
     if (task->GetState() == StateTask::PLANNED) {
-        count_tasks.fetch_add(1);
+        AddTask();
         task->ProgressState();
     }
 
     const size_t worker_for_current_task = current_worker.fetch_add(1);
-    workers[worker_for_current_task % count_workers].Push(task, is_internal);
+    workers[worker_for_current_task % count_workers].Push(task);
 }
 
-IExecutor* DistributedPool::Current() { return internal::Worker::Current(); }
-
-void DistributedPool::StartShutdown() {
-    shutdown_.store(true);
-}
+IExecutor* DistributedPool::Current() { return NInternal::Worker::Current(); }
 
 void DistributedPool::WaitShutdown() {
     StartShutdown();
     for (auto& w : workers) {
         w.Join();
-    }
-}
-
-void DistributedPool::WaitIdle() {
-    std::unique_lock lock(mutex);
-    while (0 != count_tasks.load()) {
-        empty_tasks_.wait(lock);
     }
 }
 
