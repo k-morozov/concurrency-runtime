@@ -9,7 +9,9 @@
 #include <fiber/awaiter/yield_awaiter.h>
 #include <fiber/awaiter_fiber.h>
 
-static const size_t kDefaultCoroBufferSize = 64 * 1024;
+namespace {
+constexpr size_t kDefaultCoroBufferSize = 64 * 1024;
+}
 
 namespace NFibers {
 
@@ -29,4 +31,4 @@ void Yield() {
     Suspend(&waiter);
 }
 
-}  // namespace fibers
+}  // namespace NFibers

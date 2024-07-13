@@ -11,7 +11,7 @@ test_executor = executable(
     sources : test_source_files,
     dependencies : test_dependencies,
     include_directories : [test_inc, root_src_dir],
-    link_with : [executor, fiber, go]
+    link_with : [executor, fiber, go, coro]
 )
 
 

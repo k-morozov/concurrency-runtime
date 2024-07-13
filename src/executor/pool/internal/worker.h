@@ -10,6 +10,7 @@
 
 #include <components/intrusive/list.h>
 #include <components/lock_free/simple_ms_queue.h>
+#include <coro/stackfull_coro.h>
 #include <executor/executor.h>
 #include <executor/task/task_base.h>
 
@@ -19,6 +20,11 @@ class Worker final {
     IExecutor* ex;
     std::optional<std::thread> thread;
     NComponents::SimpleMSQueue<TaskBase*> local_tasks;
+
+    bool coro_suspended{};
+    NFibers::NCoro::StackfullCoroutine coro;
+
+    void Execute();
 
 public:
     explicit Worker(IExecutor* ex);
