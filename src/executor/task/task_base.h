@@ -12,6 +12,12 @@ namespace NExecutors {
 
 enum class StateTask : unsigned { PLANNED, RUNNING, FINISHED };
 
+enum class SchedulerHint : bool { GLOBAL, LOCAL };
+
+namespace NInternal {
+class Worker;
+}
+
 struct ITask {
     enum class TaskRunResult : bool { UNCOMPLETED, COMPLETE };
 
@@ -35,8 +41,15 @@ public:
         }
     }
 
+    void SetWorker(NInternal::Worker* w) {
+        if (!worker) worker = w;
+    }
+
+    NInternal::Worker* GetWorker() { return worker; }
+
 private:
     StateTask state{StateTask::PLANNED};
+    NInternal::Worker* worker{};
 };
 
 }  // namespace NExecutors

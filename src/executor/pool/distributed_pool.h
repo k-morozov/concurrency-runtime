@@ -24,7 +24,7 @@ public:
     ~DistributedPool() override;
 
     void Start();
-    void Submit(NExecutors::TaskBase* /*task*/) override;
+    void Submit(NExecutors::TaskBase* task) override;
 
     static IExecutor* Current();
 

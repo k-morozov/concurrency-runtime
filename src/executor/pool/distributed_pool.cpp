@@ -24,15 +24,16 @@ void DistributedPool::Start() {
 }
 
 void DistributedPool::Submit(NExecutors::TaskBase* task) {
-//    if (IsShutdown()) return;
-
     if (task->GetState() == StateTask::PLANNED) {
         AddTask();
         task->ProgressState();
     }
 
-    const size_t worker_for_current_task = current_worker.fetch_add(1);
-    workers[worker_for_current_task % count_workers].Push(task);
+    if (auto worker = task->GetWorker()) {
+        worker->Push(task);
+    } else {
+        global_tasks.Push(task);
+    }
 }
 
 IExecutor* DistributedPool::Current() { return NInternal::Worker::Current(); }
