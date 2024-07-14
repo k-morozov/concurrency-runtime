@@ -53,14 +53,13 @@ void Worker::WakUpForShutdown() {
 IExecutor* Worker::Current() { return CurrentPool; }
 
 void Worker::Process() {
-    worker_mutator.emplace(
-        NComponents::NHazard::HazardManager::Get()->MakeMutator());
+    auto worker_mutator = NComponents::NHazard::HazardManager::Get()->MakeMutator();
 
     while (true) {
         CurrentPool = ex;
         TaskBase* task{};
         {
-            auto local_task = local_tasks.TryPop(worker_mutator.value());
+            auto local_task = local_tasks.TryPop(worker_mutator);
             if (local_task) {
                 task = local_task.value();
             }
@@ -75,7 +74,7 @@ void Worker::Process() {
         } else {
             {
                 auto global_task =
-                    ex->global_tasks.TryPop(worker_mutator.value());
+                    ex->global_tasks.TryPop(worker_mutator);
                 if (global_task) {
                     Push(*global_task);
                 } else {
@@ -84,11 +83,11 @@ void Worker::Process() {
                     }
 
                     counter_empty_tasks.fetch_sub(1);
-                    if (counter_empty_tasks.load() >= MaxEmptyTasksInLoop &&
-                        !shutdown.load()) {
-                        ex->AddSuspendedWorker();
-                        coro->Suspend();
-                    }
+//                    if (counter_empty_tasks.load() >= MaxEmptyTasksInLoop &&
+//                        !shutdown.load()) {
+//                        ex->AddSuspendedWorker();
+//                        coro->Suspend();
+//                    }
                 }
             }
         }

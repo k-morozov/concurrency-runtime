@@ -20,7 +20,6 @@ class Worker final {
     IExecutor* ex;
     std::optional<std::thread> thread;
     NComponents::SimpleMSQueue<TaskBase*> local_tasks;
-    std::optional<NComponents::NHazard::Mutator> worker_mutator;
 
     std::optional<NFibers::NCoro::StackfullCoroutine> coro;
 

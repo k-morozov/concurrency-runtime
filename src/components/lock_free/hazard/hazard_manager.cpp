@@ -21,7 +21,7 @@ HazardManager::HazardManager() {
 }
 
 HazardManager::~HazardManager() {
-    std::cout << "~HazardManager()" << std::endl;
+//    std::cout << "~HazardManager()" << std::endl;
     cancel_collect.store(true);
 
     if (collector_thread && collector_thread->joinable()) {
@@ -38,7 +38,11 @@ HazardManager::~HazardManager() {
 
         delete state;
 
-        mutators_count.fetch_sub(1);
+//        {
+//            std::lock_guard lock(log);
+//            std::cout << "thread_id=" << std::this_thread::get_id()
+//                      << ", dealloc thread_state" << std::endl;
+//        }
     }
     threads.clear();
 
@@ -62,7 +66,7 @@ Mutator HazardManager::MakeMutator() {
             {
                 std::lock_guard lock(log);
                 std::cout << "thread_id=" << std::this_thread::get_id()
-                          << ", call MakeMutator, alloc" << std::endl;
+                          << ", alloc thread_state" << std::endl;
             }
             threads.insert({std::this_thread::get_id(), new ThreadState{}});
 //            mutators_count.fetch_add(1);
@@ -70,11 +74,11 @@ Mutator HazardManager::MakeMutator() {
 
     }
     const auto prev = mutators_count.fetch_add(1);
-    {
-        std::lock_guard lock(log);
-        std::cout << "thread_id=" << std::this_thread::get_id()
-                  << ", call MakeMutator, prev=" << prev << std::endl;
-    }
+//    {
+//        std::lock_guard lock(log);
+//        std::cout << "thread_id=" << std::this_thread::get_id()
+//                  << ", call MakeMutator, prev=" << prev << std::endl;
+//    }
     return Mutator(this);
 }
 

@@ -14,6 +14,11 @@
 namespace NComponents::NHazard {
 
 Mutator::Mutator(HazardManager* gc) : gc(gc) {
+//    {
+//        std::lock_guard lock(log);
+//        std::cout << "thread_id: " << std::this_thread::get_id()
+//                  << ", create Mutator" << std::endl;
+//    }
     RegisterThread();
 }
 
@@ -21,10 +26,12 @@ Mutator::~Mutator() {
     Release();
     UnregisterThread();
     const auto prev = gc->mutators_count.fetch_sub(1);
-    {
-        std::lock_guard lock(log);
-        std::cout << "thread_id: " << std::this_thread::get_id() << ", call ~Mutator(), prev mutators_count=" << prev << std::endl;
-    }
+//    {
+//        std::lock_guard lock(log);
+//        std::cout << "thread_id: " << std::this_thread::get_id()
+//                  << ", destroy Mutator, prev mutators_count=" << prev
+//                  << std::endl;
+//    }
     assert(prev > 0);
 }
 
@@ -37,8 +44,6 @@ void Mutator::UnregisterThread() {
     // I suppose that we can stay thread state in threads here.
 }
 
-void Mutator::IncreaseRetired() {
-    gc->approximate_free_list_size.fetch_add(1);
-}
+void Mutator::IncreaseRetired() { gc->approximate_free_list_size.fetch_add(1); }
 
 }  // namespace NComponents::NHazard
