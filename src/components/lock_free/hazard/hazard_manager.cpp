@@ -8,6 +8,7 @@
 #include <chrono>
 #include <thread>
 #include <unordered_set>
+#include <iostream>
 
 #include <components/lock_free/hazard/mutator.h>
 
@@ -26,7 +27,11 @@ HazardManager::~HazardManager() {
         collector_thread->join();
     }
 
-    assert(mutators_count.load() == 0);
+    {
+        const auto count = mutators_count.load();
+        std::cout << "mutators_count=" << count << std::endl;
+        assert(count == 0);
+    }
 
     std::lock_guard g(thread_lock);
     for (auto& [k, state] : threads) {
