@@ -5,6 +5,7 @@
 #include <thread>
 #include <vector>
 #include <chrono>
+#include <format>
 
 #include <benchmark/benchmark.h>
 #include <executor/pool/distributed_pool.h>
@@ -16,8 +17,9 @@
 using namespace std::chrono_literals;
 
 const size_t CountThreads = std::thread::hardware_concurrency();
-static constexpr size_t kTasks = 10'000;
+static constexpr size_t kTasks = 100'000;
 static constexpr size_t CountIteration = 10;
+static constexpr size_t CountRepetitions = 5;
 
 void bench_logic(NExecutors::IExecutor& pool) {
     size_t counter{};
@@ -32,7 +34,7 @@ void bench_logic(NExecutors::IExecutor& pool) {
             NFibers::Go([&] {
                 {
                     std::lock_guard lock(mutex);
-//                    std::this_thread::sleep_for(2ms);
+//                    std::this_thread::sleep_for(5ms);
                     counter++;
                 }
                 wg.Done();
@@ -53,9 +55,10 @@ static void IntrusiveThreadPool(benchmark::State& state) {
     }
 }
 BENCHMARK(IntrusiveThreadPool)
-    ->Name("IntrusiveThreadPool")
-    ->Unit(benchmark::kMillisecond)
-    ->Iterations(CountIteration);
+    ->Name(std::format("IntrusiveThreadPool_task_{}", kTasks))
+    ->Repetitions(CountRepetitions)
+    ->Iterations(CountIteration)
+    ->Unit(benchmark::kMillisecond);
 
 static void DistributedPool(benchmark::State& state) {
     for (auto _ : state) {
@@ -66,6 +69,7 @@ static void DistributedPool(benchmark::State& state) {
     }
 }
 BENCHMARK(DistributedPool)
-    ->Name("DistributedPool")
-    ->Unit(benchmark::kMillisecond)
-    ->Iterations(CountIteration);
+    ->Name(std::format("DistributedPool_task_{}", kTasks))
+    ->Repetitions(CountRepetitions)
+    ->Iterations(CountIteration)
+    ->Unit(benchmark::kMillisecond);

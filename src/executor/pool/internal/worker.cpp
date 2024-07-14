@@ -14,9 +14,9 @@ using namespace std::chrono_literals;
 namespace {
 thread_local IExecutor* CurrentPool;
 
-constexpr size_t MaxEmptyTasksInLoop = 3;
+constexpr size_t MaxEmptyTasksInLoop = 2;
 constexpr auto EmptyTasksSleepTimeout = 400ms;
-}
+}  // namespace
 
 Worker::Worker(IExecutor* ex) : ex(ex) {}
 
@@ -26,7 +26,7 @@ Worker::~Worker() {
 }
 
 void Worker::Start() {
-    thread.emplace([this] {Loop(); });
+    thread.emplace([this] { Loop(); });
 }
 
 void Worker::Join() {
@@ -37,8 +37,10 @@ void Worker::Join() {
 
 void Worker::Push(TaskBase* task) {
     local_tasks.Push(task);
-//    counter_empty_tasks.store(0);
-//    smph.release(1);
+
+    counter_empty_tasks.store(0);
+    ex->WakeUpSuspendedWorker();
+    smph.release(1);
 }
 
 IExecutor* Worker::Current() { return CurrentPool; }
@@ -72,9 +74,12 @@ void Worker::Process() {
                     if (ex->CanCloseWorker()) {
                         break;
                     }
-                    //            counter_empty_tasks.fetch_sub(1);
-                    //            if (counter_empty_tasks.load() >= MaxEmptyTasksInLoop)
-                    //                coro->Suspend();
+
+                    counter_empty_tasks.fetch_sub(1);
+                    if (counter_empty_tasks.load() >= MaxEmptyTasksInLoop) {
+                        ex->AddSuspendedWorker();
+                        coro->Suspend();
+                    }
                 }
             }
         }
@@ -90,7 +95,7 @@ void Worker::Loop() {
         coro->Resume();
         if (ex->CanCloseWorker()) break;
 
-//        smph.try_acquire_for(EmptyTasksSleepTimeout);
+        smph.try_acquire_for(EmptyTasksSleepTimeout);
     }
 }
 
