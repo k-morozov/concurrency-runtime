@@ -49,14 +49,14 @@ void Worker::Push(TaskBase* task) {
 IExecutor* Worker::Current() { return CurrentPool; }
 
 void Worker::Process() {
-    auto worker_mutator =
-        NComponents::NHazard::HazardManager::Get()->MakeMutator();
+    worker_mutator.emplace(
+        NComponents::NHazard::HazardManager::Get()->MakeMutator());
 
     while (true) {
         CurrentPool = ex;
         TaskBase* task{};
         {
-            auto local_task = local_tasks.TryPop(worker_mutator);
+            auto local_task = local_tasks.TryPop(worker_mutator.value());
             if (local_task) {
                 task = local_task.value();
             }
@@ -70,7 +70,8 @@ void Worker::Process() {
             }
         } else {
             {
-                auto global_task = ex->global_tasks.TryPop(worker_mutator);
+                auto global_task =
+                    ex->global_tasks.TryPop(worker_mutator.value());
                 if (global_task) {
                     Push(*global_task);
                 } else {
