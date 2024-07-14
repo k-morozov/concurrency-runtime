@@ -41,6 +41,7 @@ IExecutor* DistributedPool::Current() { return NInternal::Worker::Current(); }
 void DistributedPool::WaitShutdown() {
     StartShutdown();
     for (auto& w : workers) {
+        w.WakUpForShutdown();
         w.Join();
     }
 }

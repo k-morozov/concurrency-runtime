@@ -21,7 +21,6 @@ constexpr auto EmptyTasksSleepTimeout = 400ms;
 Worker::Worker(IExecutor* ex) : ex(ex) {}
 
 Worker::~Worker() {
-    worker_mutator.reset();
     shutdown.store(true);
     smph.release(1);
 
@@ -44,6 +43,10 @@ void Worker::Push(TaskBase* task) {
 
     counter_empty_tasks.store(0);
     ex->WakeUpSuspendedWorker();
+    smph.release(1);
+}
+
+void Worker::WakUpForShutdown() {
     smph.release(1);
 }
 

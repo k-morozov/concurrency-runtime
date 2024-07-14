@@ -40,6 +40,7 @@ public:
     void Join();
 
     void Push(TaskBase*);
+    void WakUpForShutdown();
 
     static IExecutor* Current();
 };
