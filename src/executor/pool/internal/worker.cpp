@@ -14,7 +14,7 @@ using namespace std::chrono_literals;
 namespace {
 thread_local IExecutor* CurrentPool;
 
-constexpr size_t MaxEmptyTasksInLoop = 2;
+constexpr size_t MaxEmptyTasksInLoop = 1;
 constexpr auto EmptyTasksSleepTimeout = 400ms;
 }  // namespace
 
@@ -46,15 +46,11 @@ void Worker::Push(TaskBase* task) {
     smph.release(1);
 }
 
-void Worker::WakUpForShutdown() {
-    smph.release(1);
-}
+void Worker::WakUpForShutdown() { smph.release(1); }
 
 IExecutor* Worker::Current() { return CurrentPool; }
 
 void Worker::Process(NComponents::NHazard::Mutator& worker_mutator) {
-//    auto worker_mutator = NComponents::NHazard::HazardManager::Get()->MakeMutator();
-
     while (true) {
         CurrentPool = ex;
         TaskBase* task{};
@@ -73,8 +69,7 @@ void Worker::Process(NComponents::NHazard::Mutator& worker_mutator) {
             }
         } else {
             {
-                auto global_task =
-                    ex->global_tasks.TryPop(worker_mutator);
+                auto global_task = ex->global_tasks.TryPop(worker_mutator);
                 if (global_task) {
                     Push(*global_task);
                 } else {
@@ -95,7 +90,8 @@ void Worker::Process(NComponents::NHazard::Mutator& worker_mutator) {
     }
 }
 void Worker::Loop() {
-    auto worker_mutator = NComponents::NHazard::HazardManager::Get()->MakeMutator();
+    auto worker_mutator =
+        NComponents::NHazard::HazardManager::Get()->MakeMutator();
 
     while (true) {
         if (!coro) {

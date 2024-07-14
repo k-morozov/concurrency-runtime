@@ -16,8 +16,6 @@
 
 namespace NComponents::NHazard {
 
-inline std::mutex log;
-
 class Mutator final {
     HazardManager* gc;
 
@@ -68,8 +66,6 @@ public:
     inline void Release() {
         mutator_thread_state->protected_ptr.store(nullptr);
     }
-
-
 
 private:
     void RegisterThread();

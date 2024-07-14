@@ -14,11 +14,6 @@
 namespace NComponents::NHazard {
 
 Mutator::Mutator(HazardManager* gc) : gc(gc) {
-//    {
-//        std::lock_guard lock(log);
-//        std::cout << "thread_id: " << std::this_thread::get_id()
-//                  << ", create Mutator" << std::endl;
-//    }
     RegisterThread();
 }
 
@@ -26,12 +21,6 @@ Mutator::~Mutator() {
     Release();
     UnregisterThread();
     const auto prev = gc->mutators_count.fetch_sub(1);
-//    {
-//        std::lock_guard lock(log);
-//        std::cout << "thread_id: " << std::this_thread::get_id()
-//                  << ", destroy Mutator, prev mutators_count=" << prev
-//                  << std::endl;
-//    }
     assert(prev > 0);
 }
 

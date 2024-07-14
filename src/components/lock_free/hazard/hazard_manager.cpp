@@ -6,9 +6,9 @@
 
 #include <cassert>
 #include <chrono>
+#include <iostream>
 #include <thread>
 #include <unordered_set>
-#include <iostream>
 
 #include <components/lock_free/hazard/mutator.h>
 
@@ -21,7 +21,6 @@ HazardManager::HazardManager() {
 }
 
 HazardManager::~HazardManager() {
-//    std::cout << "~HazardManager()" << std::endl;
     cancel_collect.store(true);
 
     if (collector_thread && collector_thread->joinable()) {
@@ -37,18 +36,11 @@ HazardManager::~HazardManager() {
         assert(nullptr == state->retired_ptrs.load());
 
         delete state;
-
-//        {
-//            std::lock_guard lock(log);
-//            std::cout << "thread_id=" << std::this_thread::get_id()
-//                      << ", dealloc thread_state" << std::endl;
-//        }
     }
     threads.clear();
 
     {
         const auto count = mutators_count.load();
-//        std::cout << "mutators_count=" << count << std::endl;
         assert(count == 0);
     }
 }
@@ -63,22 +55,10 @@ Mutator HazardManager::MakeMutator() {
     {
         std::lock_guard g(thread_lock);
         if (!threads.contains(std::this_thread::get_id())) {
-//            {
-//                std::lock_guard lock(log);
-//                std::cout << "thread_id=" << std::this_thread::get_id()
-//                          << ", alloc thread_state" << std::endl;
-//            }
             threads.insert({std::this_thread::get_id(), new ThreadState{}});
-//            mutators_count.fetch_add(1);
         }
-
     }
-    const auto prev = mutators_count.fetch_add(1);
-//    {
-//        std::lock_guard lock(log);
-//        std::cout << "thread_id=" << std::this_thread::get_id()
-//                  << ", call MakeMutator, prev=" << prev << std::endl;
-//    }
+    mutators_count.fetch_add(1);
     return Mutator(this);
 }
 
@@ -112,7 +92,6 @@ void HazardManager::Collect() {
 void HazardManager::CheckToDelete(
     ThreadState* thread_state,
     const std::unordered_set<void*>& protected_ptrs) {
-
     RetirePtr* candidate_retired = thread_state->retired_ptrs.exchange(nullptr);
 
     while (candidate_retired) {
