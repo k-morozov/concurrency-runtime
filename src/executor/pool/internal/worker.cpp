@@ -36,11 +36,9 @@ void Worker::Join() {
 }
 
 void Worker::Push(TaskBase* task) {
-    //    if (ex->IsShutdown()) return;
-
     local_tasks.Push(task);
-    counter_empty_tasks.store(0);
-    smph.release(1);
+//    counter_empty_tasks.store(0);
+//    smph.release(1);
 }
 
 IExecutor* Worker::Current() { return CurrentPool; }
@@ -53,25 +51,32 @@ void Worker::Process() {
         CurrentPool = ex;
         TaskBase* task{};
         {
-            auto res = local_tasks.TryPop(worker_mutator);
-            if (res) {
-                task = res.value();
+            auto local_task = local_tasks.TryPop(worker_mutator);
+            if (local_task) {
+                task = local_task.value();
             }
         }
 
         if (task) {
+            task->SetWorker(this);
             const auto status = task->Run();
             if (status == ITask::TaskRunResult::COMPLETE) {
                 ex->RemoveTask();
             }
-
         } else {
-            if (ex->CanCloseWorker()) {
-                break;
+            {
+                auto global_task = ex->global_tasks.TryPop(worker_mutator);
+                if (global_task) {
+                    Push(*global_task);
+                } else {
+                    if (ex->CanCloseWorker()) {
+                        break;
+                    }
+                    //            counter_empty_tasks.fetch_sub(1);
+                    //            if (counter_empty_tasks.load() >= MaxEmptyTasksInLoop)
+                    //                coro->Suspend();
+                }
             }
-            counter_empty_tasks.fetch_sub(1);
-            if (counter_empty_tasks.load() >= MaxEmptyTasksInLoop)
-                coro->Suspend();
         }
         ex->NotifyAll();
     }
@@ -85,7 +90,7 @@ void Worker::Loop() {
         coro->Resume();
         if (ex->CanCloseWorker()) break;
 
-        smph.try_acquire_for(EmptyTasksSleepTimeout);
+//        smph.try_acquire_for(EmptyTasksSleepTimeout);
     }
 }
 

@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <components/lock_free/simple_ms_queue.h>
 #include <executor/task/task.h>
 #include <executor/task/task_base.h>
 
@@ -14,8 +15,6 @@ class Worker;
 }
 
 class Shutdowner {
-    friend class NInternal::Worker;
-
     std::atomic<size_t> count_tasks{0};
     std::atomic<bool> shutdown_{false};
 
@@ -51,8 +50,13 @@ protected:
 };
 
 struct IExecutor : public Shutdowner {
+    friend class NInternal::Worker;
+
     ~IExecutor() noexcept override = default;
     virtual void Submit(NExecutors::TaskBase* /*task*/) = 0;
+
+protected:
+    NComponents::SimpleMSQueue<TaskBase*> global_tasks;
 };
 
 }  // namespace NExecutors

@@ -21,11 +21,9 @@ class Worker final {
     std::optional<std::thread> thread;
     NComponents::SimpleMSQueue<TaskBase*> local_tasks;
 
-    std::atomic<bool> suspended{};
     std::optional<NFibers::NCoro::StackfullCoroutine> coro;
 
     std::atomic<std::size_t> counter_empty_tasks{};
-
     std::binary_semaphore smph{0};
 
     void Process();
@@ -38,7 +36,7 @@ public:
     void Start();
     void Join();
 
-    void Push(TaskBase* /*, SchedulerHint*/);
+    void Push(TaskBase*);
 
     static IExecutor* Current();
 };
