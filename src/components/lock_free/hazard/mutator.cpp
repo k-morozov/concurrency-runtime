@@ -21,7 +21,10 @@ Mutator::~Mutator() {
     Release();
     UnregisterThread();
     const auto prev = gc->mutators_count.fetch_sub(1);
-    std::cout << "thread_id: " << std::this_thread::get_id() << ", prev mutators_count=" << prev << std::endl;
+    {
+        std::lock_guard lock(log);
+        std::cout << "thread_id: " << std::this_thread::get_id() << ", call ~Mutator(), prev mutators_count=" << prev << std::endl;
+    }
     assert(prev > 0);
 }
 

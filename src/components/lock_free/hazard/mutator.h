@@ -16,6 +16,8 @@
 
 namespace NComponents::NHazard {
 
+inline std::mutex log;
+
 class Mutator final {
     HazardManager* gc;
 
