@@ -83,11 +83,11 @@ void Worker::Process() {
                     }
 
                     counter_empty_tasks.fetch_sub(1);
-                    if (counter_empty_tasks.load() >= MaxEmptyTasksInLoop &&
-                        !shutdown.load()) {
-                        ex->AddSuspendedWorker();
-                        coro->Suspend();
-                    }
+//                    if (counter_empty_tasks.load() >= MaxEmptyTasksInLoop &&
+//                        !shutdown.load()) {
+//                        ex->AddSuspendedWorker();
+//                        coro->Suspend();
+//                    }
                 }
             }
         }
