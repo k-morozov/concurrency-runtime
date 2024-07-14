@@ -2,6 +2,7 @@
 // Created by konstantin on 13.07.24.
 //
 
+#include <cassert>
 #include <coroutine>
 #include <iostream>
 
