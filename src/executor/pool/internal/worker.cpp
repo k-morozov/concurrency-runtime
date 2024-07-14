@@ -101,12 +101,14 @@ void Worker::Loop() {
                          NFibers::NContext::Buffer::AllocBytes(64 * 1024));
         }
         coro->Resume();
-        if (ex->CanCloseWorker()) break;
+        if (ex->CanCloseWorker()) {
+            coro.reset();
+            break;
+        }
 
         if (!shutdown.load()) smph.try_acquire_for(EmptyTasksSleepTimeout);
     }
-    assert(coro->IsCompleted());
-    coro.reset();
+//    assert(coro->IsCompleted());
 }
 
 }  // namespace NExecutors::NInternal
