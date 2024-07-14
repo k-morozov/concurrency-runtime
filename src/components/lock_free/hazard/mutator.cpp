@@ -5,6 +5,7 @@
 #include "mutator.h"
 
 #include <cassert>
+#include <iostream>
 #include <thread>
 
 #include <components/lock_free/hazard/hazard_manager.h>
@@ -20,6 +21,7 @@ Mutator::~Mutator() {
     Release();
     UnregisterThread();
     const auto prev = gc->mutators_count.fetch_sub(1);
+    std::cout << "prev=" << prev << std::endl;
     assert(prev > 0);
 }
 
