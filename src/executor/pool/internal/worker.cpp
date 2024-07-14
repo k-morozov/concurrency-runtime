@@ -21,6 +21,7 @@ constexpr auto EmptyTasksSleepTimeout = 400ms;
 Worker::Worker(IExecutor* ex) : ex(ex) {}
 
 Worker::~Worker() {
+    worker_mutator.reset();
     shutdown.store(true);
     smph.release(1);
 
