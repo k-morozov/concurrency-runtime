@@ -9,6 +9,11 @@ change logic creation mutator:
 IntrusiveThreadPool/iterations:10       31.6 ms         9.43 ms           10
 DistributedPool/iterations:10           64.9 ms         29.8 ms           10
 
+global and local queue:
+IntrusiveThreadPool/iterations:10       46.8 ms         8.25 ms           10
+DistributedPool/iterations:10           48.4 ms         31.2 ms           10
+
+in progress:
 add simple park with smph:
 IntrusiveThreadPool/iterations:10       38.9 ms         9.18 ms           10
 DistributedPool/iterations:10            508 ms         42.6 ms           10
