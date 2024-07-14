@@ -83,11 +83,11 @@ void Worker::Process() {
                     }
 
                     counter_empty_tasks.fetch_sub(1);
-//                    if (counter_empty_tasks.load() >= MaxEmptyTasksInLoop &&
-//                        !shutdown.load()) {
-//                        ex->AddSuspendedWorker();
-//                        coro->Suspend();
-//                    }
+                    if (counter_empty_tasks.load() >= MaxEmptyTasksInLoop &&
+                        !shutdown.load()) {
+                        ex->AddSuspendedWorker();
+                        coro->Suspend();
+                    }
                 }
             }
         }
@@ -105,6 +105,8 @@ void Worker::Loop() {
 
         if (!shutdown.load()) smph.try_acquire_for(EmptyTasksSleepTimeout);
     }
+    assert(coro->IsCompleted());
+    coro.reset();
 }
 
 }  // namespace NExecutors::NInternal

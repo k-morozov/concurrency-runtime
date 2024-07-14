@@ -48,7 +48,7 @@ HazardManager::~HazardManager() {
 
     {
         const auto count = mutators_count.load();
-        std::cout << "mutators_count=" << count << std::endl;
+//        std::cout << "mutators_count=" << count << std::endl;
         assert(count == 0);
     }
 }
@@ -63,11 +63,11 @@ Mutator HazardManager::MakeMutator() {
     {
         std::lock_guard g(thread_lock);
         if (!threads.contains(std::this_thread::get_id())) {
-            {
-                std::lock_guard lock(log);
-                std::cout << "thread_id=" << std::this_thread::get_id()
-                          << ", alloc thread_state" << std::endl;
-            }
+//            {
+//                std::lock_guard lock(log);
+//                std::cout << "thread_id=" << std::this_thread::get_id()
+//                          << ", alloc thread_state" << std::endl;
+//            }
             threads.insert({std::this_thread::get_id(), new ThreadState{}});
 //            mutators_count.fetch_add(1);
         }
