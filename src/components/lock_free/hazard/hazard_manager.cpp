@@ -5,8 +5,6 @@
 #include "hazard_manager.h"
 
 #include <cassert>
-#include <chrono>
-#include <iostream>
 #include <thread>
 #include <unordered_set>
 

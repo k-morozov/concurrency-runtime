@@ -5,7 +5,6 @@
 #include "mutator.h"
 
 #include <cassert>
-#include <iostream>
 #include <thread>
 
 #include <components/lock_free/hazard/hazard_manager.h>
