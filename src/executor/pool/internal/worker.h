@@ -22,9 +22,14 @@ class Worker final {
     NComponents::SimpleMSQueue<TaskBase*> local_tasks;
 
     std::atomic<bool> suspended{};
-    NFibers::NCoro::StackfullCoroutine coro;
+    std::optional<NFibers::NCoro::StackfullCoroutine> coro;
+
+    std::atomic<std::size_t> counter_empty_tasks{};
+
+    std::binary_semaphore smph{0};
 
     void Process();
+    void Loop();
 
 public:
     explicit Worker(IExecutor* ex);
