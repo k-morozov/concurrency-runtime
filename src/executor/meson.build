@@ -18,5 +18,5 @@ executor = library('executor',
                    install : true,
                    include_directories : [root_src_dir],
                    dependencies : [threads_dep, libatomic_dep],
-                   link_with : [context, components],
+                   link_with : [context, coro, components],
 )
