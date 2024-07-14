@@ -26,6 +26,8 @@ class Worker final {
     std::atomic<std::size_t> counter_empty_tasks{};
     std::binary_semaphore smph{0};
 
+    std::atomic<bool> shutdown{};
+
     void Process();
     void Loop();
 

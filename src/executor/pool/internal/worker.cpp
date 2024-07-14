@@ -21,6 +21,9 @@ constexpr auto EmptyTasksSleepTimeout = 400ms;
 Worker::Worker(IExecutor* ex) : ex(ex) {}
 
 Worker::~Worker() {
+    shutdown.store(true);
+    smph.release(1);
+
     Join();
     assert(0 == ex->GetTasks());
 }
@@ -76,7 +79,8 @@ void Worker::Process() {
                     }
 
                     counter_empty_tasks.fetch_sub(1);
-                    if (counter_empty_tasks.load() >= MaxEmptyTasksInLoop) {
+                    if (counter_empty_tasks.load() >= MaxEmptyTasksInLoop &&
+                        !shutdown.load()) {
                         ex->AddSuspendedWorker();
                         coro->Suspend();
                     }
@@ -95,7 +99,7 @@ void Worker::Loop() {
         coro->Resume();
         if (ex->CanCloseWorker()) break;
 
-        smph.try_acquire_for(EmptyTasksSleepTimeout);
+        if (!shutdown.load()) smph.try_acquire_for(EmptyTasksSleepTimeout);
     }
 }
 

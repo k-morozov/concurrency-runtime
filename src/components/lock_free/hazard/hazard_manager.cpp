@@ -47,6 +47,7 @@ HazardManager* HazardManager::Get() {
 }
 
 Mutator HazardManager::MakeMutator() {
+    assert(!cancel_collect.load());
     {
         std::lock_guard g(thread_lock);
         if (!threads.contains(std::this_thread::get_id()))
