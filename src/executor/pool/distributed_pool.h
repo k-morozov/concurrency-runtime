@@ -16,7 +16,7 @@ class DistributedPool final : public IExecutor {
     friend class NInternal::Worker;
 
     const size_t count_workers;
-    std::atomic<size_t> current_worker{};
+//    std::atomic<size_t> current_worker{};
     std::deque<NInternal::Worker> workers;
 
 public:

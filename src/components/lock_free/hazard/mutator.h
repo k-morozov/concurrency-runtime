@@ -24,6 +24,12 @@ protected:
 
 public:
     explicit Mutator(HazardManager* gc);
+    Mutator(const Mutator& o) = delete;
+    Mutator(Mutator&& o) noexcept = delete;
+
+    Mutator& operator=(const Mutator& o) = delete;
+    Mutator& operator=(Mutator&& o) noexcept = delete;
+
     ~Mutator();
 
     template <class T>
@@ -60,8 +66,6 @@ public:
     inline void Release() {
         mutator_thread_state->protected_ptr.store(nullptr);
     }
-
-
 
 private:
     void RegisterThread();

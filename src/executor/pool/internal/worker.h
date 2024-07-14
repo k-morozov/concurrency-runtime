@@ -26,7 +26,9 @@ class Worker final {
     std::atomic<std::size_t> counter_empty_tasks{};
     std::binary_semaphore smph{0};
 
-    void Process();
+    std::atomic<bool> shutdown{};
+
+    void Process(NComponents::NHazard::Mutator& worker_mutator);
     void Loop();
 
 public:
@@ -37,6 +39,7 @@ public:
     void Join();
 
     void Push(TaskBase*);
+    void WakUpForShutdown();
 
     static IExecutor* Current();
 };

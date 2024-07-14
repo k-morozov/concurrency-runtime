@@ -5,7 +5,6 @@
 #include "hazard_manager.h"
 
 #include <cassert>
-#include <chrono>
 #include <thread>
 #include <unordered_set>
 
@@ -26,8 +25,6 @@ HazardManager::~HazardManager() {
         collector_thread->join();
     }
 
-    assert(mutators_count.load() == 0);
-
     std::lock_guard g(thread_lock);
     for (auto& [k, state] : threads) {
         assert(nullptr == state->protected_ptr.load());
@@ -39,6 +36,11 @@ HazardManager::~HazardManager() {
         delete state;
     }
     threads.clear();
+
+    {
+        const auto count = mutators_count.load();
+        assert(count == 0);
+    }
 }
 
 HazardManager* HazardManager::Get() {
@@ -47,10 +49,12 @@ HazardManager* HazardManager::Get() {
 }
 
 Mutator HazardManager::MakeMutator() {
+    assert(!cancel_collect.load());
     {
         std::lock_guard g(thread_lock);
-        if (!threads.contains(std::this_thread::get_id()))
+        if (!threads.contains(std::this_thread::get_id())) {
             threads.insert({std::this_thread::get_id(), new ThreadState{}});
+        }
     }
     mutators_count.fetch_add(1);
     return Mutator(this);
@@ -86,7 +90,6 @@ void HazardManager::Collect() {
 void HazardManager::CheckToDelete(
     ThreadState* thread_state,
     const std::unordered_set<void*>& protected_ptrs) {
-
     RetirePtr* candidate_retired = thread_state->retired_ptrs.exchange(nullptr);
 
     while (candidate_retired) {

@@ -4,6 +4,7 @@
 
 #include "mutator.h"
 
+#include <cassert>
 #include <thread>
 
 #include <components/lock_free/hazard/hazard_manager.h>
@@ -18,7 +19,8 @@ Mutator::Mutator(HazardManager* gc) : gc(gc) {
 Mutator::~Mutator() {
     Release();
     UnregisterThread();
-    gc->mutators_count.fetch_sub(1);
+    const auto prev = gc->mutators_count.fetch_sub(1);
+    assert(prev > 0);
 }
 
 void Mutator::RegisterThread() {
@@ -30,8 +32,6 @@ void Mutator::UnregisterThread() {
     // I suppose that we can stay thread state in threads here.
 }
 
-void Mutator::IncreaseRetired() {
-    gc->approximate_free_list_size.fetch_add(1);
-}
+void Mutator::IncreaseRetired() { gc->approximate_free_list_size.fetch_add(1); }
 
 }  // namespace NComponents::NHazard

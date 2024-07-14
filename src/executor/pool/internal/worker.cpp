@@ -14,19 +14,22 @@ using namespace std::chrono_literals;
 namespace {
 thread_local IExecutor* CurrentPool;
 
-constexpr size_t MaxEmptyTasksInLoop = 3;
+constexpr size_t MaxEmptyTasksInLoop = 1;
 constexpr auto EmptyTasksSleepTimeout = 400ms;
-}
+}  // namespace
 
 Worker::Worker(IExecutor* ex) : ex(ex) {}
 
 Worker::~Worker() {
+    shutdown.store(true);
+    smph.release(1);
+
     Join();
     assert(0 == ex->GetTasks());
 }
 
 void Worker::Start() {
-    thread.emplace([this] {Loop(); });
+    thread.emplace([this] { Loop(); });
 }
 
 void Worker::Join() {
@@ -37,16 +40,17 @@ void Worker::Join() {
 
 void Worker::Push(TaskBase* task) {
     local_tasks.Push(task);
-//    counter_empty_tasks.store(0);
-//    smph.release(1);
+
+    counter_empty_tasks.store(0);
+    ex->WakeUpSuspendedWorker();
+    smph.release(1);
 }
+
+void Worker::WakUpForShutdown() { smph.release(1); }
 
 IExecutor* Worker::Current() { return CurrentPool; }
 
-void Worker::Process() {
-    auto worker_mutator =
-        NComponents::NHazard::HazardManager::Get()->MakeMutator();
-
+void Worker::Process(NComponents::NHazard::Mutator& worker_mutator) {
     while (true) {
         CurrentPool = ex;
         TaskBase* task{};
@@ -72,9 +76,13 @@ void Worker::Process() {
                     if (ex->CanCloseWorker()) {
                         break;
                     }
-                    //            counter_empty_tasks.fetch_sub(1);
-                    //            if (counter_empty_tasks.load() >= MaxEmptyTasksInLoop)
-                    //                coro->Suspend();
+
+                    counter_empty_tasks.fetch_sub(1);
+                    if (counter_empty_tasks.load() >= MaxEmptyTasksInLoop &&
+                        !shutdown.load()) {
+                        ex->AddSuspendedWorker();
+                        coro->Suspend();
+                    }
                 }
             }
         }
@@ -82,15 +90,20 @@ void Worker::Process() {
     }
 }
 void Worker::Loop() {
+    auto worker_mutator =
+        NComponents::NHazard::HazardManager::Get()->MakeMutator();
+
     while (true) {
         if (!coro) {
-            coro.emplace([this]() { Process(); },
+            coro.emplace([&, this]() { Process(worker_mutator); },
                          NFibers::NContext::Buffer::AllocBytes(64 * 1024));
         }
         coro->Resume();
-        if (ex->CanCloseWorker()) break;
+        if (ex->CanCloseWorker()) {
+            break;
+        }
 
-//        smph.try_acquire_for(EmptyTasksSleepTimeout);
+        if (!shutdown.load()) smph.try_acquire_for(EmptyTasksSleepTimeout);
     }
 }
 

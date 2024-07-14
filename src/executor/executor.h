@@ -21,6 +21,8 @@ class Shutdowner {
     std::mutex mutex;
     std::condition_variable empty_tasks_;
 
+    std::atomic<std::size_t> suspended_workers{};
+
 public:
     virtual ~Shutdowner() noexcept = default;
 
@@ -47,6 +49,18 @@ protected:
     }
 
     void NotifyAll() { empty_tasks_.notify_all(); }
+
+    void AddSuspendedWorker() {
+        suspended_workers.fetch_add(1);
+    }
+
+    void WakeUpSuspendedWorker() {
+        suspended_workers.fetch_sub(1);
+    }
+
+    size_t GetSuspendedWorkers() const {
+        return suspended_workers.load();
+    }
 };
 
 struct IExecutor : public Shutdowner {
