@@ -28,7 +28,7 @@ class Worker final {
 
     std::atomic<bool> shutdown{};
 
-    void Process();
+    void Process(NComponents::NHazard::Mutator& worker_mutator);
     void Loop();
 
 public:

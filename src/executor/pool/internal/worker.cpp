@@ -52,8 +52,8 @@ void Worker::WakUpForShutdown() {
 
 IExecutor* Worker::Current() { return CurrentPool; }
 
-void Worker::Process() {
-    auto worker_mutator = NComponents::NHazard::HazardManager::Get()->MakeMutator();
+void Worker::Process(NComponents::NHazard::Mutator& worker_mutator) {
+//    auto worker_mutator = NComponents::NHazard::HazardManager::Get()->MakeMutator();
 
     while (true) {
         CurrentPool = ex;
@@ -95,20 +95,20 @@ void Worker::Process() {
     }
 }
 void Worker::Loop() {
+    auto worker_mutator = NComponents::NHazard::HazardManager::Get()->MakeMutator();
+
     while (true) {
         if (!coro) {
-            coro.emplace([this]() { Process(); },
+            coro.emplace([&, this]() { Process(worker_mutator); },
                          NFibers::NContext::Buffer::AllocBytes(64 * 1024));
         }
         coro->Resume();
         if (ex->CanCloseWorker()) {
-//            coro.reset();
             break;
         }
 
         if (!shutdown.load()) smph.try_acquire_for(EmptyTasksSleepTimeout);
     }
-//    assert(coro->IsCompleted());
 }
 
 }  // namespace NExecutors::NInternal
