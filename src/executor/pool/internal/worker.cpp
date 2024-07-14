@@ -102,7 +102,7 @@ void Worker::Loop() {
         }
         coro->Resume();
         if (ex->CanCloseWorker()) {
-            coro.reset();
+//            coro.reset();
             break;
         }
 
