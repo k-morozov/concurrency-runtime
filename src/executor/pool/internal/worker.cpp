@@ -13,7 +13,10 @@ namespace {
 thread_local IExecutor* CurrentPool;
 }
 
-Worker::Worker(IExecutor* ex) : ex(ex) {}
+Worker::Worker(IExecutor* ex)
+    : ex(ex),
+      coro([this]() { Process(); },
+           NFibers::NContext::Buffer::AllocBytes(64 * 1024)) {}
 
 Worker::~Worker() {
     Join();
@@ -21,34 +24,7 @@ Worker::~Worker() {
 }
 
 void Worker::Start() {
-    thread.emplace(std::thread([this]() {
-        auto worker_mutator =
-            NComponents::NHazard::HazardManager::Get()->MakeMutator();
-
-        while (true) {
-            CurrentPool = ex;
-            TaskBase* task{};
-            {
-                auto res = local_tasks.TryPop(worker_mutator);
-                if (res) {
-                    task = res.value();
-                }
-            }
-
-            if (task) {
-                const auto status = task->Run();
-                if (status == ITask::TaskRunResult::COMPLETE) {
-                    ex->RemoveTask();
-                }
-
-            } else {
-                if (ex->CanCloseWorker()) {
-                    break;
-                }
-            }
-            ex->NotifyAll();
-        }
-    }));
+    thread.emplace(std::thread([this]() { coro.Resume(); }));
 }
 
 void Worker::Join() {
@@ -64,5 +40,34 @@ void Worker::Push(TaskBase* task) {
 }
 
 IExecutor* Worker::Current() { return CurrentPool; }
+
+void Worker::Process() {
+    auto worker_mutator =
+        NComponents::NHazard::HazardManager::Get()->MakeMutator();
+
+    while (true) {
+        CurrentPool = ex;
+        TaskBase* task{};
+        {
+            auto res = local_tasks.TryPop(worker_mutator);
+            if (res) {
+                task = res.value();
+            }
+        }
+
+        if (task) {
+            const auto status = task->Run();
+            if (status == ITask::TaskRunResult::COMPLETE) {
+                ex->RemoveTask();
+            }
+
+        } else {
+            if (ex->CanCloseWorker()) {
+                break;
+            }
+        }
+        ex->NotifyAll();
+    }
+}
 
 }  // namespace NExecutors::NInternal
