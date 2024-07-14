@@ -4,6 +4,7 @@
 
 #include "mutator.h"
 
+#include <cassert>
 #include <thread>
 
 #include <components/lock_free/hazard/hazard_manager.h>
@@ -18,7 +19,8 @@ Mutator::Mutator(HazardManager* gc) : gc(gc) {
 Mutator::~Mutator() {
     Release();
     UnregisterThread();
-    gc->mutators_count.fetch_sub(1);
+    const auto prev = gc->mutators_count.fetch_sub(1);
+    assert(prev > 0);
 }
 
 void Mutator::RegisterThread() {
