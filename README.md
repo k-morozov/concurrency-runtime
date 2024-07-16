@@ -4,11 +4,11 @@
 
 ## What I did?
 
-- [library for switch context](src/context/README.md)
-- [stackfull coroutine](src/coro/README.md)
-- [executor](src/executor/README.md)
-- [fibers](src/fiber/README.md)
-- [common components library](src/components/README.md)
+- [library for switch context](#switch-context)
+- [stackfull coroutine](#stackfull-coroutine)
+- [executor](#executor)
+- [fibers](#fibers)
+- [common components library](#common-components)
 
 ----------------------------------------
 
@@ -35,3 +35,27 @@ meson setup --native-file build/conan_meson_native.ini build . --buildtype debug
 meson compile -C build
 meson test -C build
 ```
+
+
+### Switch context
+
+in progres
+
+### Stackfull coroutine
+
+in progres
+
+### Executor
+
+in progres
+
+### Fibers
+
+in progres
+
+### Common components
+
+- function
+- spinlock
+- intrusive list
+- lock free queue
