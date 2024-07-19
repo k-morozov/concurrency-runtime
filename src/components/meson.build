@@ -8,6 +8,9 @@ components_sources = files(
     'lock_free/hazard/mutator.cpp',
     'lock_free/hazard/hazard_manager.cpp',
     'lock_free/hazard/thread_state.cpp',
+    'async_mutex/async_mutex.cpp',
+    'async_mutex/event.cpp',
+    'async_mutex/mutex_awaiter.cpp',
 )
 
 cpp = meson.get_compiler('cpp')
