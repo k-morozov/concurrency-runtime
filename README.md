@@ -11,6 +11,13 @@
 - [common components library](#common-components)
 
 ----------------------------------------
+### Intro
+
+I really wanted to understand how Go's runtime works. I suppose that the best way to research smth - write it by yourself. So this project is only my effort to understand it. This lib doesn't ready for production. For example I wrote specific context switching and I don't know how it works on Window/MacOS or another CPU arch. I try to write good unit tests with diffrent sanitizers and cases. However, I don't think it's enough. For example for simular project fault injection is a good way to found a conccurancy problem. 
+
+***I must admit that every decision is made in the design of the system imperfectly. Every design is trade off.***
+
+When I work with this lib I understood that concurrancy is really too hard.
 
 ### Requirements
 
@@ -36,26 +43,53 @@ meson compile -C build
 meson test -C build
 ```
 
+### Bench
+
+[see here](bench/readme.md)
+
+### Perf results
+
+[see here](doc/workload.svg)
+
+-----------------------------------------------
+
+## What have I implemented?
 
 ### Switch context
 
-in progres
+Main part for implementation stackfull coroutine.
+
+- [start see](src/context/context.h)
+- [asm core](src/context/buffer/prepare_context.s)
 
 ### Stackfull coroutine
 
-in progres
+My implementation of stackfull coroutine.
+
+- [see here](src/coro/stackfull_coro.h)
 
 ### Executor
 
-in progres
+Scheduler, executor.
+
+- [manual executor, step by step](src/executor/manual/intrusive_manual_executor.h)
+- [simple intrusive thread pool](src/executor/pool/intrusive_pool.h)
+- [strand executor](src/executor/strand/intrusive_strand.h)
+- [my last work - thread pool with sharded workers](src/executor/pool/distributed_pool.h)
 
 ### Fibers
 
-in progres
+Stackfull coroutine + Executor = Fibers. Im proud of async mutex, wait group, event.
+
+- [Fiber](src/fiber/awaiter_fiber.h)
+- [async mutex](src/fiber/sync/async_mutex.h)
+- [async wait_group](src/fiber/sync/wait_group.h)
 
 ### Common components
 
-- function
-- spinlock
-- intrusive list
-- lock free queue
+- [function](src/components/function/basic_function.h)
+- [spinlock](src/components/sync/spinLock.h)
+- [simple intrusive list](src/components/intrusive/list.h)
+- [lock free queue](src/components/lock_free/simple_ms_queue.h)
+
+P.S. Thanks for R.Lipovsky for his wonderfully program :)
