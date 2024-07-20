@@ -11,6 +11,7 @@ components_sources = files(
     'async_mutex/async_mutex.cpp',
     'async_mutex/event.cpp',
     'async_mutex/mutex_awaiter.cpp',
+    'async_mutex/resumable_no_own.cpp',
 )
 
 cpp = meson.get_compiler('cpp')

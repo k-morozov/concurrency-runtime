@@ -8,6 +8,7 @@
 #include <coroutine>
 
 #include <components/async_mutex/event.h>
+#include <components/async_mutex/resumable_no_own.h>
 
 namespace NComponents {
 
@@ -19,8 +20,9 @@ public:
     void unlock();
 
 private:
-    std::atomic<bool> flag{};
     Event event;
+
+    ResumableNoOwn LockImpl();
 };
 
 }  // namespace NComponents

@@ -5,17 +5,33 @@
 #pragma once
 
 #include <atomic>
+#include <list>
 
 #include <components/async_mutex/mutex_awaiter.h>
 
 namespace NComponents {
 struct Event final {
-    std::atomic<bool>& flag;
+    std::atomic<bool> flag{};
+    std::list<MutexAwaiter> waiters;
 
-    explicit Event(std::atomic<bool>& flag) : flag(flag) {}
+    Event() = default;
+
+    bool TrySet() {
+        return flag.exchange(true);
+    }
+    void UnSet() {
+        flag.store(false);
+        if (!waiters.empty()) {
+            auto waiter = waiters.front();
+            waiters.pop_front();
+            waiter.coro.resume();
+        }
+    }
+
+    bool IsSet() const { return flag.load(); }
 
     MutexAwaiter operator co_await();
 
-    void ParkAwaiter();
+    void ParkAwaiter(MutexAwaiter awaiter);
 };
 }  // namespace NComponents

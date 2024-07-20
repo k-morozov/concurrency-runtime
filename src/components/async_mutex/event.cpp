@@ -3,8 +3,17 @@
 //
 #include "event.h"
 
+#include <iostream>
+
 namespace NComponents {
 
-MutexAwaiter Event::operator co_await() { return MutexAwaiter{*this}; }
+MutexAwaiter Event::operator co_await() {
+    return MutexAwaiter{*this};
+}
+
+void Event::ParkAwaiter(MutexAwaiter awaiter) {
+    std::cout << "[Event::ParkAwaiter] add waiter, current size=" << waiters.size() << std::endl;
+    waiters.push_back(awaiter);
+}
 
 }  // namespace NComponents

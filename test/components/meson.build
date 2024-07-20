@@ -4,6 +4,7 @@ test_source_files = [
     'test_basic_function.cpp',
     'test_intrusive_list.cpp',
     'test_ms_queue.cpp',
+    'test_async_mutex.cpp',
 ]
 
 cpp = meson.get_compiler('cpp')
