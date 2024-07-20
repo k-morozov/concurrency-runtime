@@ -8,6 +8,7 @@
 
 #include <components/async_mutex/async_mutex.h>
 
+using namespace std::chrono_literals;
 
 TEST(TestAsyncMutex, JustWorking) {
     NComponents::AsyncMutex mutex;
@@ -16,32 +17,21 @@ TEST(TestAsyncMutex, JustWorking) {
     mutex.unlock();
 }
 
-TEST(TestAsyncMutex, OneThread) {
+TEST(TestAsyncMutex, SomeThreads) {
     NComponents::AsyncMutex mutex;
     int number{};
 
     {
-        std::jthread th1([&]{
-            mutex.lock();
-            number += 1000;
-            mutex.unlock();
-        });
-        std::jthread th2([&]{
-            mutex.lock();
-            number += 100;
-            mutex.unlock();
-        });
-        std::jthread th3([&]{
-            mutex.lock();
-            number += 10;
-            mutex.unlock();
-        });
-        std::jthread th4([&]{
-            mutex.lock();
-            number += 1;
-            mutex.unlock();
-        });
+        std::vector<std::optional<std::jthread>> workers;
+        for(size_t i=0; i<2; i++) {
+            workers.emplace_back([&]{
+                mutex.lock();
+                std::this_thread::sleep_for(10ms);
+                number += 1;
+                mutex.unlock();
+            });
+        }
     }
 
-    ASSERT_EQ(number, 1111);
+    ASSERT_EQ(number, 4);
 }
