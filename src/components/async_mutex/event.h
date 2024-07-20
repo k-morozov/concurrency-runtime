@@ -8,6 +8,8 @@
 #include <list>
 #include <mutex>
 #include <iostream>
+#include <syncstream>
+#include <thread>
 
 #include <components/async_mutex/mutex_awaiter.h>
 #include <components/sync/spinLock.h>
@@ -23,21 +25,24 @@ struct Event final {
     bool TrySet() {
         std::lock_guard lock(spinlock);
         if (flag) {
-            std::cout << "[Event::TrySet] flag was setted." << std::endl;
+            std::osyncstream(std::cout) << "[Event::TrySet] flag was setted." << std::endl;
             return false;
         }
 
-        std::cout << "[Event::TrySet] set flag" << std::endl;
+        std::osyncstream(std::cout) << "[Event::TrySet] set flag" << std::endl;
         flag = true;
         return true;
     }
 
     void UnSet() {
         std::unique_lock lock(spinlock);
-        std::cout << "[Event::TrySet] Unset flag" << std::endl;
+        std::osyncstream(std::cout) << "[Event::UnSet][thread=" << std::this_thread::get_id() << "] call" << std::endl;
+
         flag = false;
+        std::osyncstream(std::cout) << "[Event::UnSet][thread=" << std::this_thread::get_id() << "] unset flag" << std::endl;
+
         if (!waiters.empty()) {
-            std::cout << "[Event::TrySet] There is a waiter" << std::endl;
+            std::cout << "[Event::TrySet] Waiters size=" << waiters.size() << ", pop first" << std::endl;
             auto waiter = waiters.front();
             waiters.pop_front();
             lock.unlock();
@@ -45,7 +50,6 @@ struct Event final {
             waiter.coro.resume();
             return;
         }
-        std::cout << "[Event::TrySet] No waiter" << std::endl;
     }
 
     bool IsSet() const {

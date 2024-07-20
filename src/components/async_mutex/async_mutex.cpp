@@ -5,7 +5,8 @@
 #include "async_mutex.h"
 
 #include <coroutine>
-#include <iostream>
+#include <syncstream>
+#include <thread>
 
 #include <components/async_mutex/mutex_awaiter.h>
 
@@ -14,18 +15,19 @@ namespace NComponents {
 AsyncMutex::AsyncMutex(): event() {}
 
 void AsyncMutex::lock() {
-    std::cout << "[AsyncMutex::lock] call" << std::endl;
+    std::osyncstream(std::cout) << "[AsyncMutex::lock][thread=" << std::this_thread::get_id() << "] call" << std::endl;
     LockImpl();
 }
 
 void AsyncMutex::unlock() {
-    std::cout << "[AsyncMutex::unlock] call" << std::endl;
+    std::osyncstream(std::cout) << "[AsyncMutex::unlock][thread=" << std::this_thread::get_id() << "] call" << std::endl;
     event.UnSet();
 }
 
 ResumableNoOwn AsyncMutex::LockImpl() {
-    std::cout << "[AsyncMutex::LockImpl] call" << std::endl;
+    std::osyncstream(std::cout) << "[AsyncMutex::LockImpl] Start in thread_id=" << std::this_thread::get_id() << std::endl;
     co_await event;
+    std::osyncstream(std::cout) << "[AsyncMutex::LockImpl] Resumed in thread_id=" << std::this_thread::get_id() << std::endl;
 }
 
 }  // namespace NComponents

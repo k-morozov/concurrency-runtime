@@ -5,30 +5,41 @@
 #include "mutex_awaiter.h"
 
 #include <iostream>
+#include <syncstream>
+#include <thread>
 
 #include <components/async_mutex/event.h>
 
 namespace NComponents {
 
 MutexAwaiter::MutexAwaiter(Event& event) : event(event) {
-    std::cout << "[MutexAwaiter] create" << std::endl;
+    std::osyncstream(std::cout)
+        << "[MutexAwaiter][this=" << this
+        << "][thread=" << std::this_thread::get_id() << "] create" << std::endl;
 }
 
 bool MutexAwaiter::await_ready() const {
+    // td::lock_guard lock(spinlock); lock from here and to result
     const bool lock_own = event.TrySet();
-    std::cout << "[MutexAwaiter::await_ready] try set event " << lock_own
-              << ", so ready status=" << lock_own << std::endl;
+    std::osyncstream(std::cout)
+        << "[MutexAwaiter::await_ready][this=" << this
+        << "][thread=" << std::this_thread::get_id() << "] try set event "
+        << lock_own << ", so ready status=" << lock_own << std::endl;
     return lock_own;
 }
 
 void MutexAwaiter::await_suspend(std::coroutine_handle<> coro_) {
-    std::cout << "[MutexAwaiter::await_suspend] call" << std::endl;
+    std::osyncstream(std::cout)
+        << "[MutexAwaiter::await_suspend][this=" << this
+        << "][thread=" << std::this_thread::get_id() << "] call" << std::endl;
     coro = coro_;
     event.ParkAwaiter(*this);
 }
 
 void MutexAwaiter::await_resume() {
-    std::cout << "[MutexAwaiter::await_resume] call" << std::endl;
+    std::osyncstream(std::cout)
+        << "[MutexAwaiter::await_resume][this=" << this
+        << "][thread=" << std::this_thread::get_id() << "] call" << std::endl;
     event.UnSet();
 }
 
