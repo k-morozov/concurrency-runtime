@@ -15,10 +15,10 @@ MutexAwaiter::MutexAwaiter(Event& event) : event(event) {
 }
 
 bool MutexAwaiter::await_ready() const {
-    const bool result = event.TrySet();
-    std::cout << "[MutexAwaiter::await_ready] try set event " << result
-              << ", so ready status=" << !result << std::endl;
-    return !result;
+    const bool lock_own = event.TrySet();
+    std::cout << "[MutexAwaiter::await_ready] try set event " << lock_own
+              << ", so ready status=" << lock_own << std::endl;
+    return lock_own;
 }
 
 void MutexAwaiter::await_suspend(std::coroutine_handle<> coro_) {

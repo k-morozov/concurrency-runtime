@@ -12,6 +12,7 @@ MutexAwaiter Event::operator co_await() {
 }
 
 void Event::ParkAwaiter(MutexAwaiter awaiter) {
+    std::lock_guard lock(spinlock);
     std::cout << "[Event::ParkAwaiter] add waiter, current size=" << waiters.size() << std::endl;
     waiters.push_back(awaiter);
 }
