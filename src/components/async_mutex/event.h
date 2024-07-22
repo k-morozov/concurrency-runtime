@@ -5,9 +5,9 @@
 #pragma once
 
 #include <atomic>
+#include <iostream>
 #include <list>
 #include <mutex>
-#include <iostream>
 #include <syncstream>
 #include <thread>
 
@@ -25,24 +25,33 @@ struct Event final {
     bool TrySet() {
         std::lock_guard lock(spinlock);
         if (flag) {
-            std::osyncstream(std::cout) << "[Event::TrySet] flag was setted." << std::endl;
+            std::osyncstream(std::cout)
+                << "[Event::TrySet][thread_id=" << std::this_thread::get_id()
+                << "] flag was locked. Need park." << std::endl;
             return false;
         }
 
-        std::osyncstream(std::cout) << "[Event::TrySet] set flag" << std::endl;
+        std::osyncstream(std::cout)
+            << "[Event::TrySet][thread_id=" << std::this_thread::get_id()
+            << "] lock flag." << std::endl;
         flag = true;
         return true;
     }
 
     void UnSet() {
         std::unique_lock lock(spinlock);
-        std::osyncstream(std::cout) << "[Event::UnSet][thread=" << std::this_thread::get_id() << "] call" << std::endl;
+        std::osyncstream(std::cout)
+            << "[Event::UnSet][thread_id=" << std::this_thread::get_id()
+            << "] call" << std::endl;
 
         flag = false;
-        std::osyncstream(std::cout) << "[Event::UnSet][thread=" << std::this_thread::get_id() << "] unset flag" << std::endl;
+        std::osyncstream(std::cout)
+            << "[Event::UnSet][thread_id=" << std::this_thread::get_id()
+            << "] unset flag" << std::endl;
 
         if (!waiters.empty()) {
-            std::cout << "[Event::TrySet] Waiters size=" << waiters.size() << ", pop first" << std::endl;
+            std::cout << "[Event::TrySet] Waiters size=" << waiters.size()
+                      << ", wake up first" << std::endl;
             auto waiter = waiters.front();
             waiters.pop_front();
             lock.unlock();

@@ -23,24 +23,23 @@ bool MutexAwaiter::await_ready() const {
     const bool lock_own = event.TrySet();
     std::osyncstream(std::cout)
         << "[MutexAwaiter::await_ready][this=" << this
-        << "][thread=" << std::this_thread::get_id() << "] try set event "
-        << lock_own << ", so ready status=" << lock_own << std::endl;
+        << "][thread=" << std::this_thread::get_id()
+        << "] try lock mutex: " << (lock_own ? "OK" : "Fail") << std::endl;
     return lock_own;
 }
 
-void MutexAwaiter::await_suspend(std::coroutine_handle<> coro_) {
-    std::osyncstream(std::cout)
-        << "[MutexAwaiter::await_suspend][this=" << this
-        << "][thread=" << std::this_thread::get_id() << "] call" << std::endl;
+void MutexAwaiter::await_suspend(std::coroutine_handle<> coro_) noexcept {
+    std::osyncstream(std::cout) << "[MutexAwaiter::await_suspend][this=" << this
+                                << "][thread=" << std::this_thread::get_id()
+                                << "] call and park." << std::endl;
     coro = coro_;
     event.ParkAwaiter(*this);
 }
 
-void MutexAwaiter::await_resume() {
-    std::osyncstream(std::cout)
-        << "[MutexAwaiter::await_resume][this=" << this
-        << "][thread=" << std::this_thread::get_id() << "] call" << std::endl;
-    event.UnSet();
+void MutexAwaiter::await_resume() const noexcept {
+    std::osyncstream(std::cout) << "[MutexAwaiter::await_resume][this=" << this
+                                << "][thread=" << std::this_thread::get_id()
+                                << "] call and just resume." << std::endl;
 }
 
 }  // namespace NComponents

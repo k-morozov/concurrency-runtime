@@ -17,8 +17,8 @@ struct MutexAwaiter final {
     explicit MutexAwaiter(Event& event);
 
     bool await_ready() const;
-    void await_suspend(std::coroutine_handle<>);
-    void await_resume();
+    void await_suspend(std::coroutine_handle<>) noexcept;
+    void await_resume() const noexcept;
 };
 
 }  // namespace NComponents

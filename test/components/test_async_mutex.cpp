@@ -4,19 +4,19 @@
 
 #include "gtest/gtest.h"
 
-#include <thread>
 #include <condition_variable>
+#include <thread>
 
 #include <components/async_mutex/async_mutex.h>
 
 using namespace std::chrono_literals;
 
-//TEST(TestAsyncMutex, JustWorking) {
-//    NComponents::AsyncMutex mutex;
+// TEST(TestAsyncMutex, JustWorking) {
+//     NComponents::AsyncMutex mutex;
 //
-//    mutex.lock();
-//    mutex.unlock();
-//}
+//     mutex.lock();
+//     mutex.unlock();
+// }
 
 TEST(TestAsyncMutex, SomeThreads) {
     NComponents::AsyncMutex mutex;
@@ -29,14 +29,16 @@ TEST(TestAsyncMutex, SomeThreads) {
     constexpr size_t MaxCount = 2;
     {
         std::vector<std::optional<std::jthread>> workers;
-        for(size_t i=0; i<MaxCount; i++) {
-            workers.emplace_back([&]{
+        for (size_t i = 0; i < MaxCount; i++) {
+            workers.emplace_back([&] {
                 {
                     std::unique_lock lock(cv_wait);
                     while (!wait_flag) cv.wait(lock);
                 }
                 mutex.lock();
-                std::this_thread::sleep_for(10ms);
+                std::osyncstream(std::cout)
+                    << "[main][thead_id=" << std::this_thread::get_id()
+                    << "] increase number" << std::endl;
                 number += 1;
                 mutex.unlock();
             });

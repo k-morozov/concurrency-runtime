@@ -15,12 +15,12 @@ namespace NComponents {
 AsyncMutex::AsyncMutex(): event() {}
 
 void AsyncMutex::lock() {
-    std::osyncstream(std::cout) << "[AsyncMutex::lock][thread=" << std::this_thread::get_id() << "] call" << std::endl;
+    std::osyncstream(std::cout) << "[AsyncMutex::lock][thread_id=" << std::this_thread::get_id() << "] call" << std::endl;
     LockImpl();
 }
 
 void AsyncMutex::unlock() {
-    std::osyncstream(std::cout) << "[AsyncMutex::unlock][thread=" << std::this_thread::get_id() << "] call" << std::endl;
+    std::osyncstream(std::cout) << "[AsyncMutex::unlock][thread_id=" << std::this_thread::get_id() << "] call" << std::endl;
     event.UnSet();
 }
 
