@@ -70,4 +70,5 @@ struct Event final {
 
     void ParkAwaiter(MutexAwaiter awaiter);
 };
+
 }  // namespace NComponents

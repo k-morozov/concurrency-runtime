@@ -5,6 +5,7 @@
 #pragma once
 
 #include <coroutine>
+#include <iostream>
 
 namespace NComponents {
 
@@ -20,5 +21,7 @@ struct MutexAwaiter final {
     void await_suspend(std::coroutine_handle<>) noexcept;
     void await_resume() const noexcept;
 };
+
+std::ostream& operator<<(std::ostream& stream, const MutexAwaiter& w);
 
 }  // namespace NComponents

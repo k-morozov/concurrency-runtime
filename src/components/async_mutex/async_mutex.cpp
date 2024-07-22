@@ -12,22 +12,23 @@
 
 namespace NComponents {
 
-AsyncMutex::AsyncMutex(): event() {}
+AsyncMutex::AsyncMutex() : event() {}
 
-void AsyncMutex::lock() {
-    std::osyncstream(std::cout) << "[AsyncMutex::lock][thread_id=" << std::this_thread::get_id() << "] call" << std::endl;
-    LockImpl();
+ResumableNoOwn AsyncMutex::lock() {
+    std::osyncstream(std::cout) << "[AsyncMutex::LockImpl] Start in thread_id="
+                                << std::this_thread::get_id() << std::endl;
+    co_await event;
+
+    std::osyncstream(std::cout)
+        << "[AsyncMutex::LockImpl] Resumed in thread_id="
+        << std::this_thread::get_id() << std::endl;
 }
 
 void AsyncMutex::unlock() {
-    std::osyncstream(std::cout) << "[AsyncMutex::unlock][thread_id=" << std::this_thread::get_id() << "] call" << std::endl;
+    std::osyncstream(std::cout)
+        << "[AsyncMutex::unlock][thread_id=" << std::this_thread::get_id()
+        << "] call" << std::endl;
     event.UnSet();
-}
-
-ResumableNoOwn AsyncMutex::LockImpl() {
-    std::osyncstream(std::cout) << "[AsyncMutex::LockImpl] Start in thread_id=" << std::this_thread::get_id() << std::endl;
-    co_await event;
-    std::osyncstream(std::cout) << "[AsyncMutex::LockImpl] Resumed in thread_id=" << std::this_thread::get_id() << std::endl;
 }
 
 }  // namespace NComponents

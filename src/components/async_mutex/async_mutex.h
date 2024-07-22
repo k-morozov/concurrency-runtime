@@ -16,13 +16,11 @@ class AsyncMutex final {
 public:
     AsyncMutex();
 
-    void lock();
+    ResumableNoOwn lock();
     void unlock();
 
 private:
     Event event;
-
-    ResumableNoOwn LockImpl();
 };
 
 }  // namespace NComponents
