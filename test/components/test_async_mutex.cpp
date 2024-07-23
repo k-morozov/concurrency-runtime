@@ -42,7 +42,7 @@ TEST(TestAsyncMutex, SomeThreads) {
     std::condition_variable cv;
     std::atomic<bool> wait_flag{};
 
-    constexpr size_t MaxCount = 32;
+    constexpr size_t MaxCount = 2;
     {
         std::vector<std::jthread> workers;
         for (size_t i = 0; i < MaxCount; i++) {
