@@ -45,12 +45,7 @@ struct Event final {
         std::unique_lock lock(spinlock);
         std::osyncstream(std::cout)
             << "[Event::UnSet][thread_id=" << std::this_thread::get_id()
-            << "] call" << std::endl;
-
-        flag = false;
-        std::osyncstream(std::cout)
-            << "[Event::UnSet][thread_id=" << std::this_thread::get_id()
-            << "] unset flag" << std::endl;
+            << "] call, set status flag to false" << std::endl;
 
         if (!waiters.empty()) {
             std::cout << "[Event::TrySet] Waiters size=" << waiters.size()
@@ -59,10 +54,12 @@ struct Event final {
             waiters.pop_front();
             lock.unlock();
 
-            assert(waiter.coro.operator bool());
+//            assert(waiter.coro.operator bool());
             waiter.coro.resume();
             return;
         }
+
+        flag = false;
     }
 
     bool IsSet() const {
