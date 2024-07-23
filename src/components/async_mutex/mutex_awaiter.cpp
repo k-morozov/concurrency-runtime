@@ -13,7 +13,7 @@
 namespace NComponents {
 
 MutexAwaiter::MutexAwaiter(Event& event) : event(event) {
-    std::osyncstream(std::cout) << *this << "create." << std::endl;
+    std::osyncstream(std::cout) << *this << " create." << std::endl;
 }
 
 bool MutexAwaiter::await_ready() const {

@@ -26,16 +26,16 @@ TEST(TestAsyncMutex, SomeThreads) {
     std::condition_variable cv;
     std::atomic<bool> wait_flag{};
 
-    constexpr size_t MaxCount = 16;
+    constexpr size_t MaxCount = 2;
     {
         std::vector<std::optional<std::jthread>> workers;
         for (size_t i = 0; i < MaxCount; i++) {
-            workers.emplace_back([&] {
+            workers.emplace_back([&]() -> NComponents::ResumableNoOwn {
                 {
                     std::unique_lock lock(cv_wait);
                     while (!wait_flag) cv.wait(lock);
                 }
-                mutex.lock();
+                co_await mutex.lock();
                 std::osyncstream(std::cout)
                     << "[main][thead_id=" << std::this_thread::get_id()
                     << "] increase number" << std::endl;

@@ -16,7 +16,7 @@ class AsyncMutex final {
 public:
     AsyncMutex();
 
-    ResumableNoOwn lock();
+    Event& lock();
     void unlock();
 
 private:
