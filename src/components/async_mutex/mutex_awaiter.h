@@ -16,6 +16,7 @@ struct MutexAwaiter final {
     std::coroutine_handle<> coro{};
 
     explicit MutexAwaiter(Event& event);
+    ~MutexAwaiter();
 
     bool await_ready() const;
     void await_suspend(std::coroutine_handle<>) noexcept;

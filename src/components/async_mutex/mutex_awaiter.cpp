@@ -4,6 +4,7 @@
 
 #include "mutex_awaiter.h"
 
+#include <cassert>
 #include <iostream>
 #include <syncstream>
 #include <thread>
@@ -14,6 +15,10 @@ namespace NComponents {
 
 MutexAwaiter::MutexAwaiter(Event& event) : event(event) {
     std::osyncstream(std::cout) << *this << " create." << std::endl;
+}
+
+MutexAwaiter::~MutexAwaiter() {
+    std::osyncstream(std::cout) << *this << " destroy." << std::endl;
 }
 
 bool MutexAwaiter::await_ready() const {
@@ -32,6 +37,7 @@ void MutexAwaiter::await_suspend(std::coroutine_handle<> coro_) noexcept {
 
 void MutexAwaiter::await_resume() const noexcept {
     std::osyncstream(std::cout) << *this << "[await_resume] call and just resume." << std::endl;
+    assert(event.IsSet());
 }
 
 std::ostream& operator<<(std::ostream& stream, const MutexAwaiter& w) {

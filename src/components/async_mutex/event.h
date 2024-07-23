@@ -5,6 +5,7 @@
 #pragma once
 
 #include <atomic>
+#include <cassert>
 #include <iostream>
 #include <list>
 #include <mutex>
@@ -39,6 +40,8 @@ struct Event final {
     }
 
     void UnSet() {
+        assert(IsSet());
+
         std::unique_lock lock(spinlock);
         std::osyncstream(std::cout)
             << "[Event::UnSet][thread_id=" << std::this_thread::get_id()
@@ -56,6 +59,7 @@ struct Event final {
             waiters.pop_front();
             lock.unlock();
 
+            assert(waiter.coro.operator bool());
             waiter.coro.resume();
             return;
         }
