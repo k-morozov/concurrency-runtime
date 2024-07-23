@@ -46,6 +46,7 @@ TEST(TestAsyncMutex, SomeThreads) {
     {
         std::vector<std::jthread> workers;
         for (size_t i = 0; i < MaxCount; i++) {
+            // https://stackoverflow.com/questions/60592174/lambda-lifetime-explanation-for-c20-coroutines
             workers.emplace_back(consumer, std::ref(mutex), std::ref(number),
                                  std::ref(cv_wait), std::ref(cv),
                                  std::ref(wait_flag));
