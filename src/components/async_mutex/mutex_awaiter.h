@@ -6,17 +6,29 @@
 
 #include <coroutine>
 #include <iostream>
+#include <mutex>
+
+#include <components/sync/spinLock.h>
 
 namespace NComponents {
 
 struct Event;
+using LockGuard = std::unique_lock<NSync::SpinLock>;
 
-struct MutexAwaiter final {
+class MutexAwaiter final {
     Event& event;
+    NSync::SpinLock& guard;
     std::coroutine_handle<> coro{};
 
-    explicit MutexAwaiter(Event& event);
+public:
+    MutexAwaiter(Event& event, NSync::SpinLock& guard);
+    MutexAwaiter(MutexAwaiter&& o) noexcept;
+
     ~MutexAwaiter();
+
+    void Resume() const { coro.resume(); }
+    void ReleaseLock() const;
+//    bool HasLock() const;
 
     bool await_ready() const;
     void await_suspend(std::coroutine_handle<>) noexcept;

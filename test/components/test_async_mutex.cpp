@@ -6,6 +6,7 @@
 
 #include <condition_variable>
 #include <thread>
+#include <latch>
 
 #include <components/async_mutex/async_mutex.h>
 
@@ -13,9 +14,22 @@ using namespace std::chrono_literals;
 
 namespace {
 
-struct TestSyncIncrement {
+struct TestJust final {
+    NComponents::AsyncMutex mutex;
+
+    NComponents::ResumableNoOwn run() {
+        co_await mutex.lock();
+        mutex.unlock();
+    }
+};
+
+struct TestSyncIncrement final {
     NComponents::AsyncMutex mutex;
     size_t number{};
+
+    std::latch latch;
+
+    explicit TestSyncIncrement(size_t n) : latch(n) {}
 
     NComponents::ResumableNoOwn run() {
         {
@@ -25,12 +39,21 @@ struct TestSyncIncrement {
         co_await mutex.lock();
         number += 1;
         mutex.unlock();
+
+        latch.count_down();
     }
 
-    void StartAll() {
+    NComponents::ResumableNoOwn StartAll() {
         std::unique_lock lock(cv_wait);
         wait_flag.store(true);
         cv.notify_all();
+
+        co_await mutex.lock();
+        mutex.unlock();
+    }
+
+    void Wait() {
+        latch.wait();
     }
 
 private:
@@ -70,18 +93,15 @@ private:
 }  // namespace
 
 TEST(TestAsyncMutex, JustWorking) {
-    std::jthread th([]() -> NComponents::ResumableNoOwn {
-        NComponents::AsyncMutex mutex;
+    TestJust worker;
 
-        co_await mutex.lock();
-        mutex.unlock();
-    });
+    std::jthread th(&TestJust::run, &worker);
 }
 
 TEST(TestAsyncMutex, SyncIncrementInThreads) {
-    TestSyncIncrement worker;
-
     constexpr size_t MaxCount = 32;
+
+    TestSyncIncrement worker(MaxCount);
     {
         std::vector<std::jthread> workers;
         for (size_t i = 0; i < MaxCount; i++) {
@@ -89,6 +109,7 @@ TEST(TestAsyncMutex, SyncIncrementInThreads) {
         }
 
         worker.StartAll();
+        worker.Wait();
     }
 
     ASSERT_EQ(worker.number, MaxCount);
@@ -96,5 +117,6 @@ TEST(TestAsyncMutex, SyncIncrementInThreads) {
 
 TEST(TestAsyncMutex, ThreadWait) {
     TestWait worker;
+
     std::jthread th(&TestWait::run, &worker);
 }

@@ -15,6 +15,7 @@ namespace NComponents {
 class AsyncMutex final {
 public:
     AsyncMutex();
+    ~AsyncMutex();
 
     Event& lock();
     void unlock();
