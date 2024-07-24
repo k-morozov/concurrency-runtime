@@ -43,7 +43,7 @@ void MutexAwaiter::await_resume() const noexcept {
         << std::endl;
 }
 
-std::ostream& operator<<(std::ostream& stream, const MutexAwaiter& w) {
+std::ostream& operator<<(std::ostream& stream, const MutexAwaiter& /*w*/) {
     stream << "[MutexAwaiter][thread_id=" << std::this_thread::get_id() << "]";
     return stream;
 }

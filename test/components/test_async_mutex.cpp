@@ -13,7 +13,17 @@ using namespace std::chrono_literals;
 
 namespace {
 
-struct TestSyncIncrement {
+struct TestJust final {
+    NComponents::AsyncMutex mutex;
+
+    NComponents::ResumableNoOwn run() {
+
+        co_await mutex.lock();
+        mutex.unlock();
+    }
+};
+
+struct TestSyncIncrement final {
     NComponents::AsyncMutex mutex;
     size_t number{};
 
@@ -70,12 +80,9 @@ private:
 }  // namespace
 
 TEST(TestAsyncMutex, JustWorking) {
-    std::jthread th([]() -> NComponents::ResumableNoOwn {
-        NComponents::AsyncMutex mutex;
+    TestJust worker;
 
-        co_await mutex.lock();
-        mutex.unlock();
-    });
+    std::jthread th(&TestJust::run, &worker);
 }
 
 TEST(TestAsyncMutex, SyncIncrementInThreads) {
