@@ -99,7 +99,7 @@ TEST(TestAsyncMutex, JustWorking) {
 }
 
 TEST(TestAsyncMutex, SyncIncrementInThreads) {
-    constexpr size_t MaxCount = 2;
+    constexpr size_t MaxCount = 32;
 
     TestSyncIncrement worker(MaxCount);
     {
