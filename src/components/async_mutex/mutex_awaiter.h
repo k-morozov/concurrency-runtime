@@ -29,7 +29,7 @@ public:
 
     void Resume() const { coro.resume(); }
 
-    void ReleaseLock() { guard.unlock(); }
+    void ReleaseLock() const;
 
     bool await_ready() const;
     void await_suspend(std::coroutine_handle<>) noexcept;

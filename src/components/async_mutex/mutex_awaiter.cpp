@@ -15,11 +15,17 @@ namespace NComponents {
 
 MutexAwaiter::MutexAwaiter(Event& event, LockGuard guard)
     : event(event), guard(std::move(guard)) {
-    //    std::osyncstream(std::cout) << *this << " create." << std::endl;
+    std::osyncstream(std::cout) << *this << " create with guard." << std::endl;
 }
 
 MutexAwaiter::~MutexAwaiter() {
     //    std::osyncstream(std::cout) << *this << " destroy." << std::endl;
+}
+
+void MutexAwaiter::ReleaseLock() const {
+    std::osyncstream(std::cout)
+        << *this << "[await_suspend] release guard." << std::endl;
+    guard.unlock();
 }
 
 bool MutexAwaiter::await_ready() const {
@@ -28,8 +34,7 @@ bool MutexAwaiter::await_ready() const {
     std::osyncstream(std::cout) << *this << "[await_ready] try lock mutex: "
                                 << (lock_own ? "OK" : "Fail") << std::endl;
 
-    if (lock_own)
-        guard.unlock();
+    if (lock_own) ReleaseLock();
 
     return lock_own;
 }
@@ -45,7 +50,7 @@ void MutexAwaiter::await_resume() const noexcept {
     std::osyncstream(std::cout)
         << *this
         << "[await_resume] call and just resume, status flag=" << event.IsSet()
-        << ", release guard." << std::endl;
+        << std::endl;
 }
 
 std::ostream& operator<<(std::ostream& stream, const MutexAwaiter& /*w*/) {

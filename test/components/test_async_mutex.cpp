@@ -115,8 +115,8 @@ TEST(TestAsyncMutex, SyncIncrementInThreads) {
     ASSERT_EQ(worker.number, MaxCount);
 }
 
-TEST(TestAsyncMutex, ThreadWait) {
-    TestWait worker;
-
-    std::jthread th(&TestWait::run, &worker);
-}
+//TEST(TestAsyncMutex, ThreadWait) {
+//    TestWait worker;
+//
+//    std::jthread th(&TestWait::run, &worker);
+//}

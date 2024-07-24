@@ -9,7 +9,6 @@
 namespace NComponents {
 
 bool Event::TryLock() {
-    //    std::unique_lock lock(spinlock);
     if (lock_flag) {
         std::osyncstream(std::cout)
             << "[Event::TryLock][thread_id=" << std::this_thread::get_id()
@@ -25,7 +24,6 @@ bool Event::TryLock() {
 }
 
 void Event::Unlock() {
-//    assert(IsSet());
     std::unique_lock lock(spinlock);
 
     std::osyncstream(std::cout)
@@ -35,7 +33,7 @@ void Event::Unlock() {
     if (!waiters.empty()) {
         std::cout << "[Event::Unlock] Waiters size=" << waiters.size()
                   << ", wake up first" << std::endl;
-        auto waiter = std::move(waiters.front());
+        MutexAwaiter waiter = std::move(waiters.front());
         waiters.pop_front();
         lock.unlock();
 
@@ -57,8 +55,7 @@ void Event::ParkAwaiter(MutexAwaiter&& awaiter) {
     //    std::lock_guard lock(spinlock);
     std::osyncstream(std::cout)
         << "[Event::ParkAwaiter][thead_id=" << std::this_thread::get_id()
-        << "] add waiter, new size=" << waiters.size() + 1 << ", release lock"
-        << std::endl;
+        << "] add waiter, new size=" << waiters.size() + 1 << std::endl;
     waiters.emplace_back(std::move(awaiter));
     waiters.back().ReleaseLock();
 }
