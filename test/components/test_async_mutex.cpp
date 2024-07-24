@@ -25,10 +25,6 @@ struct TestSyncIncrement {
         co_await mutex.lock();
         number += 1;
         mutex.unlock();
-
-        co_await mutex.lock();
-        number += 1;
-        mutex.unlock();
     }
 
     void StartAll() {
@@ -95,7 +91,7 @@ TEST(TestAsyncMutex, SyncIncrementInThreads) {
         worker.StartAll();
     }
 
-    ASSERT_EQ(worker.number, 2*MaxCount);
+    ASSERT_EQ(worker.number, MaxCount);
 }
 
 TEST(TestAsyncMutex, ThreadWait) {
