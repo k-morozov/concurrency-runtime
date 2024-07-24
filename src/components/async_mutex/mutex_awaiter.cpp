@@ -15,6 +15,8 @@ namespace NComponents {
 
 MutexAwaiter::MutexAwaiter(Event& event, NSync::SpinLock& guard)
     : event(event), guard(guard) {
+
+    guard.lock();
     std::osyncstream(std::cout) << *this << " create with guard." << std::endl;
 }
 

@@ -99,7 +99,7 @@ TEST(TestAsyncMutex, JustWorking) {
 }
 
 TEST(TestAsyncMutex, SyncIncrementInThreads) {
-    constexpr size_t MaxCount = 2;
+    constexpr size_t MaxCount = 32;
 
     TestSyncIncrement worker(MaxCount);
     {
@@ -115,8 +115,8 @@ TEST(TestAsyncMutex, SyncIncrementInThreads) {
     ASSERT_EQ(worker.number, MaxCount);
 }
 
-//TEST(TestAsyncMutex, ThreadWait) {
-//    TestWait worker;
-//
-//    std::jthread th(&TestWait::run, &worker);
-//}
+TEST(TestAsyncMutex, ThreadWait) {
+    TestWait worker;
+
+    std::jthread th(&TestWait::run, &worker);
+}
