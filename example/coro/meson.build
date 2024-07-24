@@ -20,4 +20,6 @@ example_subscription = executable('example_subscription',
                                   example_subscription_sources
 )
 
-
+example_mutex = executable('example_mutex',
+                           'example_mutex.cpp'
+)
