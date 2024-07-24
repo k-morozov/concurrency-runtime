@@ -35,7 +35,7 @@ struct Event final {
 
     MutexAwaiter operator co_await();
 
-    void ParkAwaiter(MutexAwaiter&& awaiter);
+    void ParkAwaiter(MutexAwaiter* awaiter);
 };
 
 }  // namespace NComponents

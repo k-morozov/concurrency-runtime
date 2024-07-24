@@ -18,6 +18,11 @@ MutexAwaiter::MutexAwaiter(Event& event, LockGuard guard)
     std::osyncstream(std::cout) << *this << " create with guard." << std::endl;
 }
 
+MutexAwaiter::MutexAwaiter(MutexAwaiter&& o) noexcept
+    : event(o.event), coro(o.coro) {
+    if (o.guard.owns_lock()) o.guard.unlock();
+}
+
 MutexAwaiter::~MutexAwaiter() {
     //    std::osyncstream(std::cout) << *this << " destroy." << std::endl;
 }
@@ -26,6 +31,10 @@ void MutexAwaiter::ReleaseLock() const {
     std::osyncstream(std::cout)
         << *this << "[await_suspend] release guard." << std::endl;
     guard.unlock();
+}
+
+bool MutexAwaiter::HasLock() const {
+    return guard.owns_lock();
 }
 
 bool MutexAwaiter::await_ready() const {
@@ -43,7 +52,7 @@ void MutexAwaiter::await_suspend(std::coroutine_handle<> coro_) noexcept {
     std::osyncstream(std::cout)
         << *this << "[await_suspend] park and release guard." << std::endl;
     coro = coro_;
-    event.ParkAwaiter(std::move(*this));
+    event.ParkAwaiter(this);
 }
 
 void MutexAwaiter::await_resume() const noexcept {
