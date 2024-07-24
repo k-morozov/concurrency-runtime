@@ -6,6 +6,7 @@
 
 #include <condition_variable>
 #include <thread>
+#include <latch>
 
 #include <components/async_mutex/async_mutex.h>
 
@@ -26,6 +27,10 @@ struct TestSyncIncrement final {
     NComponents::AsyncMutex mutex;
     size_t number{};
 
+    std::latch latch;
+
+    explicit TestSyncIncrement(size_t n) : latch(n) {}
+
     NComponents::ResumableNoOwn run() {
         {
             std::unique_lock lock(cv_wait);
@@ -34,6 +39,8 @@ struct TestSyncIncrement final {
         co_await mutex.lock();
         number += 1;
         mutex.unlock();
+
+        latch.count_down();
     }
 
     NComponents::ResumableNoOwn StartAll() {
@@ -43,6 +50,10 @@ struct TestSyncIncrement final {
 
         co_await mutex.lock();
         mutex.unlock();
+    }
+
+    void Wait() {
+        latch.wait();
     }
 
 private:
@@ -88,9 +99,9 @@ TEST(TestAsyncMutex, JustWorking) {
 }
 
 TEST(TestAsyncMutex, SyncIncrementInThreads) {
-    TestSyncIncrement worker;
-
     constexpr size_t MaxCount = 32;
+
+    TestSyncIncrement worker(MaxCount);
     {
         std::vector<std::jthread> workers;
         for (size_t i = 0; i < MaxCount; i++) {
@@ -98,6 +109,7 @@ TEST(TestAsyncMutex, SyncIncrementInThreads) {
         }
 
         worker.StartAll();
+        worker.Wait();
     }
 
     ASSERT_EQ(worker.number, MaxCount);
