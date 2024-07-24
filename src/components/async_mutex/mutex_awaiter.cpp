@@ -14,15 +14,14 @@
 namespace NComponents {
 
 MutexAwaiter::MutexAwaiter(Event& event) : event(event) {
-    std::osyncstream(std::cout) << *this << " create." << std::endl;
+//    std::osyncstream(std::cout) << *this << " create." << std::endl;
 }
 
 MutexAwaiter::~MutexAwaiter() {
-    std::osyncstream(std::cout) << *this << " destroy." << std::endl;
+//    std::osyncstream(std::cout) << *this << " destroy." << std::endl;
 }
 
 bool MutexAwaiter::await_ready() const {
-    // td::lock_guard lock(spinlock); lock from here and to result
     const bool lock_own = event.TrySet();
 
     std::osyncstream(std::cout) << *this << "[await_ready] try lock mutex: "

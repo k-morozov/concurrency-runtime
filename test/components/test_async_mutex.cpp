@@ -11,53 +11,55 @@
 
 using namespace std::chrono_literals;
 
-// TEST(TestAsyncMutex, JustWorking) {
-//     NComponents::AsyncMutex mutex;
-//
-//     mutex.lock();
-//     mutex.unlock();
-// }
+namespace {
 
-NComponents::ResumableNoOwn consumer(NComponents::AsyncMutex& mutex,
-                                     size_t& number, std::mutex& cv_wait,
-                                     std::condition_variable& cv,
-                                     std::atomic<bool>& wait_flag) {
-    {
-        std::unique_lock lock(cv_wait);
-        while (!wait_flag) cv.wait(lock);
+struct TestWork {
+    NComponents::AsyncMutex mutex;
+    size_t number{};
+
+    NComponents::ResumableNoOwn run() {
+        {
+            std::unique_lock lock(cv_wait);
+            while (!wait_flag) cv.wait(lock);
+        }
+        co_await mutex.lock();
+        number += 1;
+        mutex.unlock();
     }
-    co_await mutex.lock();
-    std::osyncstream(std::cout)
-        << "[main][thead_id=" << std::this_thread::get_id()
-        << "] increase number" << std::endl;
-    number += 1;
+
+    void StartAll() {
+        std::unique_lock lock(cv_wait);
+        wait_flag.store(true);
+        cv.notify_all();
+    }
+
+private:
+    std::mutex cv_wait;
+    std::condition_variable cv;
+    std::atomic<bool> wait_flag{};
+};
+
+}  // namespace
+
+TEST(TestAsyncMutex, JustWorking) {
+    NComponents::AsyncMutex mutex;
+
+    mutex.lock();
     mutex.unlock();
 }
 
 TEST(TestAsyncMutex, SomeThreads) {
-    NComponents::AsyncMutex mutex;
-    size_t number{};
-
-    std::mutex cv_wait;
-    std::condition_variable cv;
-    std::atomic<bool> wait_flag{};
+    TestWork worker;
 
     constexpr size_t MaxCount = 32;
     {
         std::vector<std::jthread> workers;
         for (size_t i = 0; i < MaxCount; i++) {
-            // https://stackoverflow.com/questions/60592174/lambda-lifetime-explanation-for-c20-coroutines
-            workers.emplace_back(consumer, std::ref(mutex), std::ref(number),
-                                 std::ref(cv_wait), std::ref(cv),
-                                 std::ref(wait_flag));
+            workers.emplace_back(&TestWork::run, &worker);
         }
 
-        {
-            std::unique_lock lock(cv_wait);
-            wait_flag.store(true);
-            cv.notify_all();
-        }
+        worker.StartAll();
     }
 
-    ASSERT_EQ(number, MaxCount);
+    ASSERT_EQ(worker.number, MaxCount);
 }
