@@ -16,6 +16,7 @@
 #include <components/sync/spinLock.h>
 
 namespace NComponents {
+
 struct Event final {
     mutable NSync::SpinLock spinlock;
     bool flag{};
@@ -54,7 +55,6 @@ struct Event final {
             waiters.pop_front();
             lock.unlock();
 
-//            assert(waiter.coro.operator bool());
             waiter.coro.resume();
             return;
         }

@@ -16,13 +16,6 @@ AsyncMutex::AsyncMutex() : event() {}
 
 Event& AsyncMutex::lock() {
     return event;
-//    std::osyncstream(std::cout) << "[AsyncMutex::LockImpl] Start in thread_id="
-//                                << std::this_thread::get_id() << std::endl;
-//    co_await event;
-
-    std::osyncstream(std::cout)
-        << "[AsyncMutex::LockImpl] Resumed in thread_id="
-        << std::this_thread::get_id() << std::endl;
 }
 
 void AsyncMutex::unlock() {

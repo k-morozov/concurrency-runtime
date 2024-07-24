@@ -25,6 +25,10 @@ struct TestWork {
         co_await mutex.lock();
         number += 1;
         mutex.unlock();
+
+        co_await mutex.lock();
+        number += 1;
+        mutex.unlock();
     }
 
     void StartAll() {
@@ -42,10 +46,12 @@ private:
 }  // namespace
 
 TEST(TestAsyncMutex, JustWorking) {
-    NComponents::AsyncMutex mutex;
+    std::jthread th([]() -> NComponents::ResumableNoOwn {
+        NComponents::AsyncMutex mutex;
 
-    mutex.lock();
-    mutex.unlock();
+        co_await mutex.lock();
+        mutex.unlock();
+    });
 }
 
 TEST(TestAsyncMutex, SomeThreads) {
@@ -61,5 +67,5 @@ TEST(TestAsyncMutex, SomeThreads) {
         worker.StartAll();
     }
 
-    ASSERT_EQ(worker.number, MaxCount);
+    ASSERT_EQ(worker.number, 2*MaxCount);
 }
