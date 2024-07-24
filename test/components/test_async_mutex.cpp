@@ -17,7 +17,6 @@ struct TestJust final {
     NComponents::AsyncMutex mutex;
 
     NComponents::ResumableNoOwn run() {
-
         co_await mutex.lock();
         mutex.unlock();
     }
@@ -37,10 +36,13 @@ struct TestSyncIncrement final {
         mutex.unlock();
     }
 
-    void StartAll() {
+    NComponents::ResumableNoOwn StartAll() {
         std::unique_lock lock(cv_wait);
         wait_flag.store(true);
         cv.notify_all();
+
+        co_await mutex.lock();
+        mutex.unlock();
     }
 
 private:
@@ -103,5 +105,6 @@ TEST(TestAsyncMutex, SyncIncrementInThreads) {
 
 TEST(TestAsyncMutex, ThreadWait) {
     TestWait worker;
+
     std::jthread th(&TestWait::run, &worker);
 }

@@ -18,6 +18,10 @@ Event& AsyncMutex::lock() {
     return event;
 }
 
+AsyncMutex::~AsyncMutex() {
+    assert(event.waiters.empty());
+}
+
 void AsyncMutex::unlock() {
     std::osyncstream(std::cout)
         << "[AsyncMutex::unlock][thread_id=" << std::this_thread::get_id()
