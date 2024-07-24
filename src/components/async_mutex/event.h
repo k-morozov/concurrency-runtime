@@ -46,7 +46,7 @@ struct Event final {
         std::unique_lock lock(spinlock);
         std::osyncstream(std::cout)
             << "[Event::UnSet][thread_id=" << std::this_thread::get_id()
-            << "] call, set status flag to false" << std::endl;
+            << "] call" << std::endl;
 
         if (!waiters.empty()) {
             std::cout << "[Event::TrySet] Waiters size=" << waiters.size()

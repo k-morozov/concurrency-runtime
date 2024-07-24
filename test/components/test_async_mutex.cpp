@@ -13,7 +13,7 @@ using namespace std::chrono_literals;
 
 namespace {
 
-struct TestWork {
+struct TestSyncIncrement {
     NComponents::AsyncMutex mutex;
     size_t number{};
 
@@ -43,6 +43,34 @@ private:
     std::atomic<bool> wait_flag{};
 };
 
+struct TestWait final {
+    NComponents::AsyncMutex mutex;
+    bool status{};
+
+    NComponents::ResumableNoOwn run() {
+        co_await mutex.lock();
+
+        std::jthread th(&TestWait::internal_run, this);
+
+        std::this_thread::sleep_for(5s);
+
+        if (status)
+            throw std::logic_error("no wait");
+
+        mutex.unlock();
+
+        if (!status)
+            throw std::logic_error("status is false");
+    }
+
+private:
+    NComponents::ResumableNoOwn internal_run() {
+        co_await mutex.lock();
+        status = true;
+        mutex.unlock();
+    }
+};
+
 }  // namespace
 
 TEST(TestAsyncMutex, JustWorking) {
@@ -54,18 +82,23 @@ TEST(TestAsyncMutex, JustWorking) {
     });
 }
 
-TEST(TestAsyncMutex, SomeThreads) {
-    TestWork worker;
+TEST(TestAsyncMutex, SyncIncrementInThreads) {
+    TestSyncIncrement worker;
 
     constexpr size_t MaxCount = 32;
     {
         std::vector<std::jthread> workers;
         for (size_t i = 0; i < MaxCount; i++) {
-            workers.emplace_back(&TestWork::run, &worker);
+            workers.emplace_back(&TestSyncIncrement::run, &worker);
         }
 
         worker.StartAll();
     }
 
     ASSERT_EQ(worker.number, 2*MaxCount);
+}
+
+TEST(TestAsyncMutex, ThreadWait) {
+    TestWait worker;
+    std::jthread th(&TestWait::run, &worker);
 }
