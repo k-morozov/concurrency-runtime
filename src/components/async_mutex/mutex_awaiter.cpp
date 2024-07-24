@@ -13,18 +13,18 @@
 
 namespace NComponents {
 
-MutexAwaiter::MutexAwaiter(Event& event, LockGuard guard)
-    : event(event), guard(std::move(guard)) {
+MutexAwaiter::MutexAwaiter(Event& event, NSync::SpinLock& guard)
+    : event(event), guard(guard) {
     std::osyncstream(std::cout) << *this << " create with guard." << std::endl;
 }
 
 MutexAwaiter::MutexAwaiter(MutexAwaiter&& o) noexcept
-    : event(o.event), coro(o.coro) {
-    if (o.guard.owns_lock()) o.guard.unlock();
+    : event(o.event), guard(o.guard), coro(o.coro) {
+    o.coro = nullptr;
 }
 
 MutexAwaiter::~MutexAwaiter() {
-    //    std::osyncstream(std::cout) << *this << " destroy." << std::endl;
+    std::osyncstream(std::cout) << *this << " destroy." << std::endl;
 }
 
 void MutexAwaiter::ReleaseLock() const {
@@ -33,9 +33,9 @@ void MutexAwaiter::ReleaseLock() const {
     guard.unlock();
 }
 
-bool MutexAwaiter::HasLock() const {
-    return guard.owns_lock();
-}
+//bool MutexAwaiter::HasLock() const {
+//    return guard.owns_lock();
+//}
 
 bool MutexAwaiter::await_ready() const {
     const bool lock_own = event.TryLock();

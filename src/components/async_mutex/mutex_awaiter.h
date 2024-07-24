@@ -17,18 +17,18 @@ using LockGuard = std::unique_lock<NSync::SpinLock>;
 
 class MutexAwaiter final {
     Event& event;
-    mutable LockGuard guard;
+    NSync::SpinLock& guard;
     std::coroutine_handle<> coro{};
 
 public:
-    MutexAwaiter(Event& event, LockGuard guard);
+    MutexAwaiter(Event& event, NSync::SpinLock& guard);
     MutexAwaiter(MutexAwaiter&& o) noexcept;
 
     ~MutexAwaiter();
 
     void Resume() const { coro.resume(); }
     void ReleaseLock() const;
-    bool HasLock() const;
+//    bool HasLock() const;
 
     bool await_ready() const;
     void await_suspend(std::coroutine_handle<>) noexcept;

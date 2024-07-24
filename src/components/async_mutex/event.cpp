@@ -47,18 +47,20 @@ void Event::Unlock() {
 }
 
 MutexAwaiter Event::operator co_await() {
-    std::unique_lock lock(spinlock);
-    return MutexAwaiter{*this, std::move(lock)};
+//    std::unique_lock lock(spinlock);
+    return MutexAwaiter{*this, spinlock};
 }
 
 void Event::ParkAwaiter(MutexAwaiter* awaiter) {
     assert(awaiter);
-    assert(awaiter->HasLock());
+//    assert(awaiter->HasLock());
 
     std::osyncstream(std::cout)
         << "[Event::ParkAwaiter][thead_id=" << std::this_thread::get_id()
         << "] add waiter, new size=" << waiters.size() + 1 << std::endl;
+
     waiters.emplace_back(std::move(*awaiter));
+    waiters.back().ReleaseLock();
 }
 
 }  // namespace NComponents
