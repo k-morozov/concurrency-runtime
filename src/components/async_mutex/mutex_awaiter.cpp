@@ -13,34 +13,39 @@
 
 namespace NComponents {
 
-MutexAwaiter::MutexAwaiter(Event& event) : event(event) {
-//    std::osyncstream(std::cout) << *this << " create." << std::endl;
+MutexAwaiter::MutexAwaiter(Event& event, LockGuard guard)
+    : event(event), guard(std::move(guard)) {
+    //    std::osyncstream(std::cout) << *this << " create." << std::endl;
 }
 
 MutexAwaiter::~MutexAwaiter() {
-//    std::osyncstream(std::cout) << *this << " destroy." << std::endl;
+    //    std::osyncstream(std::cout) << *this << " destroy." << std::endl;
 }
 
 bool MutexAwaiter::await_ready() const {
-    const bool lock_own = event.TrySet();
+    const bool lock_own = event.TryLock();
 
     std::osyncstream(std::cout) << *this << "[await_ready] try lock mutex: "
                                 << (lock_own ? "OK" : "Fail") << std::endl;
+
+    if (lock_own)
+        guard.unlock();
+
     return lock_own;
 }
 
 void MutexAwaiter::await_suspend(std::coroutine_handle<> coro_) noexcept {
     std::osyncstream(std::cout)
-        << *this << "[await_suspend] call and park." << std::endl;
+        << *this << "[await_suspend] park and release guard." << std::endl;
     coro = coro_;
-    event.ParkAwaiter(*this);
+    event.ParkAwaiter(std::move(*this));
 }
 
 void MutexAwaiter::await_resume() const noexcept {
     std::osyncstream(std::cout)
         << *this
         << "[await_resume] call and just resume, status flag=" << event.IsSet()
-        << std::endl;
+        << ", release guard." << std::endl;
 }
 
 std::ostream& operator<<(std::ostream& stream, const MutexAwaiter& /*w*/) {

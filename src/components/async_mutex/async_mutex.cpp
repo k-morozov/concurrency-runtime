@@ -26,7 +26,7 @@ void AsyncMutex::unlock() {
     std::osyncstream(std::cout)
         << "[AsyncMutex::unlock][thread_id=" << std::this_thread::get_id()
         << "] call" << std::endl;
-    event.UnSet();
+    event.Unlock();
 }
 
 }  // namespace NComponents
