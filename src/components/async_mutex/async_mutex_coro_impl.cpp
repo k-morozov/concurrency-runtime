@@ -58,7 +58,8 @@ void AsyncMutexCoroImpl::ParkAwaiter(MutexAwaiter* awaiter) {
 }
 
 MutexAwaiter AsyncMutexCoroImpl::operator co_await() {
-    return MutexAwaiter{*this, spinlock};
+    MutexAwaiter::LockGuard guard(spinlock);
+    return MutexAwaiter{*this, std::move(guard)};
 }
 
 }  // namespace NComponents

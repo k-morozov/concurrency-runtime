@@ -19,7 +19,7 @@ AsyncMutexCoroImpl& AsyncMutex::lock() {
 }
 
 AsyncMutex::~AsyncMutex() {
-    assert(event.waiters.empty());
+//    assert(mutex_impl.waiters.empty());
 }
 
 void AsyncMutex::unlock() {

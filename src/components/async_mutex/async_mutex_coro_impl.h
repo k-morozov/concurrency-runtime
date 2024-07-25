@@ -17,10 +17,12 @@
 
 namespace NComponents {
 
-struct AsyncMutexCoroImpl final {
+class AsyncMutexCoroImpl final {
     mutable NSync::SpinLock spinlock;
     bool lock_flag{};
     std::list<MutexAwaiter> waiters;
+
+public:
 
     AsyncMutexCoroImpl() = default;
 

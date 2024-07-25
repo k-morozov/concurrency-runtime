@@ -12,7 +12,7 @@
 
 namespace NComponents {
 
-struct AsyncMutexCoroImpl;
+class AsyncMutexCoroImpl;
 
 struct ResumableNoOwn {
     struct promise_type {

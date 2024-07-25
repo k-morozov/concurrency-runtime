@@ -12,16 +12,13 @@
 
 namespace NComponents {
 
-struct AsyncMutexCoroImpl;
-using LockGuard = std::unique_lock<NSync::SpinLock>;
+class AsyncMutexCoroImpl;
 
 class MutexAwaiter final {
-    AsyncMutexCoroImpl& event;
-    NSync::SpinLock& guard;
-    std::coroutine_handle<> coro{};
-
 public:
-    MutexAwaiter(AsyncMutexCoroImpl& event, NSync::SpinLock& guard);
+    using LockGuard = std::unique_lock<NSync::SpinLock>;
+
+    MutexAwaiter(AsyncMutexCoroImpl& event, LockGuard&& guard);
     MutexAwaiter(MutexAwaiter&& o) noexcept;
 
     ~MutexAwaiter();
@@ -33,6 +30,11 @@ public:
     bool await_ready() const;
     void await_suspend(std::coroutine_handle<>) noexcept;
     void await_resume() const noexcept;
+
+private:
+    AsyncMutexCoroImpl& event;
+    mutable LockGuard guard;
+    std::coroutine_handle<> coro{};
 };
 
 std::ostream& operator<<(std::ostream& stream, const MutexAwaiter& w);
