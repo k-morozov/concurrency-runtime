@@ -21,8 +21,8 @@ MutexAwaiter::MutexAwaiter(AsyncMutexCoroImpl& event, LockGuard&& guard)
 MutexAwaiter::MutexAwaiter(MutexAwaiter&& o) noexcept
     : event(o.event), coro(o.coro) {
     o.coro = nullptr;
-    if (o.guard.owns_lock()) {
-        guard = MutexAwaiter::LockGuard(*o.guard.release(), std::adopt_lock);
+    if (auto* p = o.guard.release(); p) {
+        guard = MutexAwaiter::LockGuard(*p, std::adopt_lock);
     }
 }
 
@@ -33,7 +33,10 @@ MutexAwaiter::~MutexAwaiter() {
 void MutexAwaiter::ReleaseLock() const {
     std::osyncstream(std::cout)
         << *this << "[await_suspend] release guard." << std::endl;
-    guard.unlock();
+
+    if (auto* p = guard.release(); p) {
+        p->unlock();
+    }
 }
 
 // bool MutexAwaiter::HasLock() const {

@@ -100,7 +100,7 @@ TEST(TestAsyncMutex, JustWorking) {
 
 TEST(TestAsyncMutex, SyncIncrementInThreads) {
     constexpr size_t MaxCountThreads = 32;
-    constexpr size_t CountIterations = 10;
+    constexpr size_t CountIterations = 100;
 
     TestSyncIncrement worker(MaxCountThreads, CountIterations);
     {
