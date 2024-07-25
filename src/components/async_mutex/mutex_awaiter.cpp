@@ -9,13 +9,12 @@
 #include <syncstream>
 #include <thread>
 
-#include <components/async_mutex/event.h>
+#include <components/async_mutex/async_mutex_coro_impl.h>
 
 namespace NComponents {
 
-MutexAwaiter::MutexAwaiter(Event& event, NSync::SpinLock& guard)
+MutexAwaiter::MutexAwaiter(AsyncMutexCoroImpl& event, NSync::SpinLock& guard)
     : event(event), guard(guard) {
-
     guard.lock();
     std::osyncstream(std::cout) << *this << " create with guard." << std::endl;
 }
@@ -35,9 +34,9 @@ void MutexAwaiter::ReleaseLock() const {
     guard.unlock();
 }
 
-//bool MutexAwaiter::HasLock() const {
-//    return guard.owns_lock();
-//}
+// bool MutexAwaiter::HasLock() const {
+//     return guard.owns_lock();
+// }
 
 bool MutexAwaiter::await_ready() const {
     const bool lock_own = event.TryLock();
