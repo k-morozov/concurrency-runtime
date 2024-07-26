@@ -39,10 +39,6 @@ void MutexAwaiter::ReleaseLock() const {
     }
 }
 
-// bool MutexAwaiter::HasLock() const {
-//     return guard.owns_lock();
-// }
-
 bool MutexAwaiter::await_ready() const {
     const bool lock_own = event.TryLock();
 

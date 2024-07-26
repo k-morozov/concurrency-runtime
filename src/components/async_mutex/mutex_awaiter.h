@@ -25,7 +25,6 @@ public:
 
     void Resume() const { coro.resume(); }
     void ReleaseLock() const;
-//    bool HasLock() const;
 
     bool await_ready() const;
     void await_suspend(std::coroutine_handle<>) noexcept;
