@@ -24,12 +24,7 @@ struct ResumableNoOwn {
         void unhandled_exception() { std::terminate(); }
     };
 
-    ResumableNoOwn(std::coroutine_handle<promise_type> /*handle*/) {
-        std::osyncstream(std::cout)
-            << "[ResumableNoOwn][this=" << this
-            << "][thread_id=" << std::this_thread::get_id() << "] create"
-            << std::endl;
-    }
+    ResumableNoOwn(std::coroutine_handle<promise_type> /*handle*/) {}
 };
 
 }  // namespace NComponents
