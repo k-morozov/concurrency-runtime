@@ -42,6 +42,10 @@ struct TestSyncIncrement final {
             co_await mutex.lock();
             number += 1;
             mutex.unlock();
+
+            co_await mutex.lock();
+            number += 1;
+            mutex.unlock();
         }
 
         latch.count_down();
@@ -113,7 +117,7 @@ TEST(TestAsyncMutex, SyncIncrementInThreads) {
         worker.Wait();
     }
 
-    ASSERT_EQ(worker.number, MaxCountThreads * CountIterations);
+    ASSERT_EQ(worker.number, 2 * MaxCountThreads * CountIterations);
 }
 
 TEST(TestAsyncMutex, ThreadWait) {

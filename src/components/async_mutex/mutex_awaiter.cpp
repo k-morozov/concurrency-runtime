@@ -10,12 +10,16 @@
 #include <thread>
 
 #include <components/async_mutex/async_mutex_coro_impl.h>
+#include <components/async_mutex/config.h>
 
 namespace NComponents {
 
 MutexAwaiter::MutexAwaiter(AsyncMutexCoroImpl& event, LockGuard&& guard)
     : event(event), guard(std::move(guard)) {
-    std::osyncstream(std::cout) << *this << " create with guard." << std::endl;
+    if (ENABLE_DEBUG) {
+        std::osyncstream(std::cout)
+            << *this << " create with guard." << std::endl;
+    }
 }
 
 MutexAwaiter::MutexAwaiter(MutexAwaiter&& o) noexcept
@@ -27,12 +31,16 @@ MutexAwaiter::MutexAwaiter(MutexAwaiter&& o) noexcept
 }
 
 MutexAwaiter::~MutexAwaiter() {
-    std::osyncstream(std::cout) << *this << " destroy." << std::endl;
+    if (ENABLE_DEBUG) {
+        std::osyncstream(std::cout) << *this << " destroy." << std::endl;
+    }
 }
 
 void MutexAwaiter::ReleaseLock() const {
-    std::osyncstream(std::cout)
-        << *this << "[await_suspend] release guard." << std::endl;
+    if (ENABLE_DEBUG) {
+        std::osyncstream(std::cout)
+            << *this << "[await_suspend] release guard." << std::endl;
+    }
 
     if (auto* p = guard.release(); p) {
         p->unlock();
@@ -42,8 +50,10 @@ void MutexAwaiter::ReleaseLock() const {
 bool MutexAwaiter::await_ready() const {
     const bool lock_own = event.TryLock();
 
-    std::osyncstream(std::cout) << *this << "[await_ready] try lock mutex: "
-                                << (lock_own ? "OK" : "Fail") << std::endl;
+    if (ENABLE_DEBUG) {
+        std::osyncstream(std::cout) << *this << "[await_ready] try lock mutex: "
+                                    << (lock_own ? "OK" : "Fail") << std::endl;
+    }
 
     if (lock_own) ReleaseLock();
 
@@ -51,15 +61,19 @@ bool MutexAwaiter::await_ready() const {
 }
 
 void MutexAwaiter::await_suspend(std::coroutine_handle<> coro_) noexcept {
-    std::osyncstream(std::cout)
-        << *this << "[await_suspend] park and release guard." << std::endl;
+    if (ENABLE_DEBUG) {
+        std::osyncstream(std::cout)
+            << *this << "[await_suspend] park and release guard." << std::endl;
+    }
     coro = coro_;
     event.ParkAwaiter(this);
 }
 
 void MutexAwaiter::await_resume() const noexcept {
-    std::osyncstream(std::cout)
-        << *this << "[await_resume] call and just resume." << std::endl;
+    if (ENABLE_DEBUG) {
+        std::osyncstream(std::cout)
+            << *this << "[await_resume] call and just resume." << std::endl;
+    }
 }
 
 std::ostream& operator<<(std::ostream& stream, const MutexAwaiter& /*w*/) {
