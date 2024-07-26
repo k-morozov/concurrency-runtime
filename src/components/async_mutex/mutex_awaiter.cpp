@@ -9,20 +9,21 @@
 #include <syncstream>
 #include <thread>
 
-#include <components/async_mutex/event.h>
+#include <components/async_mutex/async_mutex_coro_impl.h>
 
 namespace NComponents {
 
-MutexAwaiter::MutexAwaiter(Event& event, NSync::SpinLock& guard)
-    : event(event), guard(guard) {
-
-    guard.lock();
+MutexAwaiter::MutexAwaiter(AsyncMutexCoroImpl& event, LockGuard&& guard)
+    : event(event), guard(std::move(guard)) {
     std::osyncstream(std::cout) << *this << " create with guard." << std::endl;
 }
 
 MutexAwaiter::MutexAwaiter(MutexAwaiter&& o) noexcept
-    : event(o.event), guard(o.guard), coro(o.coro) {
+    : event(o.event), coro(o.coro) {
     o.coro = nullptr;
+    if (auto* p = o.guard.release(); p) {
+        guard = MutexAwaiter::LockGuard(*p, std::adopt_lock);
+    }
 }
 
 MutexAwaiter::~MutexAwaiter() {
@@ -32,12 +33,11 @@ MutexAwaiter::~MutexAwaiter() {
 void MutexAwaiter::ReleaseLock() const {
     std::osyncstream(std::cout)
         << *this << "[await_suspend] release guard." << std::endl;
-    guard.unlock();
-}
 
-//bool MutexAwaiter::HasLock() const {
-//    return guard.owns_lock();
-//}
+    if (auto* p = guard.release(); p) {
+        p->unlock();
+    }
+}
 
 bool MutexAwaiter::await_ready() const {
     const bool lock_own = event.TryLock();
@@ -59,9 +59,7 @@ void MutexAwaiter::await_suspend(std::coroutine_handle<> coro_) noexcept {
 
 void MutexAwaiter::await_resume() const noexcept {
     std::osyncstream(std::cout)
-        << *this
-        << "[await_resume] call and just resume, status flag=" << event.IsSet()
-        << std::endl;
+        << *this << "[await_resume] call and just resume." << std::endl;
 }
 
 std::ostream& operator<<(std::ostream& stream, const MutexAwaiter& /*w*/) {

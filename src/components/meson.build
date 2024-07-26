@@ -9,7 +9,7 @@ components_sources = files(
     'lock_free/hazard/hazard_manager.cpp',
     'lock_free/hazard/thread_state.cpp',
     'async_mutex/async_mutex.cpp',
-    'async_mutex/event.cpp',
+    'async_mutex/async_mutex_coro_impl.cpp',
     'async_mutex/mutex_awaiter.cpp',
     'async_mutex/resumable_no_own.cpp',
 )

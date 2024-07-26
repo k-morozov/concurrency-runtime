@@ -5,8 +5,8 @@
 #include "gtest/gtest.h"
 
 #include <condition_variable>
-#include <thread>
 #include <latch>
+#include <thread>
 
 #include <components/async_mutex/async_mutex.h>
 
@@ -28,17 +28,21 @@ struct TestSyncIncrement final {
     size_t number{};
 
     std::latch latch;
+    const size_t count_iterations;
 
-    explicit TestSyncIncrement(size_t n) : latch(n) {}
+    explicit TestSyncIncrement(size_t n, size_t count_iterations)
+        : latch(n), count_iterations(count_iterations) {}
 
     NComponents::ResumableNoOwn run() {
         {
             std::unique_lock lock(cv_wait);
             while (!wait_flag) cv.wait(lock);
         }
-        co_await mutex.lock();
-        number += 1;
-        mutex.unlock();
+        for (size_t i = 0; i < count_iterations; i++) {
+            co_await mutex.lock();
+            number += 1;
+            mutex.unlock();
+        }
 
         latch.count_down();
     }
@@ -52,9 +56,7 @@ struct TestSyncIncrement final {
         mutex.unlock();
     }
 
-    void Wait() {
-        latch.wait();
-    }
+    void Wait() { latch.wait(); }
 
 private:
     std::mutex cv_wait;
@@ -73,13 +75,11 @@ struct TestWait final {
 
         std::this_thread::sleep_for(5s);
 
-        if (status)
-            throw std::logic_error("no wait");
+        if (status) throw std::logic_error("no wait");
 
         mutex.unlock();
 
-        if (!status)
-            throw std::logic_error("status is false");
+        if (!status) throw std::logic_error("status is false");
     }
 
 private:
@@ -99,12 +99,13 @@ TEST(TestAsyncMutex, JustWorking) {
 }
 
 TEST(TestAsyncMutex, SyncIncrementInThreads) {
-    constexpr size_t MaxCount = 32;
+    constexpr size_t MaxCountThreads = 32;
+    constexpr size_t CountIterations = 100;
 
-    TestSyncIncrement worker(MaxCount);
+    TestSyncIncrement worker(MaxCountThreads, CountIterations);
     {
         std::vector<std::jthread> workers;
-        for (size_t i = 0; i < MaxCount; i++) {
+        for (size_t i = 0; i < MaxCountThreads; i++) {
             workers.emplace_back(&TestSyncIncrement::run, &worker);
         }
 
@@ -112,7 +113,7 @@ TEST(TestAsyncMutex, SyncIncrementInThreads) {
         worker.Wait();
     }
 
-    ASSERT_EQ(worker.number, MaxCount);
+    ASSERT_EQ(worker.number, MaxCountThreads * CountIterations);
 }
 
 TEST(TestAsyncMutex, ThreadWait) {

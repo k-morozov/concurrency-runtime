@@ -7,7 +7,7 @@
 #include <atomic>
 #include <coroutine>
 
-#include <components/async_mutex/event.h>
+#include <components/async_mutex/async_mutex_coro_impl.h>
 #include <components/async_mutex/resumable_no_own.h>
 
 namespace NComponents {
@@ -17,11 +17,11 @@ public:
     AsyncMutex();
     ~AsyncMutex();
 
-    Event& lock();
+    AsyncMutexCoroImpl& lock();
     void unlock();
 
 private:
-    Event event;
+    AsyncMutexCoroImpl mutex_impl;
 };
 
 }  // namespace NComponents

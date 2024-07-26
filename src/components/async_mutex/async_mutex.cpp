@@ -12,18 +12,18 @@
 
 namespace NComponents {
 
-AsyncMutex::AsyncMutex() : event() {}
+AsyncMutex::AsyncMutex() : mutex_impl() {}
 
-Event& AsyncMutex::lock() {
-    return event;
+AsyncMutexCoroImpl& AsyncMutex::lock() {
+    return mutex_impl;
 }
 
 AsyncMutex::~AsyncMutex() {
-    assert(event.waiters.empty());
+//    assert(mutex_impl.waiters.empty());
 }
 
 void AsyncMutex::unlock() {
-    event.Unlock();
+    mutex_impl.Unlock();
 }
 
 }  // namespace NComponents

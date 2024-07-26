@@ -12,6 +12,8 @@
 
 namespace NComponents {
 
+class AsyncMutexCoroImpl;
+
 struct ResumableNoOwn {
     struct promise_type {
         std::suspend_never initial_suspend() const noexcept { return {}; }
@@ -23,10 +25,10 @@ struct ResumableNoOwn {
     };
 
     ResumableNoOwn(std::coroutine_handle<promise_type> /*handle*/) {
-//        std::osyncstream(std::cout)
-//            << "[ResumableNoOwn][this=" << this
-//            << "][thread_id=" << std::this_thread::get_id() << "] create"
-//            << std::endl;
+        std::osyncstream(std::cout)
+            << "[ResumableNoOwn][this=" << this
+            << "][thread_id=" << std::this_thread::get_id() << "] create"
+            << std::endl;
     }
 };
 

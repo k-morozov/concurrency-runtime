@@ -17,12 +17,14 @@
 
 namespace NComponents {
 
-struct Event final {
+class AsyncMutexCoroImpl final {
     mutable NSync::SpinLock spinlock;
     bool lock_flag{};
     std::list<MutexAwaiter> waiters;
 
-    Event() = default;
+public:
+
+    AsyncMutexCoroImpl() = default;
 
     bool TryLock();
 
@@ -33,9 +35,9 @@ struct Event final {
         return lock_flag;
     }
 
-    MutexAwaiter operator co_await();
-
     void ParkAwaiter(MutexAwaiter* awaiter);
+
+    MutexAwaiter operator co_await();
 };
 
 }  // namespace NComponents
