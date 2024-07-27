@@ -23,3 +23,7 @@ example_subscription = executable('example_subscription',
 example_mutex = executable('example_mutex',
                            'example_mutex.cpp'
 )
+
+example_stm = executable('example_stm',
+                         'example_stm.cpp'
+)
