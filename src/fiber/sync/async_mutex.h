@@ -8,12 +8,13 @@
 
 #include <components/intrusive/list.h>
 #include <components/sync/spinLock.h>
+#include <components/sync/queue_spinlock.h>
 #include <fiber/awaiter/mutex_awaiter.h>
 
 namespace NFibers {
 
 class AsyncMutex {
-    using Spinlock = NSync::SpinLock;
+    using Spinlock = NSync::QueueSpinLock;
     using Waiter = AsyncMutexWaiter<AsyncMutex>;
 
     friend Waiter;

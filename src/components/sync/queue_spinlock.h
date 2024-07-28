@@ -16,6 +16,10 @@ public:
             host.Acquire(this);
         }
         ~Guard() {
+            Release();
+        }
+
+        void Release() {
             host.Release(this);
         }
 
