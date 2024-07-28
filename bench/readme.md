@@ -14,7 +14,7 @@
 | IntrusiveThreadPool_task_100000/iterations:10/repeats:5_stddev | 20.8 ms | 5.86 ms| 5          |
 | IntrusiveThreadPool_task_100000/iterations:10/repeats:5_cv     | 6.50 %  | 6.31 % | 5          |
 
-### DistributedPool Task 100,000
+### DistributedPool Task 100,000 (spinlock)
 
 | Benchmark                                                     | Time   | CPU     | Iterations |
 |---------------------------------------------------------------|--------|---------|------------|
@@ -28,7 +28,21 @@
 | DistributedPool_task_100000/iterations:10/repeats:5_stddev    | 8.96 ms| 0.477 ms| 5          |
 | DistributedPool_task_100000/iterations:10/repeats:5_cv        | 7.05 % | 0.80 %  | 5          |
 
-### Mutex
+### DistributedPool Task 100,000 (std::mutex)
+
+| Benchmark                                                       | Time    | CPU    | Iterations |
+|-----------------------------------------------------------------|---------|--------|------------|
+| DistributedPool_task_100000/iterations:10/repeats:5             | 254 ms  | 96.8 ms| 10         |
+| DistributedPool_task_100000/iterations:10/repeats:5             | 492 ms  | 196 ms | 10         |
+| DistributedPool_task_100000/iterations:10/repeats:5             | 563 ms  | 224 ms | 10         |
+| DistributedPool_task_100000/iterations:10/repeats:5             | 254 ms  | 118 ms | 10         |
+| DistributedPool_task_100000/iterations:10/repeats:5             | 175 ms  | 83.4 ms| 10         |
+| DistributedPool_task_100000/iterations:10/repeats:5_mean        | 348 ms  | 144 ms | 5          |
+| DistributedPool_task_100000/iterations:10/repeats:5_median      | 254 ms  | 118 ms | 5          |
+| DistributedPool_task_100000/iterations:10/repeats:5_stddev      | 169 ms  | 62.7 ms| 5          |
+| DistributedPool_task_100000/iterations:10/repeats:5_cv          | 48.67 % | 43.65 %| 5          |
+
+### Compare std::mutex and async_mutex with coro
 
 | Benchmark                                     | Time     | CPU     | Iterations |
 |-----------------------------------------------|----------|---------|------------|
