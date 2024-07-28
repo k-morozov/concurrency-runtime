@@ -6,6 +6,8 @@
 #include <coroutine>
 #include <iostream>
 #include <unordered_map>
+#include <concepts>
+#include <any>
 
 #include "generator.h"
 
@@ -55,6 +57,16 @@ using coro_t = std::coroutine_handle<>;
 enum class Sym : char { A, B, Term };
 enum class State { A, B };
 
+template <class State, class Sym>
+class StateMachine;
+
+using stm_t = StateMachine<State, Sym>;
+
+template <class F>
+concept CanInvokeWithStm = requires(F f, stm_t& stm) {
+    { f(stm) } -> std::same_as<Resumable>;
+};
+
 Generator<Sym> input_seq(std::string seq) {
     for (char c : seq) {
         switch (c) {
@@ -86,8 +98,11 @@ struct stm_awaiter : public F {
         auto new_state = F::operator()(sym);
         return stm[new_state];
     }
-    bool await_resume() const noexcept { return stm.genval() == Sym::Term; }
+    [[nodiscard]] bool await_resume() const noexcept {
+        return stm.genval() == Sym::Term;
+    }
 };
+
 
 template <class State, class Sym>
 class StateMachine final {
@@ -101,14 +116,14 @@ public:
         return stm_awaiter(transition, *this);
     }
 
-    template <class F>
+    template <CanInvokeWithStm F>
     void add_state(State state, F stf) {
         states[state] = stf(*this).handle();
     }
 
     void run(State initial) {
         current_state = initial;
-        states[initial].resume();
+        states[current_state].resume();
     }
 
     Sym genval() const { return gen.current_value(); }
@@ -118,15 +133,13 @@ public:
     State current() const { return current_state; }
 
 private:
-    State current_state;
-    std::unordered_map<State, coro_t> states;
+    State current_state{};
+    std::unordered_map<State, coro_t> states{};
     Generator<Sym> gen;
 };
 
-using stm_t = StateMachine<State, Sym>;
-
 Resumable StateA(stm_t& stm) {
-    auto transmition = [](auto sym) {
+    auto transmission = [](auto sym) {
         if (sym == Sym::B) {
             return State::B;
         }
@@ -134,7 +147,7 @@ Resumable StateA(stm_t& stm) {
     };
     for (;;) {
         std::cout << "State A" << std::endl;
-        bool finish = co_await stm.get_awaiter(transmition);
+        bool finish = co_await stm.get_awaiter(transmission);
         if (finish) {
             break;
         }
@@ -142,7 +155,7 @@ Resumable StateA(stm_t& stm) {
 }
 
 Resumable StateB(stm_t& stm) {
-    auto transmition = [](auto sym) {
+    auto transmission = [](auto sym) {
         if (sym == Sym::A) {
             return State::A;
         }
@@ -150,7 +163,7 @@ Resumable StateB(stm_t& stm) {
     };
     for (;;) {
         std::cout << "State B" << std::endl;
-        bool finish = co_await stm.get_awaiter(transmition);
+        bool finish = co_await stm.get_awaiter(transmission);
         if (finish) {
             break;
         }
@@ -159,7 +172,7 @@ Resumable StateB(stm_t& stm) {
 
 int main() {
     auto gen = input_seq("aaabbaba");
-    stm_t stm(std::move(gen));
+    stm_t stm(gen);
     stm.add_state(State::A, StateA);
     stm.add_state(State::B, StateB);
 
