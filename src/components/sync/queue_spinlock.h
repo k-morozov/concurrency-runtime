@@ -12,42 +12,32 @@ class QueueSpinLock final {
 public:
     class Guard final {
     public:
-        explicit Guard(QueueSpinLock& host) : host(host) {
-            host.Acquire(this);
-        }
+        explicit Guard(QueueSpinLock& host) : host(host) { host.Acquire(this); }
         ~Guard() {
-            Release();
+            if (is_owner) Release();
         }
 
         void Release() {
             host.Release(this);
+            is_owner.store(false);
         }
 
-        void SetOwner() {
-            is_owner.store(true);
-        }
+        void SetOwner() { is_owner.store(true); }
 
-        void SetNext(Guard* guard) {
-            next.store(guard);
-        }
+        void SetNext(Guard* guard) { next.store(guard); }
 
-        bool IsOwner() const {
-            return is_owner.load();
-        }
+        bool IsOwner() const { return is_owner.load(); }
 
-        bool HasNext() const {
-            return next.load() != nullptr;
-        }
+        bool HasNext() const { return next.load() != nullptr; }
 
-        void SetNextOwner() {
-            next.load()->SetOwner();
-        }
+        void SetNextOwner() { next.load()->SetOwner(); }
 
     private:
         QueueSpinLock& host;
         std::atomic<Guard*> next{};
         std::atomic<bool> is_owner{};
     };
+
 private:
     void Acquire(Guard* guard) {
         auto ancestor = tail_.exchange(guard);
@@ -57,7 +47,8 @@ private:
         }
 
         ancestor->SetNext(guard);
-        while(!guard->IsOwner()) {}
+        while (!guard->IsOwner()) {
+        }
     }
 
     void Release(Guard* guard) {
@@ -67,7 +58,7 @@ private:
         }
 
         Guard* old_guard = guard;
-        while(!tail_.compare_exchange_weak(old_guard, nullptr)) {
+        while (!tail_.compare_exchange_weak(old_guard, nullptr)) {
             if (guard->HasNext()) {
                 guard->SetNextOwner();
                 return;

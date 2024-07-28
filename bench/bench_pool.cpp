@@ -46,19 +46,19 @@ void bench_logic(NExecutors::IExecutor& pool) {
     });
 }
 
-static void IntrusiveThreadPool(benchmark::State& state) {
-    for (auto _ : state) {
-        NExecutors::IntrusiveThreadPool pool{CountThreads};
-        pool.Start();
-        bench_logic(pool);
-        pool.WaitIdle();
-    }
-}
-BENCHMARK(IntrusiveThreadPool)
-    ->Name(std::format("IntrusiveThreadPool_task_{}", kTasks))
-    ->Repetitions(CountRepetitions)
-    ->Iterations(CountIteration)
-    ->Unit(benchmark::kMillisecond);
+//static void IntrusiveThreadPool(benchmark::State& state) {
+//    for (auto _ : state) {
+//        NExecutors::IntrusiveThreadPool pool{CountThreads};
+//        pool.Start();
+//        bench_logic(pool);
+//        pool.WaitIdle();
+//    }
+//}
+//BENCHMARK(IntrusiveThreadPool)
+//    ->Name(std::format("IntrusiveThreadPool_task_{}", kTasks))
+//    ->Repetitions(CountRepetitions)
+//    ->Iterations(CountIteration)
+//    ->Unit(benchmark::kMillisecond);
 
 static void DistributedPool(benchmark::State& state) {
     for (auto _ : state) {

@@ -28,7 +28,6 @@ public:
         stopped_handle = handle;
         async_mutex->Park(this);
 
-//        guard.release()->unlock();
         guard.Release();
     }
 
