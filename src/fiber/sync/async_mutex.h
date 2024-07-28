@@ -13,7 +13,7 @@
 namespace NFibers {
 
 class AsyncMutex {
-    using Spinlock = std::mutex;
+    using Spinlock = NSync::SpinLock;
     using Waiter = AsyncMutexWaiter<AsyncMutex>;
 
     friend Waiter;
