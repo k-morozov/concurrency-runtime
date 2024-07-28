@@ -2,12 +2,12 @@
 // Created by konstantin on 27.07.24.
 //
 
+#include <any>
 #include <cassert>
+#include <concepts>
 #include <coroutine>
 #include <iostream>
 #include <unordered_map>
-#include <concepts>
-#include <any>
 
 #include "generator.h"
 
@@ -86,23 +86,23 @@ Generator<Sym> input_seq(std::string seq) {
     }
 }
 
-template <typename F, typename SM>
-struct stm_awaiter : public F {
+template <typename TableTransition, typename SM>
+struct stm_awaiter : public TableTransition {
     SM& stm;
-    stm_awaiter(F f, SM& stm) : F(f), stm(stm) {}
+    stm_awaiter(TableTransition transition, SM& stm)
+        : TableTransition(transition), stm(stm) {}
 
     bool await_ready() const noexcept { return false; }
     coro_t await_suspend(std::coroutine_handle<>) noexcept {
         stm.gennext();
         auto sym = stm.genval();
-        auto new_state = F::operator()(sym);
+        auto new_state = TableTransition::operator()(sym);
         return stm[new_state];
     }
     [[nodiscard]] bool await_resume() const noexcept {
         return stm.genval() == Sym::Term;
     }
 };
-
 
 template <class State, class Sym>
 class StateMachine final {
