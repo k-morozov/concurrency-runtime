@@ -28,6 +28,20 @@
 | DistributedPool_task_100000/iterations:10/repeats:5_stddev    | 8.96 ms| 0.477 ms| 5          |
 | DistributedPool_task_100000/iterations:10/repeats:5_cv        | 7.05 % | 0.80 %  | 5          |
 
+### DistributedPool Task 100,000 (queue spinlock)
+
+| Benchmark                                                     | Time   | CPU    | Iterations |
+|---------------------------------------------------------------|--------|--------|------------|
+| DistributedPool_task_100000/iterations:10/repeats:5           | 304 ms | 126 ms | 10         |
+| DistributedPool_task_100000/iterations:10/repeats:5           | 263 ms | 107 ms | 10         |
+| DistributedPool_task_100000/iterations:10/repeats:5           | 205 ms | 79.7 ms| 10         |
+| DistributedPool_task_100000/iterations:10/repeats:5           | 190 ms | 78.7 ms| 10         |
+| DistributedPool_task_100000/iterations:10/repeats:5           | 460 ms | 189 ms | 10         |
+| DistributedPool_task_100000/iterations:10/repeats:5_mean      | 285 ms | 116 ms | 5          |
+| DistributedPool_task_100000/iterations:10/repeats:5_median    | 263 ms | 107 ms | 5          |
+| DistributedPool_task_100000/iterations:10/repeats:5_stddev    | 108 ms | 45.5 ms| 5          |
+| DistributedPool_task_100000/iterations:10/repeats:5_cv        | 37.98 %| 39.18 %| 5          |
+
 ### DistributedPool Task 100,000 (std::mutex)
 
 | Benchmark                                                       | Time    | CPU    | Iterations |

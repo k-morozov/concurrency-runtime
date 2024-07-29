@@ -11,7 +11,7 @@ namespace NFibers {
 void AsyncMutex::Lock() {
     Waiter::Guard guard(spinlock_);
     if (locked_) {
-        Waiter waiter(this, std::move(guard));
+        Waiter waiter(this, guard);
         Suspend(&waiter);
     } else {
         locked_ = true;
