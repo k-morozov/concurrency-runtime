@@ -22,11 +22,13 @@ public:
             is_owner.store(false);
         }
 
-        void SetOwner() { is_owner.store(true); }
+        void SetOwner() { is_owner.store(true, std::memory_order_acquire); }
 
         void SetNext(Guard* guard) { next.store(guard); }
 
-        bool IsOwner() const { return is_owner.load(); }
+        bool IsOwner() const {
+            return is_owner.load(std::memory_order_release);
+        }
 
         bool HasNext() const { return next.load() != nullptr; }
 
