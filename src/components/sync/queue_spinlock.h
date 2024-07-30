@@ -14,20 +14,20 @@ public:
     public:
         explicit Guard(QueueSpinLock& host) : host(host) { host.Acquire(this); }
         ~Guard() {
-            if (is_owner) Release();
+            if (is_owner.load()) Release();
         }
 
         void Release() {
             host.Release(this);
-            is_owner.store(false);
+            is_owner.store(false, std::memory_order_release);
         }
 
-        void SetOwner() { is_owner.store(true, std::memory_order_acquire); }
+        void SetOwner() { is_owner.store(true, std::memory_order_release); }
 
         void SetNext(Guard* guard) { next.store(guard); }
 
         bool IsOwner() const {
-            return is_owner.load(std::memory_order_release);
+            return is_owner.load(std::memory_order_acquire);
         }
 
         bool HasNext() const { return next.load() != nullptr; }
