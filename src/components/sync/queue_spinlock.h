@@ -14,7 +14,7 @@ public:
     public:
         explicit Guard(QueueSpinLock& host) : host(host) { host.Acquire(this); }
         ~Guard() {
-            if (is_owner.load(std::memory_order_release)) Release();
+            if (is_owner.load(std::memory_order_acquire)) Release();
         }
 
         void Release() {
