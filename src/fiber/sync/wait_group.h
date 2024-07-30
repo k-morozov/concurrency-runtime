@@ -8,12 +8,13 @@
 
 #include <components/intrusive/list.h>
 #include <components/sync/spinLock.h>
+#include <components/sync/queue_spinlock.h>
 #include <fiber/awaiter/wait_group_awaiter.h>
 
 namespace NFibers {
 
 class WaitGroup {
-    using Spinlock = NSync::SpinLock;
+    using Spinlock = NSync::QueueSpinLock;
     using Waiter = WaitGroupWaiter<WaitGroup>;
 
     friend Waiter;
