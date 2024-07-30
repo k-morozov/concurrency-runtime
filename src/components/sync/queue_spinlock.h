@@ -14,7 +14,7 @@ public:
     public:
         explicit Guard(QueueSpinLock& host) : host(host) { host.Acquire(this); }
         ~Guard() {
-            if (is_owner.load()) Release();
+            if (is_owner.load(std::memory_order_release)) Release();
         }
 
         void Release() {
@@ -24,13 +24,13 @@ public:
 
         void SetOwner() { is_owner.store(true, std::memory_order_release); }
 
-        void SetNext(Guard* guard) { next.store(guard); }
+        void SetNext(Guard* guard) { next.store(guard, std::memory_order_release); }
 
         bool IsOwner() const {
             return is_owner.load(std::memory_order_acquire);
         }
 
-        bool HasNext() const { return next.load() != nullptr; }
+        bool HasNext() const { return next.load(std::memory_order_acquire) != nullptr; }
 
         void SetNextOwner() { next.load()->SetOwner(); }
 
@@ -60,8 +60,8 @@ private:
         }
 
         Guard* old_guard = guard;
-        while (!tail_.compare_exchange_weak(old_guard, nullptr,
-                                            std::memory_order_release)) {
+        while (!tail_.compare_exchange_weak(old_guard, nullptr/*,
+                                            std::memory_order_release*/)) {
             if (guard->HasNext()) {
                 guard->SetNextOwner();
                 return;
