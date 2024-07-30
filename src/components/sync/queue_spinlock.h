@@ -42,7 +42,7 @@ public:
 
 private:
     void Acquire(Guard* guard) {
-        auto ancestor = tail_.exchange(guard);
+        auto ancestor = tail_.exchange(guard, std::memory_order_acquire);
         if (ancestor == nullptr) {
             guard->SetOwner();
             return;
@@ -60,7 +60,8 @@ private:
         }
 
         Guard* old_guard = guard;
-        while (!tail_.compare_exchange_weak(old_guard, nullptr)) {
+        while (!tail_.compare_exchange_weak(old_guard, nullptr,
+                                            std::memory_order_release)) {
             if (guard->HasNext()) {
                 guard->SetNextOwner();
                 return;
