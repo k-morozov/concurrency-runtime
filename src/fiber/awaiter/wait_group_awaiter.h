@@ -7,6 +7,7 @@
 #include <mutex>
 
 #include <components/intrusive/list.h>
+#include <components/sync/queue_spinlock.h>
 #include <fiber/awaiter/awaiter.h>
 
 namespace NFibers {
@@ -15,23 +16,23 @@ template <class W>
 class WaitGroupWaiter : public IAwaiter,
                         public NComponents::Node<WaitGroupWaiter<W>> {
 public:
-    using Guard = std::unique_lock<typename W::Spinlock>;
+    using Guard = NSync::QueueSpinLock::Guard;
 
-    WaitGroupWaiter(W* wg, Guard guard) : wg(wg), guard(std::move(guard)){};
+    WaitGroupWaiter(W* wg, Guard& guard) : wg(wg), guard(guard){};
 
     void AwaitSuspend(StoppedFiber fiber) override {
         assert(fiber.IsValid());
 
         stopped_fiber = fiber;
         wg->Park(this);
-        guard.release()->unlock();
+        guard.Release();
     }
 
     void Schedule() { stopped_fiber.Schedule(); }
 
 private:
     W* wg;
-    Guard guard;
+    Guard& guard;
     StoppedFiber stopped_fiber;
 };
 

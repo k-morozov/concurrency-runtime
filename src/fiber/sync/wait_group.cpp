@@ -38,7 +38,7 @@ void WaitGroup::Done() {
 void WaitGroup::Wait() {
     Waiter::Guard guard(spinlock_);
     if (counter_ > 0) {
-        Waiter wg_waiter(this, std::move(guard));
+        Waiter wg_waiter(this, guard);
         Suspend(&wg_waiter);
     }
 }

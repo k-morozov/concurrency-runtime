@@ -42,7 +42,7 @@ public:
 
 private:
     void Acquire(Guard* guard) {
-        auto ancestor = tail_.exchange(guard, std::memory_order_acquire);
+        auto ancestor = tail_.exchange(guard/*, std::memory_order_acquire*/);
         if (ancestor == nullptr) {
             guard->SetOwner();
             return;
