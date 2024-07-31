@@ -17,7 +17,7 @@ I really wanted to understand how Go's runtime works. I suppose that the best wa
 
 ***I must admit that every decision is made in the design of the system imperfectly. Every design is trade off.***
 
-When I work with this lib I understood that concurrancy is really too hard.
+When I work with this lib I understood that concurrency is really too hard.
 
 ### Requirements
 
@@ -91,5 +91,6 @@ Stackfull coroutine + Executor = Fibers. Im proud of async mutex, wait group, ev
 - [spinlock](src/components/sync/spinLock.h)
 - [simple intrusive list](src/components/intrusive/list.h)
 - [lock free queue](src/components/lock_free/simple_ms_queue.h)
+- [queue spinlock](src/components/sync/queue_spinlock.h)
 
 P.S. Thanks for R.Lipovsky for his wonderfully program :)
